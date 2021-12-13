@@ -1,3 +1,5 @@
+import config from "./config.json"
+
 import { REST } from "@discordjs/rest"
 import { Routes } from "discord-api-types/v9";
 import { Client } from "discord.js";
@@ -7,9 +9,7 @@ import path from "path";
 import type { Command, EventHandler } from "./types";
 import type { SlashCommandBuilder } from "@discordjs/builders";
 
-if (!process.env.TOKEN) process.exit();
-
-const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
+const rest = new REST({ version: '9' }).setToken(config.DISCORD_BOT_TOKEN);
 
 const getCommands = async (dir: string): Promise<SlashCommandBuilder[]> => {
     const resolvedPath = path.resolve(__dirname, dir)
@@ -29,10 +29,10 @@ export const loadCommands = async (dir: string) => {
         const commands = await getCommands(dir);
         const resolvedCommands = commands.map(cmd => cmd.toJSON());
 
-        if (!process.env.CLIENT_ID) return;
+        if (!config.DISCORD_CLIENT_ID) return;
 
         await rest.put(
-            Routes.applicationCommands(process.env.CLIENT_ID),
+            Routes.applicationCommands(config.DISCORD_CLIENT_ID),
             { body: resolvedCommands },
         );
 
@@ -46,8 +46,8 @@ export const loadEvents = async (client: Client, dir: string) => {
     const resolvedPath = path.resolve(__dirname, dir)
     const eventNames = await promises.readdir(resolvedPath)
     console.log(eventNames)
-    for (const eventName of eventNames) {
-        const event: EventHandler = await import(`${resolvedPath}/${eventName}`)
-        client.on(eventName, event.handler)
-    }
+    // for (const eventName of eventNames) {
+    //     const event: EventHandler = await import(`${resolvedPath}/${eventName}`)
+    //     client.on(eventName, event.handler)
+    // }
 }
