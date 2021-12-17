@@ -11,7 +11,7 @@ interface LeekClientOptions extends ClientOptions {
     eventsDir: string
 }
 
-const rest = new REST({ version: '9' }).setToken(config.DISCORD_BOT_TOKEN);
+const rest = new REST({ version: config.DISCORD_REST_VER }).setToken(config.DISCORD_BOT_TOKEN);
 
 export class LeekClient extends Client {
     public options: LeekClientOptions;

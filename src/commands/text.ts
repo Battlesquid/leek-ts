@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { Interaction } from "discord.js";
+import { CommandInteraction } from "discord.js";
 
 export const structure =
     new SlashCommandBuilder()
@@ -26,7 +26,7 @@ export const structure =
                 )
         )
 
-export const execute = (interaction: Interaction) => {
-    if (!interaction.isCommand()) return;
+export const execute = (inter: CommandInteraction) => {
+    
 
 }

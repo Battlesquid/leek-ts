@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders"
-import { Interaction } from "discord.js"
+import { CommandInteraction } from "discord.js"
 
 export const structure =
     new SlashCommandBuilder()
@@ -16,16 +16,15 @@ export const structure =
                 .setDescription("Disable message logging")
         )
 
-const enable = (interaction: Interaction) => {
-    
-}
-
-const disable = (interaction: Interaction) => {
+const enable = (inter: CommandInteraction) => {
 
 }
 
-export const execute = async(interaction: Interaction) => {
-    if (!interaction.isCommand()) return;
+const disable = (inter: CommandInteraction) => {
+
+}
+
+export const execute = async (interaction: CommandInteraction) => {
     if (interaction.options.getSubcommand() === "enable")
         enable(interaction)
     else disable(interaction)

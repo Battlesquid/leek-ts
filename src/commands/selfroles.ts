@@ -1,8 +1,10 @@
 import { SlashCommandBuilder } from "@discordjs/builders"
+import { CommandInteraction } from "discord.js"
 
 export const structure = new SlashCommandBuilder()
     .setName("selfroles")
     .setDescription("Manage roles")
+
     .addSubcommandGroup(group =>
         group
             .setName("panel")
@@ -43,17 +45,17 @@ export const structure = new SlashCommandBuilder()
                             .setRequired(true)
                     )
             )
-            // .addSubcommand(subcmd =>
-            //     subcmd
-            //         .setName("set_description")
-            //         .setDescription("Set the description for the selfrole panel")
-            //         .addStringOption(option =>
-            //             option
-            //                 .setName("desc")
-            //                 .setDescription("The description to set the panel to")
-            //                 .setRequired(true)
-            //         )
-            // )
+            .addSubcommand(subcmd =>
+                subcmd
+                    .setName("set_description")
+                    .setDescription("Set the description for the selfrole panel")
+                    .addStringOption(option =>
+                        option
+                            .setName("desc")
+                            .setDescription("The description to set the panel to")
+                            .setRequired(true)
+                    )
+            )
             .addSubcommand(subcmd =>
                 subcmd
                     .setName("set_msg")
@@ -101,3 +103,21 @@ export const structure = new SlashCommandBuilder()
                             .setDescription("The role to remove"))
             )
     )
+
+
+const create = (inter: CommandInteraction) => {
+
+}
+
+const remove = (inter: CommandInteraction) => {
+
+}
+
+const set_name = (inter: CommandInteraction) => {
+
+}
+
+export const execute = (inter: CommandInteraction) => {
+    const group = inter.options.getSubcommandGroup();
+    // if (group === "panel")
+}
