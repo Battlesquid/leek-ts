@@ -1,5 +1,5 @@
-import { Interaction } from "discord.js"
-import { SlashCommandBuilder } from "@discordjs/builders"
+import { SlashCommandBuilder } from "@discordjs/builders";
+import { Interaction } from "discord.js";
 
 export const structure =
     new SlashCommandBuilder()
@@ -8,11 +8,13 @@ export const structure =
         .addSubcommand(subcmd =>
             subcmd
                 .setName("enable")
-                .setDescription("Allow text")
+                .setDescription("Allow text in a channel")
                 .addChannelOption(option =>
                     option
                         .setName("channel")
-                        .setDescription("The channel to allow text in")))
+                        .setDescription("The channel to allow text in (defaults to current channel)")
+                )
+        )
         .addSubcommand(subcmd =>
             subcmd
                 .setName("disable")
@@ -20,7 +22,9 @@ export const structure =
                 .addChannelOption(option =>
                     option
                         .setName("channel")
-                        .setDescription("The channel to disable text in")))
+                        .setDescription("The channel to disable text in (defaults to current channel)")
+                )
+        )
 
 export const execute = (interaction: Interaction) => {
     if (!interaction.isCommand()) return;

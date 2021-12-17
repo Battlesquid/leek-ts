@@ -1,5 +1,5 @@
-import { Interaction } from "discord.js"
 import { SlashCommandBuilder } from "@discordjs/builders"
+import { Interaction } from "discord.js"
 
 export const structure =
     new SlashCommandBuilder()
@@ -9,16 +9,24 @@ export const structure =
             subcmd
                 .setName("enable")
                 .setDescription("Enable server wide message logging")
-                .addChannelOption(option =>
-                    option
-                        .setName("channel")
-                        .setDescription("The channel to log messages to")))
+        )
         .addSubcommand(subcmd =>
             subcmd
                 .setName("disable")
-                .setDescription("Disable message logging"))
+                .setDescription("Disable message logging")
+        )
 
-export const execute = (interaction: Interaction) => {
+const enable = (interaction: Interaction) => {
+    
+}
+
+const disable = (interaction: Interaction) => {
+
+}
+
+export const execute = async(interaction: Interaction) => {
     if (!interaction.isCommand()) return;
-
+    if (interaction.options.getSubcommand() === "enable")
+        enable(interaction)
+    else disable(interaction)
 }

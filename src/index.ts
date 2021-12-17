@@ -1,9 +1,10 @@
-import config from "./config.json"
+import { Intents } from "discord.js";
+import config from "./config.json";
+import { LeekClient } from "./LeekClient";
 
-import { Client, Intents } from "discord.js"
-import { loadCommands, loadEvents } from "./loaders"
-
-const client = new Client({
+const client = new LeekClient({
+    commandDir: "./commands",
+    eventsDir: "./events",
     intents: [
         Intents.FLAGS.GUILDS,
         Intents.FLAGS.GUILD_MESSAGES,
@@ -12,7 +13,4 @@ const client = new Client({
     ]
 });
 
-loadCommands("./commands");
-loadEvents(client, "./events")
-
-client.login(config.DISCORD_BOT_TOKEN)
+client.start(config.DISCORD_BOT_TOKEN)
