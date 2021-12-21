@@ -12,38 +12,43 @@ const interHandlers: InterHandler[] = [
         name: "CommandInteraction",
         meetsReq: (inter: Interaction) => inter.isCommand(),
         execute: async (client: LeekClient, inter: Interaction) => {
-            const cmd = (inter as CommandInteraction);
-            const name = cmd.commandName;
-            console.log(cmd.options.getSubcommand());
-            cmd.reply("lmao")
+            const cmdInter = inter as CommandInteraction;
+
+            const command = client.getSlashCommand(cmdInter)
+            if (!command) {
+                cmdInter.reply("An error occurred...(how did you get here?)")
+                return;
+            }
+
+            command(cmdInter)
         }
     },
     {
         name: "ButtonInteraction",
         meetsReq: (inter: Interaction) => inter.isButton(),
         execute: async (client: LeekClient, inter: Interaction) => {
-            const btn = inter as ButtonInteraction
+            const btnInter = inter as ButtonInteraction
         }
     },
     {
         name: "ContextMenuInteraction",
         meetsReq: (inter: Interaction) => inter.isContextMenu(),
         execute: async (client: LeekClient, inter: Interaction) => {
-            const ctxMenu = inter as ContextMenuInteraction;
+            const ctxMenuInter = inter as ContextMenuInteraction;
         }
     },
     {
         name: "MessageComponentInteraction",
         meetsReq: (inter: Interaction) => inter.isMessageComponent(),
         execute: async (client: LeekClient, inter: Interaction) => {
-            const msgComp = inter as MessageComponentInteraction;
+            const msgCompInter = inter as MessageComponentInteraction;
         }
     },
     {
         name: "SelectMenuInteraction",
         meetsReq: (inter: Interaction) => inter.isSelectMenu(),
         execute: async (client: LeekClient, inter: Interaction) => {
-            const selMenu = inter as SelectMenuInteraction;
+            const selMenuInter = inter as SelectMenuInteraction;
         }
     }
 ]

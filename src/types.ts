@@ -1,12 +1,30 @@
-import type { SlashCommandBuilder } from "@discordjs/builders"
-import { Interaction } from "discord.js"
+import type { SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder } from "@discordjs/builders"
+import { CommandInteraction } from "discord.js"
+import { LeekClient } from "./LeekClient"
 
-export abstract class Command {
-    abstract structure: SlashCommandBuilder
-    abstract execute(interaction: Interaction): Promise<any>
+export type CommandExec = (inter: CommandInteraction) => Promise<any> | any
+
+export type Command = {
+    structure: SlashCommandBuilder
+    execute: CommandExec
 }
 
-export type Handler = (...args: any[]) => Promise<any>
+export type Subcommand = {
+    structure: SlashCommandSubcommandBuilder
+    execute: CommandExec
+}
+
+export type ParentCommandBase = {
+    structure: SlashCommandBuilder
+}
+
+export type GroupCommandBase = {
+    structure: SlashCommandSubcommandGroupBuilder
+}
+
+export type CommandStructure = SlashCommandBuilder | SlashCommandSubcommandBuilder
+
+export type Handler = (client: LeekClient, ...args: any[]) => Promise<any> | any
 
 export type EventHandler = {
     handler: Handler

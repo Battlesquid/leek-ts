@@ -3,7 +3,7 @@ import config from "./config.json";
 import { LeekClient } from "./LeekClient";
 
 const client = new LeekClient({
-    commandDir: "./commands",
+    commandsDir: "./commands",
     eventsDir: "./events",
     intents: [
         Intents.FLAGS.GUILDS,
