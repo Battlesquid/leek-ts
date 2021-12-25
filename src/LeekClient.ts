@@ -4,6 +4,7 @@ import { Client, ClientOptions, Collection, CommandInteraction } from "discord.j
 import fs from "fs/promises";
 import path from "path";
 import config from "./config.json";
+import { connection as dbconn } from "./database";
 import { Command, CommandExec, CommandStructure, EventHandler, GroupCommandBase, ParentCommandBase, Subcommand } from "./types";
 
 interface LeekClientOptions extends ClientOptions {
@@ -26,9 +27,10 @@ export class LeekClient extends Client {
         this.options = options;
     }
 
-    start(token: string) {
-        this.loadCommands()
-        this.loadEvents()
+    async start(token: string) {
+        await dbconn;
+        this.loadCommands(true);
+        this.loadEvents();
         this.login(token);
     }
 
@@ -39,7 +41,6 @@ export class LeekClient extends Client {
         const subcmd = cmdInter.options.getSubcommand(false) ?? "";
 
         const cmd = cmdInter.commandName + (group || subcmd ? "_" : "");
-        console.log(`${cmd}${groupName}${subcmd}`);
 
         return this.executables.get(`${cmd}${groupName}${subcmd}`)
     }
@@ -61,9 +62,9 @@ export class LeekClient extends Client {
     private async loadSubcmdGroups(subcmdDir: string, parentBase: ParentCommandBase, groups: string[]) {
         for (const group of groups) {
             const dirpath = path.resolve(__dirname, `${subcmdDir}/${group}`);
+            const directory = await this.loadDir(dirpath)
 
             const base: GroupCommandBase = (await import(`${dirpath}/base`)).default
-            const directory = await this.loadDir(dirpath)
 
             const groupCmds: Subcommand[] = (await Promise.all(
                 directory.files
@@ -86,9 +87,9 @@ export class LeekClient extends Client {
     private async loadSubcmds(dir: string, cmds: string[]) {
         for (const cmd of cmds) {
             const dirpath = path.resolve(__dirname, `${dir}/${cmd}`)
+            const directory = await this.loadDir(dirpath)
 
             const base: Command = (await import(`${dirpath}/base`)).default
-            const directory = await this.loadDir(dirpath)
 
             const subcmds: Subcommand[] = (await Promise.all(
                 directory.files
@@ -120,10 +121,6 @@ export class LeekClient extends Client {
         })
 
         await this.loadSubcmds(dirpath, directory.dirs)
-        console.log("Slash Commands\n")
-        console.log(this.slashCommands.map(s => s.options))
-        console.log("Executables\n")
-        console.log(this.executables)
     }
 
     private async loadUserCommands() {
@@ -153,9 +150,12 @@ export class LeekClient extends Client {
                     Routes.applicationCommands(config.DISCORD_CLIENT_ID),
                     { body: [...slashCommands, ...userCommands, ...messageCommands] },
                 );
+                console.log('Successfully reloaded application (/) commands.');
+            } else {
+                console.log("Skipping application command refresh")
             }
 
-            console.log('Successfully reloaded application (/) commands.');
+
         } catch (error) {
             console.error(error);
         }

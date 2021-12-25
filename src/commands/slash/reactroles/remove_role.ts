@@ -1,17 +1,18 @@
 import { SlashCommandSubcommandBuilder } from "@discordjs/builders"
 import { ChannelType } from "discord-api-types"
-import { CommandInteraction, TextChannel } from "discord.js"
-import { LeekClient } from "../../../LeekClient"
-import { Subcommand } from "../../../types"
+import { CommandInteraction, Formatters, TextChannel } from "discord.js"
+import { LeekClient } from "../../../LeekClient";
+import { Subcommand } from "../../../types";
+import { patterns, indices } from "../../../util/regexes";
 
 const command: Subcommand = {
     structure: new SlashCommandSubcommandBuilder()
-        .setName("set_desc")
-        .setDescription("Set the description for the react-role group")
+        .setName("remove_role")
+        .setDescription("Remove a role from a group")
         .addChannelOption(option =>
             option
                 .setName("channel")
-                .setDescription("The channel where the react-role is")
+                .setDescription("The channel the react-roles are in")
                 .addChannelType(ChannelType.GuildText)
                 .setRequired(true)
         )
@@ -21,19 +22,19 @@ const command: Subcommand = {
                 .setDescription("The react-role to modify")
                 .setRequired(true)
         )
-        .addStringOption(option =>
+        .addRoleOption(option =>
             option
-                .setName("desc")
-                .setDescription("The new description for the react-role group")
+                .setName("role")
+                .setDescription("The role to remove")
                 .setRequired(true)
         ),
 
     execute: async (client: LeekClient, inter: CommandInteraction) => {
         const ch = inter.options.getChannel("channel", true) as TextChannel;
         const title = inter.options.getString("title", true);
-        const desc = inter.options.getString("desc", true);
+        const role = inter.options.getRole("role", true);
 
-        const messages = await ch.messages.fetch({ limit: 50 })
+        const messages = await ch.messages.fetch({ limit: 50 });
         const msg = messages.find(m => {
             if (!m.embeds.length) return false;
             if (m.embeds[0].title !== title) return false;
@@ -47,11 +48,26 @@ const command: Subcommand = {
             return;
         }
 
-        const embed = msg.embeds[0]
-        embed.setDescription(desc)
+        const embed = msg.embeds[0];
 
+        // verify that the role exists
+        const roleField = embed.fields.find(f => f.value === Formatters.roleMention(role.id));
+        if (!roleField) {
+            inter.reply(`${role} does not exist on ${title}`);
+            return;
+        }
+
+        // filter out the field we want to remove
+        const fields = embed.fields.filter(f => f.value !== Formatters.roleMention(role.id));
+        embed.fields = fields;
         msg.edit({ embeds: [embed] });
-        inter.reply(`Description for ${title} changed to "${desc}"`)
+
+        // resolve the emoji, fetch the reaction and remove it
+        const emojiMatch = roleField.name.match(patterns.EMOJI_REGEX);
+        const emoji = emojiMatch ? emojiMatch[indices.EMOJI_ID] : roleField.name;
+        msg.reactions.cache.get(emoji)?.remove();
+
+        inter.reply(`Removed ${role} from ${title}`);
     }
 }
 

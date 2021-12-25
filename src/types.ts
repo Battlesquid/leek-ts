@@ -2,7 +2,7 @@ import type { SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandSu
 import { CommandInteraction } from "discord.js"
 import { LeekClient } from "./LeekClient"
 
-export type CommandExec = (inter: CommandInteraction) => Promise<any> | any
+export type CommandExec = (client: LeekClient, inter: CommandInteraction) => Promise<any> | any
 
 export type Command = {
     structure: SlashCommandBuilder
@@ -28,4 +28,13 @@ export type Handler = (client: LeekClient, ...args: any[]) => Promise<any> | any
 
 export type EventHandler = {
     handler: Handler
+}
+
+export type CommandValidator = {
+    passes: (inter: CommandInteraction) => Promise<any> | any
+    onFail: (inter: CommandInteraction) => Promise<any> | any
+}
+
+export type Validators = {
+    [key: string]: CommandValidator
 }

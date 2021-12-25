@@ -20,7 +20,7 @@ const interHandlers: InterHandler[] = [
                 return;
             }
 
-            command(cmdInter)
+            command(client, cmdInter)
         }
     },
     {

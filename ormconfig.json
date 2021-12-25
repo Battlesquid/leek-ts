@@ -1,0 +1,20 @@
+{
+   "type": "mongodb",
+   "database": "leekdb",
+   "synchronize": true,
+   "logging": false,
+   "entities": [
+      "src/database/entities/**/*.ts"
+   ],
+   "migrations": [
+      "src/database/migration/**/*.ts"
+   ],
+   "subscribers": [
+      "src/database/subscriber/**/*.ts"
+   ],
+   "cli": {
+      "entitiesDir": "src/database/entities",
+      "migrationsDir": "src/migration",
+      "subscribersDir": "src/subscriber"
+   }
+}
