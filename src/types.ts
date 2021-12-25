@@ -30,11 +30,17 @@ export type EventHandler = {
     handler: Handler
 }
 
-export type CommandValidator = {
-    passes: (inter: CommandInteraction) => Promise<any> | any
-    onFail: (inter: CommandInteraction) => Promise<any> | any
+export type Subevent = {
+    name: string
+    meetsReq: (...args: any[]) => Promise<boolean> | boolean
+    tryExec: (...args: any[]) => Promise<any>
 }
 
-export type Validators = {
-    [key: string]: CommandValidator
-}
+// export type CommandValidator = {
+//     passes: (inter: CommandInteraction) => Promise<any> | any
+//     onFail: (inter: CommandInteraction) => Promise<any> | any
+// }
+
+// export type Validators = {
+//     [key: string]: CommandValidator
+// }

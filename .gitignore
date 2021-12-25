@@ -7,3 +7,4 @@ temp/
 .env
 dist/
 config.json
+ormconfig.json
