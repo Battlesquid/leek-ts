@@ -1,7 +1,7 @@
 import fs from "fs/promises"
 import path from "path"
 import { LeekClient } from "../LeekClient"
-import { EventHandler } from "../types"
+import { EventHandler } from "../events/types"
 
 interface EventLoaderOptions {
     client: LeekClient

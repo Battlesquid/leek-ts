@@ -1,11 +1,12 @@
 import { Message } from "discord.js";
 import { getRepository } from "typeorm";
 import ChannelSettings from "../database/entities/ChannelSettings";
-import { Subevent } from "../types";
+import { Subevent } from "./types";
 import { patterns } from "../util/regexes";
 
 const subevent: Subevent = {
     name: "txtInTextDisabled",
+    parent: "messageCreate",
     meetsReq: async (msg: Message) => {
         if (!msg.guildId) return false;
         const repo = getRepository(ChannelSettings)

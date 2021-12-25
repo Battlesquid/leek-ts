@@ -24,18 +24,6 @@ export type GroupCommandBase = {
 
 export type CommandStructure = SlashCommandBuilder | SlashCommandSubcommandBuilder
 
-export type Handler = (client: LeekClient, ...args: any[]) => Promise<any> | any
-
-export type EventHandler = {
-    handler: Handler
-}
-
-export type Subevent = {
-    name: string
-    meetsReq: (...args: any[]) => Promise<boolean> | boolean
-    tryExec: (...args: any[]) => Promise<any>
-}
-
 // export type CommandValidator = {
 //     passes: (inter: CommandInteraction) => Promise<any> | any
 //     onFail: (inter: CommandInteraction) => Promise<any> | any
