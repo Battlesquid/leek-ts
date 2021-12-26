@@ -1,21 +1,14 @@
 import { Collection } from "discord.js";
-import fs from "fs/promises";
 import path from "path";
-import { Command, CommandExec, CommandStructure, GroupCommandBase, ParentCommandBase, Subcommand } from "../types";
-
-const loadDir = async (dir: string) => {
-    const directory = await fs.readdir(dir, { withFileTypes: true })
-
-    const dirs = directory
-        .filter(i => i.isDirectory())
-        .map(d => d.name);
-
-    const files = directory
-        .filter(i => i.isFile())
-        .map(f => f.name);
-
-    return { dirs, files }
-}
+import { loadDir } from ".";
+import {
+    Command,
+    CommandExec,
+    CommandStructure,
+    GroupCommandBase,
+    ParentCommandBase,
+    Subcommand
+} from "../types/CommandTypes";
 
 const loadSubcmdGroups = async (subcmdDir: string, parentBase: ParentCommandBase, groups: string[], cmds: Collection<string, CommandStructure>, execs: Collection<string, CommandExec>) => {
     for (const group of groups) {

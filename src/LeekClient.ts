@@ -4,20 +4,29 @@ import { Connection } from "typeorm";
 import { connection as dbconn } from "./database";
 import loadCommands from "./loaders/commandLoader";
 import loadEvents from "./loaders/eventLoader";
-import { CommandExec, CommandStructure } from "./types";
+import loadSubevents from "./loaders/subeventLoader";
+import {
+    ExecutableCollection,
+    MessageCommandCollection,
+    SlashCommandCollection,
+    UserCommandCollection
+} from "./types/CommandTypes";
+import { SubEvent } from "./types/EventTypes";
 
 interface LeekClientOptions extends ClientOptions {
     commandsDir: string
     eventsDir: string
+    subeventsDir: string
 }
 
 export class LeekClient extends Client {
     public options: LeekClientOptions;
 
-    private slashCmds: Collection<string, CommandStructure> = new Collection();
-    private userCommands: Collection<string, CommandStructure> = new Collection();
-    private messageCommands: Collection<string, CommandStructure> = new Collection();
-    private executables: Collection<string, CommandExec> = new Collection();
+    private slashCmds: SlashCommandCollection = new Collection();
+    private userCommands: UserCommandCollection = new Collection();
+    private messageCommands: MessageCommandCollection = new Collection();
+    private executables: ExecutableCollection = new Collection();
+    private subevents: Collection<string, SubEvent> = new Collection()
 
     private dbconn: Connection
 
@@ -25,6 +34,8 @@ export class LeekClient extends Client {
         super(options);
         this.options = options;
         this.options.commandsDir = path.resolve(__dirname, this.options.commandsDir)
+        this.options.eventsDir = path.resolve(__dirname, this.options.eventsDir)
+        this.options.subeventsDir = path.resolve(__dirname, this.options.subeventsDir)
     }
 
     async start(token: string) {
@@ -40,9 +51,14 @@ export class LeekClient extends Client {
         });
 
         loadEvents({
-            client: this,
-            dir: this.options.eventsDir
+            dir: this.options.eventsDir,
+            client: this
         });
+
+        loadSubevents({
+            dir: this.options.subeventsDir,
+            subevents: this.subevents
+        })
 
         this.login(token);
     }

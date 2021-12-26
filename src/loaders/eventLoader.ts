@@ -1,22 +1,23 @@
-import fs from "fs/promises"
-import path from "path"
+import { loadDir } from "."
 import { LeekClient } from "../LeekClient"
-import { EventHandler } from "../events/types"
+import { Event } from "../types/EventTypes"
 
 interface EventLoaderOptions {
-    client: LeekClient
     dir: string
+    client: LeekClient
 }
 
 const loadEvents = async (cfg: EventLoaderOptions) => {
-    const resolvedPath = path.resolve(__dirname, cfg.dir)
-    const eventNames = (await fs.readdir(resolvedPath)).map(n => n.split(".")[0])
+    const directory = await loadDir(cfg.dir)
 
-    console.log(`Loading events [${eventNames.join(", ")}]`)
-
-    for (const eventName of eventNames) {
-        const event: EventHandler = await import(`${resolvedPath}/${eventName}`)
-        cfg.client.on(eventName, event.handler.bind(null, cfg.client))
+    for (const eventFile of directory.files) {
+        const event: Event = (await import(`${cfg.dir}/${eventFile}`)).default;
+        
+        if (event.once) {
+            cfg.client.once(event.name, event.handle.bind(null, cfg.client));
+        } else {
+            cfg.client.on(event.name, event.handle.bind(null, cfg.client));
+        }
     }
 }
 

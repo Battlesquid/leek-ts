@@ -1,5 +1,10 @@
 import loadSlashCommands from "./slashCommandLoader";
-import { ExecutableCollection, MessageCommandCollection, SlashCommandCollection, UserCommandCollection } from "./types";
+import {
+    ExecutableCollection,
+    MessageCommandCollection,
+    SlashCommandCollection,
+    UserCommandCollection
+} from "../types/CommandTypes";
 import loadUserCommands from "./userCommandLoader";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";

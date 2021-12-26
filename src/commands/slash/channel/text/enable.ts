@@ -1,7 +1,9 @@
 import { SlashCommandSubcommandBuilder } from "@discordjs/builders"
 import { CommandInteraction } from "discord.js"
+import { LeekClient } from "../../../../LeekClient"
+import { Subcommand } from "../../../../types/CommandTypes"
 
-export default {
+const command: Subcommand = {
     structure: new SlashCommandSubcommandBuilder()
         .setName("enable")
         .setDescription("Allow text in a channel")
@@ -10,7 +12,9 @@ export default {
                 .setName("channel")
                 .setDescription("The channel to allow text in")
         ),
-    execute: async (inter: CommandInteraction) => {
+    execute: async (client: LeekClient, inter: CommandInteraction) => {
 
     }
 }
+
+export default command;

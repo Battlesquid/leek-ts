@@ -4,7 +4,7 @@ import { CommandInteraction } from "discord.js"
 import { getRepository } from "typeorm";
 import LogSettings from "../../../../database/entities/LogSettings";
 import { LeekClient } from "../../../../LeekClient";
-import { Subcommand } from "../../../../types";
+import { Subcommand } from "../../../../types/CommandTypes";
 
 const command: Subcommand = {
     structure: new SlashCommandSubcommandBuilder()

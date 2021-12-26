@@ -4,7 +4,7 @@ import { CommandInteraction, Formatters, TextChannel, User } from "discord.js"
 import { LeekClient } from "../../../LeekClient";
 import twemoji from "twemoji"
 import { patterns } from "../../../util/regexes";
-import { Subcommand } from "../../../types";
+import { Subcommand } from "../../../types/CommandTypes";
 
 const command: Subcommand = {
     structure: new SlashCommandSubcommandBuilder()

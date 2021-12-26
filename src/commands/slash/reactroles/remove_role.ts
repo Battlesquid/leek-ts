@@ -2,7 +2,7 @@ import { SlashCommandSubcommandBuilder } from "@discordjs/builders"
 import { ChannelType } from "discord-api-types"
 import { CommandInteraction, Formatters, TextChannel } from "discord.js"
 import { LeekClient } from "../../../LeekClient";
-import { Subcommand } from "../../../types";
+import { Subcommand } from "../../../types/CommandTypes";
 import { patterns, indices } from "../../../util/regexes";
 
 const command: Subcommand = {

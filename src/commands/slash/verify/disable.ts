@@ -3,7 +3,7 @@ import { CommandInteraction } from "discord.js"
 import { getRepository } from "typeorm"
 import VerifySettings from "../../../database/entities/VerifySettings"
 import { LeekClient } from "../../../LeekClient"
-import { Subcommand } from "../../../types"
+import { Subcommand } from "../../../types/CommandTypes"
 
 
 const command: Subcommand = {

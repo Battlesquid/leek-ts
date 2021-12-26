@@ -1,7 +1,13 @@
 import { Client } from "discord.js";
 import { LeekClient } from "../LeekClient";
-import { Handler } from "./types";
+import { Event } from "../types/EventTypes";
 
-export const handler: Handler = async (client: LeekClient, origClient: Client) => {
-    console.log("loading complete, leek online.")
+const event: Event = {
+    name: "ready",
+    handle: async (client: LeekClient, origClient: Client) => {
+        console.log("loading complete, leek online.")
+    }
+
 }
+
+export default event;

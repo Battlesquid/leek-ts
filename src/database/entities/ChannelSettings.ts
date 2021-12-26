@@ -1,3 +1,4 @@
+import { Snowflake } from "discord-api-types";
 import { Column, Entity, ObjectID, ObjectIdColumn } from "typeorm";
 
 @Entity()
@@ -9,8 +10,5 @@ export default class ChannelSettings {
     gid: string;
 
     @Column()
-    txt_disabled: string[]
-
-    @Column()
-    img_disabled: string[]
+    txt_disabled: Snowflake[]
 }

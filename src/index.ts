@@ -6,6 +6,7 @@ import { LeekClient } from "./LeekClient";
 const client = new LeekClient({
     commandsDir: "./commands",
     eventsDir: "./events",
+    subeventsDir: "./subevents",
     intents: [
         Intents.FLAGS.GUILDS,
         Intents.FLAGS.GUILD_MESSAGES,

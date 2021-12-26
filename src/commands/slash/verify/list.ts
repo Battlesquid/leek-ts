@@ -3,7 +3,7 @@ import { CommandInteraction, MessageEmbed } from "discord.js"
 import { getRepository } from "typeorm"
 import VerifyList from "../../../database/entities/VerifyLists"
 import { LeekClient } from "../../../LeekClient"
-import { Subcommand } from "../../../types"
+import { Subcommand } from "../../../types/CommandTypes"
 
 const command: Subcommand = {
     structure: new SlashCommandSubcommandBuilder()

@@ -1,3 +1,4 @@
+import { Snowflake } from "discord-api-types";
 import { Column, Entity, ObjectID, ObjectIdColumn } from "typeorm";
 
 @Entity()
@@ -7,16 +8,16 @@ export default class VerifySettings {
     _id: ObjectID;
 
     @Column()
-    gid: string;
+    gid: Snowflake;
 
     @Column()
-    join_ch: string;
+    join_ch: Snowflake;
 
     @Column()
-    appr_ch: string;
+    appr_ch: Snowflake;
 
     @Column()
-    roles: string[];
+    roles: Snowflake[];
 
     @Column()
     autogreet: boolean;
