@@ -7,6 +7,7 @@ import { SubEvent } from "../types/EventTypes";
 const subevent: SubEvent = {
     name: "txtInDisabled",
     parent: "messageCreate",
+    handleLoc: "pre",
     async meetsReqs(msg: Message){
         if (!msg.guildId) return false;
         const repo = getRepository(ChannelSettings);

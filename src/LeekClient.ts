@@ -11,7 +11,7 @@ import {
     SlashCommandCollection,
     UserCommandCollection
 } from "./types/CommandTypes";
-import { SubEvent } from "./types/EventTypes";
+import { SubEvent, SubEventExecLoc } from "./types/EventTypes";
 
 interface LeekClientOptions extends ClientOptions {
     commandsDir: string
@@ -74,7 +74,7 @@ export class LeekClient extends Client {
         return this.executables.get(`${cmd}${groupName}${subcmd}`)
     }
 
-    public getSubevents(parent: keyof ClientEvents, ...args: any[]) {
+    public getSubevents(parent: keyof ClientEvents, loc: SubEventExecLoc, ...args: any[]) {
         return this.subevents.filter(s => s.parent === parent && s.meetsReqs(args))
     }
 

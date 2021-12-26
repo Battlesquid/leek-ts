@@ -14,7 +14,7 @@ const command: Subcommand = {
         ),
 
     execute: async (client: LeekClient, inter: CommandInteraction) => {
-
+        
     }
 }
 

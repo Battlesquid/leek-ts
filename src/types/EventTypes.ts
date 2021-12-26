@@ -9,8 +9,11 @@ export type Event = {
     handle: Handler
 }
 
+export type SubEventExecLoc = "pre" | "post";
+
 export type SubEvent = {
     name: string
+    handleLoc: SubEventExecLoc
     parent: keyof ClientEvents;
     meetsReqs(...args: any[]): Promise<boolean> | boolean;
     handle(...args: any[]): Promise<void> | void;
