@@ -1,4 +1,4 @@
-import { Client, ClientOptions, Collection, CommandInteraction } from "discord.js";
+import { Client, ClientEvents, ClientOptions, Collection, CommandInteraction } from "discord.js";
 import path from "path";
 import { Connection } from "typeorm";
 import { connection as dbconn } from "./database";
@@ -26,7 +26,7 @@ export class LeekClient extends Client {
     private userCommands: UserCommandCollection = new Collection();
     private messageCommands: MessageCommandCollection = new Collection();
     private executables: ExecutableCollection = new Collection();
-    private subevents: Collection<string, SubEvent> = new Collection()
+    private subevents: SubEvent[] = [];
 
     private dbconn: Connection
 
@@ -72,6 +72,10 @@ export class LeekClient extends Client {
         const cmd = cmdInter.commandName + (group || subcmd ? "_" : "");
 
         return this.executables.get(`${cmd}${groupName}${subcmd}`)
+    }
+
+    public getSubevents(parent: keyof ClientEvents, ...args: any[]) {
+        return this.subevents.filter(s => s.parent === parent && s.meetsReqs(args))
     }
 
     public getDbconn() {

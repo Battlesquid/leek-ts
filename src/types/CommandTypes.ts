@@ -3,7 +3,7 @@ import type {
     SlashCommandSubcommandBuilder,
     SlashCommandSubcommandGroupBuilder
 } from "@discordjs/builders"
-import { Collection, CommandInteraction } from "discord.js"
+import { ClientEvents, Collection, CommandInteraction } from "discord.js"
 import { LeekClient } from "../LeekClient"
 import { SubEvent } from "./EventTypes"
 
@@ -36,5 +36,3 @@ export type MessageCommandCollection = Collection<string, CommandStructure>
 export type UserCommandCollection = Collection<string, CommandStructure>
 
 export type ExecutableCollection = Collection<string, CommandExec>
-
-export type SubeventCollection = Collection<string, SubEvent>
