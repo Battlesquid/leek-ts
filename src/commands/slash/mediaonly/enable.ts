@@ -1,21 +1,20 @@
 import { SlashCommandSubcommandBuilder } from "@discordjs/builders"
 import { CommandInteraction } from "discord.js"
 import { getRepository } from "typeorm"
-import ChannelSettings from "../../../../database/entities/ChannelSettings"
-import { LeekClient } from "../../../../LeekClient"
-import { Subcommand } from "../../../../types/CommandTypes"
+import ChannelSettings from "../../../database/entities/ChannelSettings"
+import { LeekClient } from "../../../LeekClient"
+import { Subcommand } from "../../../types/CommandTypes"
 
 const command: Subcommand = {
     structure: new SlashCommandSubcommandBuilder()
-        .setName("disable")
-        .setDescription("Disable text")
+        .setName("enable")
+        .setDescription("Mark a channel as media only")
         .addChannelOption(option =>
             option
                 .setName("channel")
-                .setDescription("The channel to disable text in")
+                .setDescription("The channel to mark as media only")
                 .setRequired(true)
         ),
-
     execute: async (client: LeekClient, inter: CommandInteraction) => {
         const ch = inter.options.getChannel("channel", true);
         const repo = getRepository(ChannelSettings);
@@ -23,21 +22,21 @@ const command: Subcommand = {
 
         try {
             settings = await repo.findOneOrFail({ gid: inter.guildId });
-            if (settings.txt_disabled.find(t => t === ch.id)) {
-                inter.reply(`Text in ${ch} is already disabled.`);
+            if (settings.media_only_chs.find(t => t === ch.id)) {
+                inter.reply(`${ch} is already marked as media only.`);
                 return;
             }
-            settings.txt_disabled.push(ch.id);
+            settings.media_only_chs.push(ch.id);
         } catch (e) {
             settings = repo.create({
                 gid: inter.guildId,
-                txt_disabled: [ch.id]
+                media_only_chs: [ch.id]
             })
         }
 
         repo.save(settings)
-        inter.reply(`Text can no longer be sent in ${ch}.`)
+        inter.reply(`Marked ${ch} as media only.`)
     }
 }
 
-export default command
+export default command;

@@ -10,5 +10,5 @@ export default class ChannelSettings {
     gid: Snowflake;
 
     @Column()
-    txt_disabled: Snowflake[]
+    media_only_chs: Snowflake[]
 }

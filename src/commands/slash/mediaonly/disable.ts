@@ -1,20 +1,21 @@
 import { SlashCommandSubcommandBuilder } from "@discordjs/builders"
 import { CommandInteraction } from "discord.js"
 import { getRepository } from "typeorm"
-import ChannelSettings from "../../../../database/entities/ChannelSettings"
-import { LeekClient } from "../../../../LeekClient"
-import { Subcommand } from "../../../../types/CommandTypes"
+import ChannelSettings from "../../../database/entities/ChannelSettings"
+import { LeekClient } from "../../../LeekClient"
+import { Subcommand } from "../../../types/CommandTypes"
 
 const command: Subcommand = {
     structure: new SlashCommandSubcommandBuilder()
-        .setName("enable")
-        .setDescription("Allow text in a channel")
+        .setName("disable")
+        .setDescription("Un-mark a channel as media only")
         .addChannelOption(option =>
             option
                 .setName("channel")
-                .setDescription("The channel to allow text in")
+                .setDescription("The channel to unmark")
                 .setRequired(true)
         ),
+
     execute: async (client: LeekClient, inter: CommandInteraction) => {
         const ch = inter.options.getChannel("channel", true);
 
@@ -22,19 +23,19 @@ const command: Subcommand = {
 
         try {
             const settings = await repo.findOneOrFail({ gid: inter.guildId });
-            if (!settings.txt_disabled.find(t => t === ch.id)) {
-                inter.reply(`Text in ${ch} must be disabled first.`);
+            if (!settings.media_only_chs.find(t => t === ch.id)) {
+                inter.reply(`You must mark ${ch} as media only first.`)
                 return;
             }
-            settings.txt_disabled = settings.txt_disabled.filter(t => t !== ch.id)
+            settings.media_only_chs = settings.media_only_chs.filter(t => t !== ch.id)
             repo.save(settings);
 
-            inter.reply(`Text can now be sent in ${ch}.`)
+            inter.reply(`Unmarked ${ch} as media only.`)
         } catch (e) {
-            inter.reply("You must first disable text in some channels first.")
+            inter.reply(`You must mark ${ch} as media only first.`)
             return;
         }
     }
 }
 
-export default command;
+export default command

@@ -17,7 +17,7 @@ const subevent: SubEvent = {
 
             const hasNoLink = !(patterns.URL_REGEX.test(msg.content));
             const hasNoAttachments = msg.attachments.size === 0;
-            const locked = settings.txt_disabled.includes(msg.channel.id);
+            const locked = settings.media_only_chs.includes(msg.channel.id);
 
             return (locked && hasNoLink && hasNoAttachments);
         } catch(e) {
