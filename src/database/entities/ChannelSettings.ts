@@ -7,7 +7,7 @@ export default class ChannelSettings {
     _id: ObjectID
 
     @Column()
-    gid: string;
+    gid: Snowflake;
 
     @Column()
     txt_disabled: Snowflake[]
