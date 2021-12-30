@@ -45,7 +45,7 @@ const command: Subcommand = {
         const desc = inter.options.getString("desc", true);
         const msg = inter.options.getString("msg", false);
 
-        if (!/#[A-Fa-f0-9]{6}|#[A-Fa-f0-9]{3}/.test(color.toString())) {
+        if (!/^(?:#[A-Fa-f0-9]{6}|#[A-Fa-f0-9]{3})$/.test(color.toString())) {
             inter.reply("Invalid color, exiting.");
             return;
         }
@@ -54,16 +54,17 @@ const command: Subcommand = {
             .setTitle(name)
             .setDescription(desc)
             .setColor(color)
+            .setFooter("reactroles")
 
-        const channel = await inter.guild?.channels.fetch(ch.id) as TextChannel;
-        if (!channel) {
+        const channel = await inter.guild?.channels.fetch(ch.id);
+        if (!channel || channel.type !== "GUILD_TEXT") {
             inter.reply("Channel unavailable, please try again.")
             return;
         }
 
         channel.send({ content: msg, embeds: [reactEmbed] })
 
-        inter.reply(`New reaction roles created in ${ch}.`)
+        inter.reply(`New react roles created in ${ch}.`)
     }
 }
 

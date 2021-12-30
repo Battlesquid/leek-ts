@@ -1,7 +1,7 @@
 import { Snowflake } from "discord-api-types";
 import { Column, Entity, ObjectID, ObjectIdColumn } from "typeorm";
 
-class VerifyEntry {
+export class VerifyEntry {
     @Column()
     id: Snowflake;
 
@@ -18,5 +18,5 @@ export default class VerifyList {
     gid: Snowflake;
 
     @Column('jsonb')
-    list: VerifyEntry[];
+    users: VerifyEntry[];
 }

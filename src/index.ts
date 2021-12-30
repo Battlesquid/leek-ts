@@ -13,6 +13,7 @@ const client = new LeekClient({
         Intents.FLAGS.GUILD_MEMBERS,
         Intents.FLAGS.GUILD_MESSAGE_REACTIONS
     ],
+    partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
     presence: {
         status: "dnd",
         activities: [{ type: ActivityTypes.PLAYING, name: "I've been updated! Type \"\/\" to see what I can do." }]

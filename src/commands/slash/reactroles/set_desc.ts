@@ -25,21 +25,21 @@ const command: Subcommand = {
             option
                 .setName("desc")
                 .setDescription("The new description for the react-role group")
-                .setRequired(true)
         ),
 
     execute: async (client: LeekClient, inter: CommandInteraction) => {
         const ch = inter.options.getChannel("channel", true) as TextChannel;
         const title = inter.options.getString("title", true);
-        const desc = inter.options.getString("desc", true);
+        const desc = inter.options.getString("desc", false);
 
         const messages = await ch.messages.fetch({ limit: 50 })
         const msg = messages.find(m => {
             if (!m.embeds.length) return false;
             if (m.embeds[0].title !== title) return false;
+            if (!m.embeds[0].footer) return false;
+            if (!m.embeds[0].footer.text.match("reactroles")) return false;
             if (!client.user) return false;
             if (!m.author.equals(client.user)) return false;
-            // to-do, add filter to check if embed is role-react
             return true;
         });
         if (!msg) {
@@ -48,7 +48,7 @@ const command: Subcommand = {
         }
 
         const embed = msg.embeds[0]
-        embed.setDescription(desc)
+        embed.setDescription(desc ?? "")
 
         msg.edit({ embeds: [embed] });
         inter.reply(`Description for ${title} changed to "${desc}"`)

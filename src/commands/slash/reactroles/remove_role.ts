@@ -3,7 +3,7 @@ import { ChannelType } from "discord-api-types"
 import { CommandInteraction, Formatters, TextChannel } from "discord.js"
 import { LeekClient } from "../../../LeekClient";
 import { Subcommand } from "../../../types/CommandTypes";
-import { patterns, indices } from "../../../util/regexes";
+import { patterns } from "../../../util/regexes";
 
 const command: Subcommand = {
     structure: new SlashCommandSubcommandBuilder()
@@ -38,9 +38,10 @@ const command: Subcommand = {
         const msg = messages.find(m => {
             if (!m.embeds.length) return false;
             if (m.embeds[0].title !== title) return false;
+            if (!m.embeds[0].footer) return false;
+            if (!m.embeds[0].footer.text.match("reactroles")) return false;
             if (!client.user) return false;
             if (!m.author.equals(client.user)) return false;
-            // to-do, add filter to check if embed is role-react
             return true;
         });
         if (!msg) {
@@ -63,8 +64,8 @@ const command: Subcommand = {
         msg.edit({ embeds: [embed] });
 
         // resolve the emoji, fetch the reaction and remove it
-        const emojiMatch = roleField.name.match(patterns.EMOJI_REGEX);
-        const emoji = emojiMatch ? emojiMatch[indices.EMOJI_ID] : roleField.name;
+        const match = roleField.name.match(patterns.EMOJI_REGEX);
+        const emoji = match ? match.groups!.id : roleField.name;
         msg.reactions.cache.get(emoji)?.remove();
 
         inter.reply(`Removed ${role} from ${title}`);

@@ -37,9 +37,10 @@ const command: Subcommand = {
         const msg = messages.find(m => {
             if (!m.embeds.length) return false;
             if (m.embeds[0].title !== title) return false;
+            if (!m.embeds[0].footer) return false;
+            if (!m.embeds[0].footer.text.match("reactroles")) return false;
             if (!client.user) return false;
             if (!m.author.equals(client.user)) return false;
-            // to-do, add filter to check if embed is role-react
             return true;
         })
         if (!msg) {
