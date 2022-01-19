@@ -8,9 +8,7 @@ const subevent: SubEvent = {
     name: "mediaOnly",
     parent: "messageCreate",
     handleLoc: "pre",
-    async meetsReqs(msg: Message) {
-        if (!msg.guildId) return false;
-
+    async handle(msg: Message) {
         const repo = getRepository(ChannelSettings);
         try {
             const settings = await repo.findOneOrFail({ gid: msg.guildId });
@@ -19,14 +17,12 @@ const subevent: SubEvent = {
             const hasNoAttachments = msg.attachments.size === 0;
             const locked = settings.media_only_chs.includes(msg.channel.id);
 
-            return (locked && hasNoLink && hasNoAttachments);
-        } catch(e) {
+            if (locked && hasNoLink && hasNoAttachments)
+                msg.delete()
+        } catch (e) {
             // no settings
-            return false;
+            return;
         }
-    },
-    handle(msg: Message) {
-        msg.delete()
     }
 }
 

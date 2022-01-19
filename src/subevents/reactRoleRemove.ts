@@ -5,28 +5,23 @@ const subevent: SubEvent = {
     name: "reactRoleRemove",
     parent: "messageReactionRemove",
     handleLoc: "pre",
-    async meetsReqs(reaction: MessageReaction, user: User) {
-        const fullMessage = reaction.message.partial ? await reaction.message.fetch() : reaction.message;
-        if(user.bot) return false;
-        if(fullMessage.embeds.length === 0) return false;
-        
-        const embed = fullMessage.embeds[0];
-        if(!embed.footer) return false;
-        
-        return embed.footer.text.match("reactroles") !== null;
-    },
     async handle(reaction: MessageReaction, user: User) {
+        if (user.bot) return;
+
         const fullMessage = reaction.message.partial ? await reaction.message.fetch() : reaction.message;
         if (!fullMessage.guild) return;
+        if (fullMessage.embeds.length === 0) return;
 
         const embed = fullMessage.embeds[0];
+        if (embed.footer?.text.match("reactroles") === null) return;
+
         const field = embed.fields.find(f => f.name === reaction.emoji.toString())
         if (!field) return;
 
         const match = field.value.match(/^<@&(?<id>\d+)>$/)
         if (!match) return;
 
-        const roleID = match.groups!.id; // second match (index 1) has the id
+        const roleID = match.groups!.id;
         const role = await fullMessage.guild.roles.fetch(roleID);
         if (!role) return;
 

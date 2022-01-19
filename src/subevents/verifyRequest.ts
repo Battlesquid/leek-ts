@@ -9,21 +9,11 @@ const subevent: SubEvent = {
     name: "verifyRequest",
     parent: "messageCreate",
     handleLoc: "pre",
-    async meetsReqs(message: Message) {
-        if (!message.guildId) return false;
-        if(message.author.bot) return false;
-
-        const match = message.content.match(patterns.VERIFY_REGEX);
-        if (!match) return false;
-
-        const repo = getRepository(VerifySettings);
-        const settings = await repo.findOne({ gid: message.guildId })
-        if (!settings) return false;
-
-        return message.channelId === settings.join_ch;
-    },
     async handle(message: Message) {
         if (!message.guildId) return;
+        
+        if(message.author.bot) return;
+
         const match = message.content.match(patterns.VERIFY_REGEX);
         if (!match) return;
 
@@ -35,6 +25,7 @@ const subevent: SubEvent = {
 
         const repo = getRepository(VerifyList);
         let settings = await repo.findOne({ gid: message.guildId })
+
         if (!settings) {
             settings = repo.create({
                 gid: message.guildId,

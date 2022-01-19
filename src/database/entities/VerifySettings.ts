@@ -8,7 +8,7 @@ export default class VerifySettings {
     _id: ObjectID;
 
     @Column()
-    gid: Snowflake;
+    gid?: Snowflake | null;
 
     @Column()
     join_ch: Snowflake;

@@ -3,9 +3,8 @@ import type {
     SlashCommandSubcommandBuilder,
     SlashCommandSubcommandGroupBuilder
 } from "@discordjs/builders"
-import { ClientEvents, Collection, CommandInteraction } from "discord.js"
+import { Collection, CommandInteraction } from "discord.js"
 import { LeekClient } from "../LeekClient"
-import { SubEvent } from "./EventTypes"
 
 export type CommandExec = (client: LeekClient, inter: CommandInteraction) => Promise<any> | any
 

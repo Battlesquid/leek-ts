@@ -1,8 +1,10 @@
-import { SlashCommandSubcommandBuilder } from "@discordjs/builders"
-import { ChannelType } from "discord-api-types"
-import { ColorResolvable, CommandInteraction, TextChannel } from "discord.js"
-import { LeekClient } from "../../../LeekClient"
-import { Subcommand } from "../../../types/CommandTypes"
+import { SlashCommandSubcommandBuilder, SlashCommandBuilder } from "@discordjs/builders";
+import { ApplicationCommandOptionType, ChannelType } from "discord-api-types";
+import { APIApplicationCommandOptionBase } from "discord-api-types/payloads/v9/_interactions/_applicationCommands/_chatInput/base";
+import { ApplicationCommandOption, ColorResolvable, CommandInteraction, TextChannel } from "discord.js";
+import { LeekClient } from "../../../LeekClient";
+import { Subcommand } from "../../../types/CommandTypes";
+// import { Stuff } from './set_color';
 
 const command: Subcommand = {
     structure: new SlashCommandSubcommandBuilder()
@@ -60,5 +62,13 @@ const command: Subcommand = {
         inter.reply(`${title}'s color has been set to ${color}.`);
     }
 }
+
+type valueof<T> = T[keyof T]
+
+
+// const b: ooga = {
+//     cmd: command.structure,
+//     subCommand: "name"
+// }
 
 export default command;

@@ -1,5 +1,5 @@
 import { SlashCommandSubcommandBuilder } from "@discordjs/builders"
-import { ChannelType } from "discord-api-types"
+import { ApplicationCommandOptionType, ChannelType } from "discord-api-types"
 import { CommandInteraction, TextChannel } from "discord.js"
 import { LeekClient } from "../../../LeekClient"
 import { Subcommand } from "../../../types/CommandTypes"
@@ -56,3 +56,5 @@ const command: Subcommand = {
 }
 
 export default command;
+
+command.structure.toJSON().options![0].type === ApplicationCommandOptionType.Boolean

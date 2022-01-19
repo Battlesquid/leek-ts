@@ -7,7 +7,7 @@ export default class ChannelSettings {
     _id: ObjectID
 
     @Column()
-    gid: Snowflake;
+    gid?: Snowflake | null;
 
     @Column()
     media_only_chs: Snowflake[]

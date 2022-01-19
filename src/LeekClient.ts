@@ -76,13 +76,7 @@ export class LeekClient extends Client {
 
     public async getSubevents(parent: keyof ClientEvents, loc: SubEventExecLoc, ...args: any[]) {
         console.log(`Checking ${loc} subevents for ${parent}`)
-        const childSubevents = this.subevents.filter(s => s.handleLoc === loc && s.parent === parent);
-        const validSubevents = [];
-
-        for(const subevent of childSubevents) {
-            const passes = await subevent.meetsReqs(...args);
-            if(passes) validSubevents.push(subevent);
-        }
+        const validSubevents = this.subevents.filter(s => s.handleLoc === loc && s.parent === parent);
 
         console.log(`There are ${validSubevents.length} ${loc} subevents that meet requirements.`)
 

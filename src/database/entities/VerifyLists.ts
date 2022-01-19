@@ -15,7 +15,7 @@ export default class VerifyList {
     _id: ObjectID;
 
     @Column({ comment: "Server (Guild) ID" })
-    gid: Snowflake;
+    gid?: Snowflake | null;
 
     @Column('jsonb')
     users: VerifyEntry[];

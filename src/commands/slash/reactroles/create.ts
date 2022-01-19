@@ -54,7 +54,7 @@ const command: Subcommand = {
             .setTitle(name)
             .setDescription(desc)
             .setColor(color)
-            .setFooter("reactroles")
+            .setFooter({text: "reactroles"})
 
         const channel = await inter.guild?.channels.fetch(ch.id);
         if (!channel || channel.type !== "GUILD_TEXT") {

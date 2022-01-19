@@ -7,7 +7,7 @@ export default class LogSettings {
     _id: ObjectID;
 
     @Column()
-    gid: Snowflake;
+    gid?: Snowflake | null;
 
     @Column({ nullable: true })
     t_log_ch?: Snowflake | null;
