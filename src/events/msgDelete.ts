@@ -22,7 +22,6 @@ const event: Event = {
 
       // TODO add support for plain urls
       if (msg.attachments.size !== 0) {
-        msg.attachments.forEach(a => console.log(a))
         msg.attachments
           .filter(attach => attach.contentType?.match("png|jpg|jpeg|gif|webp") !== null)
           .forEach(async attach => {
@@ -60,19 +59,17 @@ const event: Event = {
       const ch = await msg.guild?.channels.fetch(settings.t_log_ch);
       if (!ch || ch.type !== "GUILD_TEXT") return;
 
-      const contextMsgs = await msg.channel.messages.fetch({ before: msg.id, limit: 4 });
-      const links = Array.from(contextMsgs)
-        .map(([str, msg], i) => `[\`[${i + 1}]\`](${msg.url})`)
-        .join(" ");
+      const msgs = await msg.channel.messages.fetch({ before: msg.id, limit: 1 });
+      const context = msgs.first()?.url ? `[Jump to context](${msgs.first()!.url})` : `\`No context available\``
 
       const embed = new MessageEmbed()
         .setTitle("Message Deleted")
         .setDescription(`
-        **Sent by ${msg.author} in ${msg.channel}**
+        Sent by ${msg.author} in ${msg.channel}
 
-        > ${msg.content}
+        ${msg.content}
 
-        **Context:** ${links}
+				${context}
         `)
         .setColor("DARK_RED")
         .setTimestamp(Date.now())
