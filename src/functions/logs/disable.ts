@@ -17,27 +17,31 @@ const command: SlashCommandFunction = {
             return;
         }
 
-        if (type === "text" && !settings.t_log_ch) {
-            inter.reply("Text logging must be enabled first.");
-            return;
-        } else {
-            if (!settings.i_log_ch) {
-                em.removeAndFlush(settings)
+        if (type === "text") {
+            if (!settings.t_log_ch) {
+                inter.reply("Text logging must be enabled first.");
+                return;
             } else {
-                settings.t_log_ch = null;
-                em.flush();
+                if (!settings.i_log_ch) {
+                    em.removeAndFlush(settings)
+                } else {
+                    settings.t_log_ch = null;
+                    em.flush();
+                }
             }
         }
-
-        if (type === "image" && !settings.i_log_ch) {
-            inter.reply("Image logging must be enabled first.");
-            return;
-        } else {
-            if (!settings.t_log_ch) {
-                em.removeAndFlush(settings)
+        
+        if (type === "image") {
+            if (!settings.i_log_ch) {
+                inter.reply("Image logging must be enabled first.");
+                return;
             } else {
-                settings.i_log_ch = null;
-                em.flush();
+                if (!settings.t_log_ch) {
+                    em.removeAndFlush(settings)
+                } else {
+                    settings.i_log_ch = null;
+                    em.flush();
+                }
             }
         }
 
