@@ -9,20 +9,15 @@ const event: Event = {
     eventName: "messageCreate",
     async handle(client: LeekClient, msg: Message) {
         const em = client.orm.em.fork();
+        const settings = await em.findOne(ChannelSettings, { gid: msg.guildId });
+        if (!settings) return;
 
-        try {
-            const settings = await em.findOneOrFail(ChannelSettings, { gid: msg.guildId });
+        const hasNoLink = !(patterns.URL_REGEX.test(msg.content));
+        const hasNoAttachments = msg.attachments.size === 0;
+        const locked = settings.media_only_chs.includes(msg.channel.id);
 
-            const hasNoLink = !(patterns.URL_REGEX.test(msg.content));
-            const hasNoAttachments = msg.attachments.size === 0;
-            const locked = settings.media_only_chs.includes(msg.channel.id);
-
-            if (locked && hasNoLink && hasNoAttachments)
-                msg.delete()
-        } catch (e) {
-            // no settings
-            return;
-        }
+        if (locked && hasNoLink && hasNoAttachments)
+            msg.delete()
     }
 }
 
