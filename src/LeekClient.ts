@@ -1,10 +1,17 @@
 import { MikroORM } from "@mikro-orm/core";
 import { PostgreSqlDriver } from "@mikro-orm/postgresql";
-import { Client, ClientOptions, Collection, CommandInteraction } from "discord.js";
-import { loadEvents, loadFunctions, loadInteractions } from "./loaders/";
 import {
-    ExecutableCollection
-} from "types/CommandTypes";
+    Client,
+    ClientOptions,
+    Collection,
+    CommandInteraction
+} from "discord.js";
+import { SlashCommandData, CommandExec } from "types/CommandTypes";
+import {
+    loadEvents,
+    loadFunctions,
+    loadInteractions
+} from "./loaders/";
 
 interface LeekClientOptions extends ClientOptions {
     functionsDir: string
@@ -14,7 +21,7 @@ interface LeekClientOptions extends ClientOptions {
 
 export default class LeekClient extends Client {
     public options: LeekClientOptions;
-    private functions: ExecutableCollection = new Collection();
+    private functions: Collection<SlashCommandData, CommandExec> = new Collection();
     private ormem: MikroORM<PostgreSqlDriver>;
 
     constructor(options: LeekClientOptions) {

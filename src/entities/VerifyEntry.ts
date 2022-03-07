@@ -2,7 +2,7 @@ import { Entity, PrimaryKey, Property, types } from "@mikro-orm/core";
 import { Snowflake } from "discord-api-types";
 
 @Entity()
-export default class VerifyList {
+export default class VerifyEntry {
     @PrimaryKey()
     id!: number
 

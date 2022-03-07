@@ -6,7 +6,7 @@ export default class ChannelSettings {
     @PrimaryKey({ columnType: "varchar" })
     gid!: Snowflake;
 
-    @Property({ columnType: "varchar[]" })
+    @Property()
     media_only_chs: Snowflake[]
 
     constructor(gid: Snowflake, media_only_chs: Snowflake[]) {
