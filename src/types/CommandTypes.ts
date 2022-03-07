@@ -3,28 +3,26 @@ import type {
     SlashCommandSubcommandBuilder,
     SlashCommandSubcommandGroupBuilder
 } from "@discordjs/builders"
-import { Collection, CommandInteraction } from "discord.js"
-import { LeekClient } from "../LeekClient"
+import type { Collection, CommandInteraction } from "discord.js"
+import type LeekClient from "../LeekClient"
 
 export type CommandExec = (client: LeekClient, inter: CommandInteraction) => Promise<any> | any
 
-export type Command = {
-    structure: SlashCommandBuilder
+type BaseCommand = {
+    name: string
+}
+
+export type SlashCommandData = BaseCommand & {
+    subcommand?: string | null
+    group?: string | null
+}
+
+export type SlashCommandFunction = SlashCommandData & {
     execute: CommandExec
 }
 
-export type Subcommand = {
-    structure: SlashCommandSubcommandBuilder
-    execute: CommandExec
-}
 
-export type ParentCommandBase = {
-    structure: SlashCommandBuilder
-}
-
-export type GroupCommandBase = {
-    structure: SlashCommandSubcommandGroupBuilder
-}
+export type SlashCommand = SlashCommandBuilder | SlashCommandSubcommandBuilder | SlashCommandSubcommandGroupBuilder
 
 export type CommandStructure = SlashCommandBuilder | SlashCommandSubcommandBuilder
 
@@ -34,4 +32,4 @@ export type MessageCommandCollection = Collection<string, CommandStructure>
 
 export type UserCommandCollection = Collection<string, CommandStructure>
 
-export type ExecutableCollection = Collection<string, CommandExec>
+export type ExecutableCollection = Collection<SlashCommandData, CommandExec>

@@ -1,89 +1,68 @@
-import { Client, ClientEvents, ClientOptions, Collection, CommandInteraction } from "discord.js";
-import path from "path";
-import { Connection } from "typeorm";
-import { connection as dbconn } from "./database";
-import loadCommands from "./loaders/commandLoader";
-import loadEvents from "./loaders/eventLoader";
-import loadSubevents from "./loaders/subeventLoader";
+import { MikroORM } from "@mikro-orm/core";
+import { PostgreSqlDriver } from "@mikro-orm/postgresql";
+import { Client, ClientOptions, Collection, CommandInteraction } from "discord.js";
+import { loadEvents, loadFunctions, loadInteractions } from "./loaders/";
 import {
-    ExecutableCollection,
-    MessageCommandCollection,
-    SlashCommandCollection,
-    UserCommandCollection
-} from "./types/CommandTypes";
-import { SubEvent, SubEventExecLoc } from "./types/EventTypes";
+    ExecutableCollection
+} from "types/CommandTypes";
 
 interface LeekClientOptions extends ClientOptions {
-    commandsDir: string
+    functionsDir: string
     eventsDir: string
-    subeventsDir: string
+    interactionsDir: string
 }
 
-export class LeekClient extends Client {
+export default class LeekClient extends Client {
     public options: LeekClientOptions;
-
-    private slashCmds: SlashCommandCollection = new Collection();
-    private userCommands: UserCommandCollection = new Collection();
-    private messageCommands: MessageCommandCollection = new Collection();
-    private executables: ExecutableCollection = new Collection();
-    private subevents: SubEvent[] = [];
-
-    private dbconn: Connection
+    private functions: ExecutableCollection = new Collection();
+    private ormem: MikroORM<PostgreSqlDriver>;
 
     constructor(options: LeekClientOptions) {
         super(options);
         this.options = options;
-        this.options.commandsDir = path.resolve(__dirname, this.options.commandsDir)
-        this.options.eventsDir = path.resolve(__dirname, this.options.eventsDir)
-        this.options.subeventsDir = path.resolve(__dirname, this.options.subeventsDir)
     }
 
     async start(token: string) {
-        this.dbconn = await dbconn;
+        await this.startDatabase();
 
-        loadCommands({
-            dir: this.options.commandsDir,
-            slashCmds: this.slashCmds,
-            userCmds: this.userCommands,
-            msgCmds: this.messageCommands,
-            execs: this.executables,
+        loadInteractions({
+            dir: this.options.interactionsDir,
             reload: false
         });
 
-        loadEvents({
-            dir: this.options.eventsDir,
-            client: this
-        });
+        this.functions = new Collection(await loadFunctions(this.options.functionsDir));
 
-        loadSubevents({
-            dir: this.options.subeventsDir,
-            subevents: this.subevents
-        })
+        loadEvents(this.options.eventsDir, this);
 
         this.login(token);
     }
 
-    public getSlashCommand(cmdInter: CommandInteraction) {
-        const group = cmdInter.options.getSubcommandGroup(false) ?? "";
-        const groupName = group ? group + "_" : group;
+    private async startDatabase() {
+        const orm = await MikroORM.init<PostgreSqlDriver>({
+            entities: ['./dist/entities'],
+            entitiesTs: ['./src/entities'],
+            dbName: 'postgres',
+            type: 'postgresql',
+        });;
+        const generator = orm.getSchemaGenerator();
+        await generator.updateSchema();
 
-        const subcmd = cmdInter.options.getSubcommand(false) ?? "";
-
-        const cmd = cmdInter.commandName + (group || subcmd ? "_" : "");
-
-        return this.executables.get(`${cmd}${groupName}${subcmd}`)
+        this.ormem = orm;
     }
 
-    public async getSubevents(parent: keyof ClientEvents, loc: SubEventExecLoc, ...args: any[]) {
-        console.log(`Checking ${loc} subevents for ${parent}`)
-        const validSubevents = this.subevents.filter(s => s.handleLoc === loc && s.parent === parent);
+    public getSlashCommand(inter: CommandInteraction) {
+        const name = inter.commandName;
+        const subcommand = inter.options.getSubcommand(false) ?? undefined;
+        const group = inter.options.getSubcommandGroup(false) ?? undefined;
 
-        console.log(`There are ${validSubevents.length} ${loc} subevents that meet requirements.`)
-
-        return validSubevents;
+        const key = this.functions.findKey((val, key) =>
+            key.name === name &&
+            key.subcommand === subcommand &&
+            key.group === group);
+        return key ? this.functions.get(key) : undefined;
     }
 
-    public getDbconn() {
-        return this.dbconn
+    get orm(): MikroORM<PostgreSqlDriver> {
+        return this.ormem;
     }
 }

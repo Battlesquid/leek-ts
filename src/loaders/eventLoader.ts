@@ -1,32 +1,18 @@
-import { loadDir } from "."
-import { LeekClient } from "../LeekClient"
-import { Event } from "../types/EventTypes"
+import { Event } from "types/EventTypes"
+import { loadDirFull } from "."
+import LeekClient from "../LeekClient"
 
-interface EventLoaderOptions {
-    dir: string
-    client: LeekClient
-}
+export const loadEvents = async (dir: string, client: LeekClient) => {
+    console.log("loading events");
+    const files = await loadDirFull(dir)
 
-const loadEvents = async (cfg: EventLoaderOptions) => {
-    const directory = await loadDir(cfg.dir)
-
-    for (const eventFile of directory.files) {
-        const event: Event = (await import(`${cfg.dir}/${eventFile}`)).default;
+    for (const eventFile of files) {
+        const event: Event = (await import(eventFile.path)).default;
 
         if (event.once) {
-            cfg.client.once(event.name, (...args) => event.handle(cfg.client, ...args));
+            client.once(event.eventName, (...args) => event.handle(client, ...args));
         } else {
-            cfg.client.on(event.name, async(...args) => {
-                const preSubevents = await cfg.client.getSubevents(event.name, "pre", ...args);
-                preSubevents.forEach(p => p.handle(...args));
-
-                await event.handle(cfg.client, ...args)
-
-                const postSubevents = await cfg.client.getSubevents(event.name, "post", ...args);
-                postSubevents.forEach(p => p.handle(...args));
-            });
+            client.on(event.eventName, (...args) => event.handle(client, ...args));
         }
     }
 }
-
-export default loadEvents;

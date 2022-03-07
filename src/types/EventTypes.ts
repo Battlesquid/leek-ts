@@ -1,19 +1,13 @@
-import { ClientEvents } from "discord.js";
-import { LeekClient } from "../LeekClient";
+import { Awaitable, ClientEvents } from "discord.js";
+import LeekClient from "../LeekClient";
 
-export type Handler = (client: LeekClient, ...args: any[]) => Promise<void> | void
+// export type Handler = (client: LeekClient, ...args: ClientEvents[keyof Cl]) => void
 
 export type Event = {
-    name: keyof ClientEvents
+    id?: string
+    eventName: keyof ClientEvents
     once?: boolean | false
-    handle: Handler
+    handle: (client: LeekClient, ...args: any) => Awaitable<void>
 }
 
-export type SubEventExecLoc = "pre" | "post";
-
-export type SubEvent = {
-    name: string
-    handleLoc: SubEventExecLoc
-    parent: keyof ClientEvents;
-    handle(...args: any[]): Promise<void> | void;
-}
+// handle<K extends keyof ClientEvents>(...args: ClientEvents[K]): (...args: ClientEvents[K]) => Awaitable<void>

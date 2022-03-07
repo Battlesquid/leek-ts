@@ -1,12 +1,13 @@
 import { Intents } from "discord.js";
 import { ActivityTypes } from "discord.js/typings/enums";
+import path from "path/posix";
 import config from "./config.json";
-import { LeekClient } from "./LeekClient";
+import LeekClient from "./LeekClient";
 
 const client = new LeekClient({
-    commandsDir: "./commands",
-    eventsDir: "./events",
-    subeventsDir: "./subevents",
+    interactionsDir: path.resolve(__dirname, "./interactions"),
+    functionsDir: path.resolve(__dirname, "./functions"),
+    eventsDir: path.resolve(__dirname, "./events"),
     intents: [
         Intents.FLAGS.GUILDS,
         Intents.FLAGS.GUILD_MESSAGES,
@@ -20,4 +21,10 @@ const client = new LeekClient({
     }
 });
 
-client.start(config.DISCORD_BOT_TOKEN)
+client.start(config.DISCORD_BOT_TOKEN);
+
+
+// (async () => {
+//     const dirs = await loadDirFull(path.resolve(__dirname, "./functions"))
+//     console.log(dirs);
+// })();
