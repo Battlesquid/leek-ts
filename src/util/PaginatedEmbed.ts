@@ -48,7 +48,7 @@ export default class PaginatedEmbed {
         this.inter = options.inter;
         this.pages = options.pages;
         this.timeout = options.timeout;
-        
+
         this.prev = options.prev ?? this.defaultPrev;
         this.prev.setCustomId("prev");
 

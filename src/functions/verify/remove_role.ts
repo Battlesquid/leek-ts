@@ -23,7 +23,7 @@ const command: SlashCommandFunction = {
             return;
         }
 
-        if(settings.roles.length === 1) {
+        if (settings.roles.length === 1) {
             inter.reply(`Minimum role size reached. Add more roles, then try again.`);
             return;
         }

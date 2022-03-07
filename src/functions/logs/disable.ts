@@ -16,7 +16,7 @@ const command: SlashCommandFunction = {
             inter.reply("Logging must be enabled first.");
             return;
         }
-        
+
         if (type === "text" && !settings.t_log_ch) {
             inter.reply("Text logging must be enabled first.");
             return;

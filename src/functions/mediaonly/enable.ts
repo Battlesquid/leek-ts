@@ -16,7 +16,7 @@ const command: SlashCommandFunction = {
 
         const em = client.orm.em.fork();
         let settings = await em.findOne(ChannelSettings, { gid: inter.guildId });
-        
+
         if (settings) {
             if (settings.media_only_chs.find(t => t === ch.id)) {
                 inter.reply(`${ch} is already marked as media only.`);

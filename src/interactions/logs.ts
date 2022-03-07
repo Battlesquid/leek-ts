@@ -20,6 +20,7 @@ const logsInteraction = new SlashCommandBuilder()
                     .setName("channel")
                     .setDescription("The channel to send these logs to")
                     .addChannelType(ChannelType.GuildText)
+                    .setRequired(true)
             )
     )
     .addSubcommand(subcmd =>

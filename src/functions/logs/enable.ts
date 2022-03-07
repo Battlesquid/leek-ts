@@ -36,7 +36,7 @@ const command: SlashCommandFunction = {
         }
         console.log(settings);
 
-        inter.reply("Enabled text logging.");
+        inter.reply(`Enabled ${type} logging.`);
     }
 }
 

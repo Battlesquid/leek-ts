@@ -36,7 +36,7 @@ const command: SlashCommandFunction = {
                 const unverified = msg.member?.roles.cache.hasAny(...settings.roles) === false;
                 const noExistingEntry = entries.find(e => e.uid === msg.author.id) === undefined;
                 const unique = key === coll.find(m => m.author.id === msg.author.id)?.id
- 
+
                 return isUser && nickMatch && unverified && noExistingEntry && unique;
             })
 
