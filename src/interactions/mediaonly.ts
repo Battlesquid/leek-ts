@@ -1,4 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
+import { ChannelType } from "discord-api-types";
 
 const mediaInteraction = new SlashCommandBuilder()
     .setName("mediaonly")
@@ -11,6 +12,7 @@ const mediaInteraction = new SlashCommandBuilder()
                 option
                     .setName("channel")
                     .setDescription("The channel to mark as media only")
+                    .addChannelType(ChannelType.GuildText)
                     .setRequired(true)
             )
     )
@@ -22,17 +24,7 @@ const mediaInteraction = new SlashCommandBuilder()
                 option
                     .setName("channel")
                     .setDescription("The channel to unmark")
-                    .setRequired(true)
-            )
-    )
-    .addSubcommand(subcmd =>
-        subcmd
-            .setName("whitelist")
-            .setDescription("Whitelist a role, allowing users with that role to bypass media-only restrictions")
-            .addRoleOption(opt =>
-                opt
-                    .setName("role")
-                    .setDescription("The role to whitelist")
+                    .addChannelType(ChannelType.GuildText)
                     .setRequired(true)
             )
     )
