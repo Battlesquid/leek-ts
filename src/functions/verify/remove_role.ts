@@ -23,11 +23,15 @@ const command: SlashCommandFunction = {
             return;
         }
 
+        if(settings.roles.length === 1) {
+            inter.reply(`Minimum role size reached. Add more roles, then try again.`);
+            return;
+        }
         settings.roles = settings.roles.filter(r => r !== role.id);
 
         em.flush();
 
-        inter.reply(`Added ${role} to the list of roles.`);
+        inter.reply(`Removed ${role} from the list of roles.`);
     }
 }
 
