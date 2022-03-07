@@ -15,10 +15,12 @@ const command: SlashCommandFunction = {
             return;
         }
 
-        settings.autogreet = inter.options.getBoolean("autogreet", true)
+        const autogreet = inter.options.getBoolean("autogreet", true);
+
+        settings.autogreet = autogreet;
         em.flush();
 
-        inter.reply(`Autogreet set to ${inter.options.getBoolean("autogreet", true)}`)
+        inter.reply(`Autogreet set to ${autogreet}`)
     }
 }
 

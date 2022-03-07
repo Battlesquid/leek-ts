@@ -1,5 +1,5 @@
+import { CommandInteraction, Formatters } from "discord.js";
 import VerifyEntry from 'entities/VerifyEntry';
-import { CommandInteraction, Formatters, TextChannel } from "discord.js";
 import VerifySettings from "entities/VerifySettings";
 import { SlashCommandFunction } from "types/CommandTypes";
 import { patterns } from "util/regexes";

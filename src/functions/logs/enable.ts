@@ -1,8 +1,7 @@
 import { CommandInteraction } from "discord.js"
-import { SlashCommandFunction } from "types/CommandTypes"
 import LogSettings from "entities/LogSettings"
+import { SlashCommandFunction } from "types/CommandTypes"
 import LeekClient from "../../LeekClient"
-
 
 const command: SlashCommandFunction = {
     name: "logs",
@@ -12,13 +11,13 @@ const command: SlashCommandFunction = {
             inter.reply("An unexpected error occured.");
             return;
         }
+
         const ch = inter.options.getChannel("channel", true);
         const type = inter.options.getString("type", true);
-        const em = client.orm.em.fork();
 
+        const em = client.orm.em.fork();
         let settings = await em.findOne(LogSettings, { gid: inter.guildId });
 
-        // if settings doesnt exist
         if (!settings) {
             if (type === "text") {
                 settings = new LogSettings(inter.guildId, ch.id, null);
@@ -26,7 +25,7 @@ const command: SlashCommandFunction = {
                 settings = new LogSettings(inter.guildId, null, ch.id);
             }
             em.persistAndFlush(settings);
-        } else { // means that i_log_ch exists and we dont want to override it
+        } else {
             if (type === "text") {
                 settings.t_log_ch = ch.id
             } else {
@@ -34,7 +33,6 @@ const command: SlashCommandFunction = {
             }
             em.flush();
         }
-        console.log(settings);
 
         inter.reply(`Enabled ${type} logging.`);
     }

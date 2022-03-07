@@ -15,11 +15,13 @@ const command: SlashCommandFunction = {
             return;
         }
 
-        settings.notif_ch = inter.options.getChannel("channel", true).id
+        const ch = inter.options.getChannel("channel", true);
+        
+        settings.notif_ch = ch.id
 
         em.flush();
 
-        inter.reply(`Join channel set to ${inter.options.getChannel("channel", true)}`)
+        inter.reply(`Join channel set to ${ch}`)
     }
 }
 

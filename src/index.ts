@@ -22,9 +22,3 @@ const client = new LeekClient({
 });
 
 client.start(config.DISCORD_BOT_TOKEN);
-
-
-// (async () => {
-//     const dirs = await loadDirFull(path.resolve(__dirname, "./functions"))
-//     console.log(dirs);
-// })();

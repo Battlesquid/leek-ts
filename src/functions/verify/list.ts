@@ -1,4 +1,11 @@
-import { CommandInteraction, Emoji, Formatters, MessageButton, MessageEmbed, Permissions, TextChannel } from "discord.js"
+import {
+    CommandInteraction,
+    Formatters,
+    MessageButton,
+    MessageEmbed,
+    Permissions,
+    TextChannel
+} from "discord.js"
 import VerifyEntry from "entities/VerifyEntry"
 import VerifySettings from "entities/VerifySettings"
 import { SlashCommandFunction } from "types/CommandTypes"
@@ -6,7 +13,7 @@ import EmojiConstants from "util/EmojiConstants"
 import PaginatedEmbed from "util/PaginatedEmbed"
 import LeekClient from "../../LeekClient"
 
-const fun: SlashCommandFunction = {
+const command: SlashCommandFunction = {
     name: "verify",
     subcommand: "list",
     execute: async (client: LeekClient, inter: CommandInteraction) => {
@@ -36,8 +43,6 @@ const fun: SlashCommandFunction = {
                 page.addField(data.nick, Formatters.userMention(data.uid));
             }
         })
-
-
 
         const approve = new MessageButton()
             .setCustomId("verify_approve")
@@ -108,4 +113,4 @@ const fun: SlashCommandFunction = {
     }
 }
 
-export default fun;
+export default command;

@@ -1,8 +1,6 @@
 import { Awaitable, ClientEvents } from "discord.js";
 import LeekClient from "../LeekClient";
 
-// export type Handler = (client: LeekClient, ...args: ClientEvents[keyof Cl]) => void
-
 export type Event = {
     id?: string
     eventName: keyof ClientEvents

@@ -31,8 +31,6 @@ export const loadInteractions = async (cfg: CommandLoaderOptions) => {
 
         const slashCmds = await getSlashInteractions(cfg.dir);
 
-        // console.log(`Loading commands [${commands.map(c => c.structure.name).join(", ")}]`)
-
         if (cfg.reload) {
             await rest.put(
                 Routes.applicationCommands(config.DISCORD_CLIENT_ID),

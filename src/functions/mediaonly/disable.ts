@@ -1,6 +1,6 @@
 import { CommandInteraction } from "discord.js"
+import ChannelSettings from "entities/ChannelSettings"
 import { SlashCommandFunction } from "types/CommandTypes"
-import ChannelSettings from "../../entities/ChannelSettings"
 import LeekClient from "../../LeekClient"
 
 const command: SlashCommandFunction = {
