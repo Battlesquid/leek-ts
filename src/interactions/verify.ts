@@ -84,18 +84,6 @@ const verifyInteraction = new SlashCommandBuilder()
     )
     .addSubcommand(subcmd =>
         subcmd
-            .setName("set_notify_ch")
-            .setDescription("Set the notify channel.")
-            .addChannelOption(option =>
-                option
-                    .setName("channel")
-                    .setDescription("The channel where you want notifications to be sent to.")
-                    .addChannelType(ChannelType.GuildText)
-                    .setRequired(true)
-            )
-    )
-    .addSubcommand(subcmd =>
-        subcmd
             .setName("set_autogreet")
             .setDescription("Automatically generate a welcome message for verified users")
             .addBooleanOption(option =>

@@ -14,7 +14,6 @@ const command: SlashCommandFunction = {
 
         const join_ch = inter.options.getChannel("join_channel", true);
         const role = inter.options.getRole("role", true);
-        const notif_ch = inter.options.getChannel("notify_channel", false) ?? null;
         const autogreet = inter.options.getBoolean("autogreet", false) ?? false;
 
         const em = client.orm.em.fork();
@@ -25,7 +24,7 @@ const command: SlashCommandFunction = {
             return;
         }
 
-        em.persistAndFlush(new VerifySettings(inter.guildId, join_ch.id, [role.id], notif_ch?.id, autogreet));
+        em.persistAndFlush(new VerifySettings(inter.guildId, join_ch.id, [role.id], autogreet));
 
         inter.reply("Verification enabled.");
     }

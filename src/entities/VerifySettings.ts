@@ -13,16 +13,12 @@ export default class VerifySettings {
     @Property()
     roles: Snowflake[];
 
-    @Property({ columnType: "varchar", nullable: true })
-    notif_ch: Snowflake | null;
-
     @Property({ columnType: "boolean", default: false })
     autogreet: boolean;
 
-    constructor(gid: Snowflake, join_ch: Snowflake, roles: Snowflake[], notif_ch?: Snowflake | null, autogreet?: boolean) {
+    constructor(gid: Snowflake, join_ch: Snowflake, roles: Snowflake[], autogreet?: boolean) {
         this.gid = gid;
         this.join_ch = join_ch;
-        this.notif_ch = notif_ch ?? null;
         this.roles = roles;
         this.autogreet = autogreet ?? false;
     }
