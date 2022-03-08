@@ -45,9 +45,9 @@ const command: SlashCommandFunction = {
 
             let nick = "";
             if (match.groups!.vrc_team) {
-                nick = `${match.groups!.nick.slice(0, 32 - match.groups!.vrc_team.length)}｜${match.groups!.vrc_team}`;
+                nick = `${match.groups!.nick.slice(0, 29 - match.groups!.vrc_team.length)} | ${match.groups!.vrc_team}`;
             } else {
-                nick = `${match.groups!.nick.slice(0, 32 - match.groups!.vexu_team.length)}｜${match.groups!.vexu_team}`;
+                nick = `${match.groups!.nick.slice(0, 29 - match.groups!.vexu_team.length)} | ${match.groups!.vexu_team}`;
             }
 
             em.persistAndFlush(new VerifyEntry(inter.guildId!, msg.author.id, nick))

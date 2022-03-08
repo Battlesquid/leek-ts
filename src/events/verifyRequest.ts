@@ -18,9 +18,9 @@ const event: Event = {
         const em = client.orm.em.fork();
         let nick = "";
         if (match.groups!.vrc_team)
-            nick = `${match.groups!.nick.slice(0, 32 - match.groups!.vrc_team.length)}｜${match.groups!.vrc_team}`;
+            nick = `${match.groups!.nick.slice(0, 29 - match.groups!.vrc_team.length)} | ${match.groups!.vrc_team}`;
         else
-            nick = `${match.groups!.nick.slice(0, 32 - match.groups!.vexu_team.length)}｜${match.groups!.vexu_team}`;
+            nick = `${match.groups!.nick.slice(0, 29 - match.groups!.vexu_team.length)} | ${match.groups!.vexu_team}`;
 
         const entry = await em.findOne(VerifyEntry, { gid: message.guildId, uid: message.author.id });
         if (entry) {
