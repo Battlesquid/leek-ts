@@ -28,10 +28,7 @@ const command: SlashCommandFunction = {
 
         if (cmdName === "all") {
             const perms = client.application.commands.cache
-                .filter(cmd => {
-                    console.log(cmd.name);
-                    return cmd.name !== command.name
-                })
+                .filter(cmd => cmd.name !== command.name)
                 .map<GuildApplicationCommandPermissionData>(cmd => ({
                     id: cmd.id,
                     permissions: [{
