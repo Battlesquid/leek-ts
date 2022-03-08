@@ -17,12 +17,6 @@ const enable = new SlashCommandSubcommandBuilder()
             .setDescription("Role to give on approval")
             .setRequired(true)
     )
-    .addChannelOption(option =>
-        option
-            .setName("notify_channel")
-            .setDescription("Channel to send daily verification reminders")
-            .addChannelType(ChannelType.GuildText)
-    )
     .addBooleanOption(option =>
         option
             .setName("autogreet")
