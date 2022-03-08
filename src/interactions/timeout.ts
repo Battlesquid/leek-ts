@@ -3,6 +3,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 const timeoutInteraction = new SlashCommandBuilder()
     .setName("timeout")
     .setDescription("Timeout a user")
+    .setDefaultPermission(false)
     .addUserOption(option =>
         option
             .setName("user")
