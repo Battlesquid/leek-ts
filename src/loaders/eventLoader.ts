@@ -7,18 +7,20 @@ export const loadEvents = async (dir: string, client: LeekClient) => {
     console.log("loading events");
     const files = await loadDirFull(dir);
 
-    for (const eventFile of files) {
-        const event: Event<keyof ClientEvents> = (await import(eventFile.path))
-            .default;
+    return Promise.all(
+        files.map(async eventFile => {
+            const event: Event<keyof ClientEvents> = (await import(eventFile.path))
+                .default;
 
-        if (event.once) {
-            client.once(event.eventName, (...args) =>
-                event.handle(client, ...args)
-            );
-        } else {
-            client.on(event.eventName, (...args) =>
-                event.handle(client, ...args)
-            );
-        }
-    }
+            if (event.once) {
+                client.once(event.eventName, (...args) =>
+                    event.handle(client, ...args)
+                );
+            } else {
+                client.on(event.eventName, (...args) =>
+                    event.handle(client, ...args)
+                );
+            }
+        })
+    )
 };

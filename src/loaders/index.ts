@@ -28,10 +28,10 @@ export const loadDirFull = async (dir: string): Promise<File[]> => {
         }))
     );
 
-    for (const innerDir of folder.dirs) {
+    await Promise.all(folder.dirs.map(async innerDir => {
         const f = await loadDirFull(`${dir}/${innerDir}`);
-        files.push(...f);
-    }
+        files.push(...f)
+    }))
 
     return files;
 };

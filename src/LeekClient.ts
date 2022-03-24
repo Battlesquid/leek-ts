@@ -27,18 +27,12 @@ export default class LeekClient extends Client {
     }
 
     async start(token: string) {
-        await this.startDatabase();
-
-        loadInteractions({
-            dir: this.options.interactionsDir,
-            reload: false,
-        });
-
-        this.functions = new Collection(
-            await loadFunctions(this.options.functionsDir)
-        );
-
-        loadEvents(this.options.eventsDir, this);
+        await Promise.all([
+            this.startDatabase(),
+            loadInteractions(this.options.interactionsDir, false),
+            loadFunctions(this.options.functionsDir, this.functions),
+            loadEvents(this.options.eventsDir, this)
+        ]);
 
         this.login(token);
     }

@@ -4,34 +4,27 @@ import { loadDirFull } from ".";
 import config from "../config.json";
 import type { SlashCommand } from "../types/CommandTypes";
 
-interface CommandLoaderOptions {
-    dir: string;
-    reload?: boolean | false;
-}
-
 const rest = new REST({ version: config.DISCORD_REST_VER }).setToken(
     config.DISCORD_BOT_TOKEN
 );
 
 const getSlashInteractions = async (dir: string) => {
     const contents = await loadDirFull(dir);
-    const cmds = [];
 
-    for (const file of contents) {
-        const cmd: SlashCommand = (await import(file.path)).default;
-        cmds.push(cmd.toJSON());
-    }
+    const cmds = (await Promise.all(
+        contents.map<Promise<SlashCommand>>(async file => (await import(file.path)).default)
+    )).map(cmd => cmd.toJSON());
 
     return cmds;
 };
 
-export const loadInteractions = async (cfg: CommandLoaderOptions) => {
+export const loadInteractions = async (dir: string, reload: boolean) => {
     console.log("loading interactions");
 
     try {
-        const slashCmds = await getSlashInteractions(cfg.dir);
+        const slashCmds = await getSlashInteractions(dir);
 
-        if (cfg.reload) {
+        if (reload) {
             await rest.put(
                 Routes.applicationCommands(config.DISCORD_CLIENT_ID),
                 {
