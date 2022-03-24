@@ -1,38 +1,27 @@
 {
-  "ts-node": {
-    "require": [
-      "tsconfig-paths/register"
-    ]
-  },
-  "compilerOptions": {
-    "target": "es2017",
-    "lib": [
-      "es5",
-      "es6"
-    ],
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "module": "commonjs",
-    "rootDir": "src",
-    "moduleResolution": "node",
-    "baseUrl": ".",
-    "paths": {
-      "util/*": [
-        "src/util/*"
-      ],
-      "types/*": [
-        "src/types/*"
-      ],
-      "entities/*": [
-        "src/entities/*"
-      ]
+    "ts-node": {
+        "require": ["tsconfig-paths/register"]
     },
-    "resolveJsonModule": true,
-    "outDir": "./dist",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strictPropertyInitialization": false,
-    "strict": true,
-    "skipLibCheck": true
-  }
+    "compilerOptions": {
+        "target": "es2017",
+        "lib": ["es5", "es6"],
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "module": "commonjs",
+        "rootDir": "src",
+        "moduleResolution": "node",
+        "baseUrl": ".",
+        "paths": {
+            "util/*": ["src/util/*"],
+            "types/*": ["src/types/*"],
+            "entities/*": ["src/entities/*"]
+        },
+        "resolveJsonModule": true,
+        "outDir": "./dist",
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "strictPropertyInitialization": false,
+        "strict": true,
+        "skipLibCheck": true
+    }
 }

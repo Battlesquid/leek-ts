@@ -6,7 +6,9 @@ const command: SlashCommandFunction = {
     name: "reactroles",
     subcommand: "create",
     execute: async (client: LeekClient, inter: CommandInteraction) => {
-        const color = `#${inter.options.getString("color", false) ?? "444444"}` as ColorResolvable;
+        const color = `#${
+            inter.options.getString("color", false) ?? "444444"
+        }` as ColorResolvable;
         const ch = inter.options.getChannel("channel", true);
         const name = inter.options.getString("name", true);
         const desc = inter.options.getString("desc", true);
@@ -21,18 +23,18 @@ const command: SlashCommandFunction = {
             .setTitle(name)
             .setDescription(desc)
             .setColor(color)
-            .setFooter({ text: "reactroles" })
+            .setFooter({ text: "reactroles" });
 
         const channel = await inter.guild?.channels.fetch(ch.id);
         if (!channel || channel.type !== "GUILD_TEXT") {
-            inter.reply("Channel unavailable, please try again.")
+            inter.reply("Channel unavailable, please try again.");
             return;
         }
 
-        channel.send({ content: msg, embeds: [reactEmbed] })
+        channel.send({ content: msg, embeds: [reactEmbed] });
 
-        inter.reply(`New react roles created in ${ch}.`)
-    }
-}
+        inter.reply(`New react roles created in ${ch}.`);
+    },
+};
 
 export default command;

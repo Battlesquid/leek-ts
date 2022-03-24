@@ -4,14 +4,14 @@ import {
     MessageButton,
     MessageEmbed,
     Permissions,
-    TextChannel
-} from "discord.js"
-import VerifyEntry from "entities/VerifyEntry"
-import VerifySettings from "entities/VerifySettings"
-import { SlashCommandFunction } from "types/CommandTypes"
-import EmojiConstants from "util/EmojiConstants"
-import PaginatedEmbed from "util/PaginatedEmbed"
-import LeekClient from "../../LeekClient"
+    TextChannel,
+} from "discord.js";
+import VerifyEntry from "entities/VerifyEntry";
+import VerifySettings from "entities/VerifySettings";
+import { SlashCommandFunction } from "types/CommandTypes";
+import EmojiConstants from "util/EmojiConstants";
+import PaginatedEmbed from "util/PaginatedEmbed";
+import LeekClient from "../../LeekClient";
 
 const command: SlashCommandFunction = {
     name: "verify",
@@ -19,7 +19,9 @@ const command: SlashCommandFunction = {
     execute: async (client: LeekClient, inter: CommandInteraction) => {
         const em = client.orm.em.fork();
 
-        const settings = await em.findOne(VerifySettings, { gid: inter.guildId })
+        const settings = await em.findOne(VerifySettings, {
+            gid: inter.guildId,
+        });
         if (!settings) {
             inter.reply("Verification must be enabled first.");
             return;
@@ -34,20 +36,19 @@ const command: SlashCommandFunction = {
         const pages = PaginatedEmbed.generateFromTemplate<VerifyEntry>({
             perPage: 6,
             entries: list,
-            base: new MessageEmbed()
-                .setFooter({ text: "verify_approve" }),
+            base: new MessageEmbed().setFooter({ text: "verify_approve" }),
             perPageCallback(page, currPage) {
                 page.setTitle(`Verify List - Page ${currPage + 1}`);
             },
-            perItemCallback(page, data, currPage) {
+            perItemCallback(page, data) {
                 page.addField(data.nick, Formatters.userMention(data.uid));
-            }
-        })
+            },
+        });
 
         const approve = new MessageButton()
             .setCustomId("verify_approve")
             .setEmoji(EmojiConstants.CHECKMARK)
-            .setStyle("SUCCESS")
+            .setStyle("SUCCESS");
 
         const embed = new PaginatedEmbed({
             inter,
@@ -65,9 +66,18 @@ const command: SlashCommandFunction = {
                 if (!inter.guild) return;
 
                 try {
-                    const requestingUser = await inter.guild.members.fetch(inter.user.id);
-                    if (!requestingUser.permissions.has(Permissions.FLAGS.MANAGE_ROLES)) {
-                        inter.followUp({ content: "You do not have permission to do that.", ephemeral: true })
+                    const requestingUser = await inter.guild.members.fetch(
+                        inter.user.id
+                    );
+                    if (
+                        !requestingUser.permissions.has(
+                            Permissions.FLAGS.MANAGE_ROLES
+                        )
+                    ) {
+                        inter.followUp({
+                            content: "You do not have permission to do that.",
+                            ephemeral: true,
+                        });
                         return;
                     }
 
@@ -76,41 +86,53 @@ const command: SlashCommandFunction = {
 
                     for (const user of list) {
                         try {
-                            await inter.guild.members.edit(user.uid, {
-                                roles: settings.roles,
-                                nick: user.nick
-                            }, `Verified by ${requestingUser.user.tag}`)
+                            await inter.guild.members.edit(
+                                user.uid,
+                                {
+                                    roles: settings.roles,
+                                    nick: user.nick,
+                                },
+                                `Verified by ${requestingUser.user.tag}`
+                            );
                         } catch (e) {
                             successCount--;
-                            failed.push(user.uid)
+                            failed.push(user.uid);
                         }
                     }
 
-                    em.removeAndFlush(list)
+                    em.removeAndFlush(list);
 
                     if (successCount === list.length) {
-                        await inter.followUp(`Verified ${successCount} users.`)
+                        await inter.followUp(`Verified ${successCount} users.`);
                     } else {
-                        await inter.followUp(`Verified ${successCount} users but failed to verify ${failed.length} users.`)
+                        await inter.followUp(
+                            `Verified ${successCount} users but failed to verify ${failed.length} users.`
+                        );
                     }
 
                     if (settings.autogreet) {
                         const mentions = list
-                            .filter(u => !failed.includes(u.uid))
-                            .map(u => Formatters.userMention(u.uid))
+                            .filter((u) => !failed.includes(u.uid))
+                            .map((u) => Formatters.userMention(u.uid))
                             .join(", ");
 
-                        const channel = await inter.guild.channels.fetch(inter.channelId) as TextChannel;
-                        channel.send(Formatters.inlineCode(`Welcome ${mentions}!`));
+                        const channel = (await inter.guild.channels.fetch(
+                            inter.channelId
+                        )) as TextChannel;
+                        channel.send(
+                            Formatters.inlineCode(`Welcome ${mentions}!`)
+                        );
                     }
 
-                    collector.stop()
-                } catch (e) { console.log(e) }
-            }
-        })
+                    collector.stop();
+                } catch (e) {
+                    console.log(e);
+                }
+            },
+        });
 
         await embed.send();
-    }
-}
+    },
+};
 
 export default command;

@@ -5,12 +5,13 @@ import config from "../config.json";
 import type { SlashCommand } from "../types/CommandTypes";
 
 interface CommandLoaderOptions {
-    dir: string
-    reload?: boolean | false
+    dir: string;
+    reload?: boolean | false;
 }
 
-const rest = new REST({ version: config.DISCORD_REST_VER })
-    .setToken(config.DISCORD_BOT_TOKEN);
+const rest = new REST({ version: config.DISCORD_REST_VER }).setToken(
+    config.DISCORD_BOT_TOKEN
+);
 
 const getSlashInteractions = async (dir: string) => {
     const contents = await loadDirFull(dir);
@@ -22,27 +23,26 @@ const getSlashInteractions = async (dir: string) => {
     }
 
     return cmds;
-}
+};
 
 export const loadInteractions = async (cfg: CommandLoaderOptions) => {
-    console.log('loading interactions');
+    console.log("loading interactions");
 
     try {
-
         const slashCmds = await getSlashInteractions(cfg.dir);
 
         if (cfg.reload) {
             await rest.put(
                 Routes.applicationCommands(config.DISCORD_CLIENT_ID),
-                { body: [...slashCmds] },
+                {
+                    body: [...slashCmds],
+                }
             );
-            console.log('Successfully reloaded application commands.');
+            console.log("Successfully reloaded application commands.");
         } else {
-            console.log("Skipping application command refresh")
+            console.log("Skipping application command refresh");
         }
-
-
     } catch (error) {
         console.error(error);
     }
-}
+};

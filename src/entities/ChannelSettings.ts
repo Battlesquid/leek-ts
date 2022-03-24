@@ -7,10 +7,10 @@ export default class ChannelSettings {
     gid!: Snowflake;
 
     @Property()
-    media_only_chs: Snowflake[]
+    media_only: Snowflake[];
 
     constructor(gid: Snowflake, media_only_chs: Snowflake[]) {
         this.gid = gid;
-        this.media_only_chs = media_only_chs;
+        this.media_only = media_only_chs;
     }
 }

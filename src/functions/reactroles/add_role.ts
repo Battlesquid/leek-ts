@@ -18,8 +18,8 @@ const command: SlashCommandFunction = {
             return;
         }
 
-        const messages = await ch.messages.fetch({ limit: 50 })
-        const msg = messages.find(m => {
+        const messages = await ch.messages.fetch({ limit: 50 });
+        const msg = messages.find((m) => {
             if (!m.embeds.length) return false;
             if (m.embeds[0].title !== title) return false;
             if (!m.embeds[0].footer) return false;
@@ -29,18 +29,26 @@ const command: SlashCommandFunction = {
             return true;
         });
         if (!msg) {
-            inter.reply("The requested react-roles are either too far back or does not exist.");
+            inter.reply(
+                "The requested react-roles are either too far back or does not exist."
+            );
             return;
         }
 
         const embed = msg.embeds[0];
 
-        if (embed.fields.find(f => f.name === emoji)) {
+        if (embed.fields.find((f) => f.name === emoji)) {
             inter.reply("Emoji already in use, exiting.");
             return;
         }
 
-        if (embed.fields.find(f => f.value === Formatters.roleMention(role.id))) {
+        const OOG = 2;
+
+        if (
+            embed.fields.find(
+                (f) => f.value === Formatters.roleMention(role.id)
+            )
+        ) {
             inter.reply("Role already included, exiting.");
             return;
         }
@@ -49,9 +57,10 @@ const command: SlashCommandFunction = {
         msg.edit({ embeds: [embed] });
         msg.react(emoji);
 
-        inter.reply(`Users can now react to ${title} with ${emoji} to get the ${role} role`);
-    }
-}
-
+        inter.reply(
+            `Users can now react to ${title} with ${emoji} to get the ${role} role`
+        );
+    },
+};
 
 export default command;

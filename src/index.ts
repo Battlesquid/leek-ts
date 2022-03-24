@@ -12,13 +12,18 @@ const client = new LeekClient({
         Intents.FLAGS.GUILDS,
         Intents.FLAGS.GUILD_MESSAGES,
         Intents.FLAGS.GUILD_MEMBERS,
-        Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+        Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
     ],
-    partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
+    partials: ["MESSAGE", "CHANNEL", "REACTION"],
     presence: {
         status: "dnd",
-        activities: [{ type: ActivityTypes.PLAYING, name: "I've been updated! Type \"\/\" to see what I can do." }]
-    }
+        activities: [
+            {
+                type: ActivityTypes.PLAYING,
+                name: 'I\'ve been updated! Type "/" to see what I can do.',
+            },
+        ],
+    },
 });
 
 client.start(config.DISCORD_BOT_TOKEN);

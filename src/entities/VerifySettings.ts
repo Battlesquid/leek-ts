@@ -3,7 +3,6 @@ import { Snowflake } from "discord-api-types";
 
 @Entity()
 export default class VerifySettings {
-
     @PrimaryKey({ columnType: "varchar" })
     gid!: Snowflake;
 
@@ -16,7 +15,12 @@ export default class VerifySettings {
     @Property({ columnType: "boolean", default: false })
     autogreet: boolean;
 
-    constructor(gid: Snowflake, join_ch: Snowflake, roles: Snowflake[], autogreet?: boolean) {
+    constructor(
+        gid: Snowflake,
+        join_ch: Snowflake,
+        roles: Snowflake[],
+        autogreet?: boolean
+    ) {
         this.gid = gid;
         this.join_ch = join_ch;
         this.roles = roles;

@@ -1,7 +1,7 @@
-import { CommandInteraction } from "discord.js"
-import LogSettings from "entities/LogSettings"
-import { SlashCommandFunction } from "types/CommandTypes"
-import LeekClient from "../../LeekClient"
+import { CommandInteraction } from "discord.js";
+import LogSettings from "entities/LogSettings";
+import { SlashCommandFunction } from "types/CommandTypes";
+import LeekClient from "../../LeekClient";
 
 const command: SlashCommandFunction = {
     name: "logs",
@@ -27,7 +27,7 @@ const command: SlashCommandFunction = {
             em.persistAndFlush(settings);
         } else {
             if (type === "text") {
-                settings.t_log_ch = ch.id
+                settings.t_log_ch = ch.id;
             } else {
                 settings.i_log_ch = ch.id;
             }
@@ -35,7 +35,7 @@ const command: SlashCommandFunction = {
         }
 
         inter.reply(`Enabled ${type} logging.`);
-    }
-}
+    },
+};
 
 export default command;

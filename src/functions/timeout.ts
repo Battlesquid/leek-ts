@@ -13,7 +13,7 @@ const command: SlashCommandFunction = {
         try {
             const millis = ms(duration);
             const durationStr = ms(millis);
-            console.log(millis)
+            console.log(millis);
 
             if (millis < 0) {
                 inter.reply("Duration must be a positive value");
@@ -36,15 +36,19 @@ const command: SlashCommandFunction = {
                 return;
             }
 
-            member.disableCommunicationUntil(Date.now() + millis, reason)
+            member
+                .disableCommunicationUntil(Date.now() + millis, reason)
                 .then(() => inter.reply(`Timed out ${user} for ${durationStr}`))
-                .catch(e => inter.reply("An error occured, make sure I have permission"))
-
+                .catch(() =>
+                    inter.reply("An error occured, make sure I have permission")
+                );
         } catch (e) {
-            inter.reply("An invalid duration was provided, please provide a valid duration, then try again.");
+            inter.reply(
+                "An invalid duration was provided, please provide a valid duration, then try again."
+            );
             return;
         }
-    }
-}
+    },
+};
 
 export default command;

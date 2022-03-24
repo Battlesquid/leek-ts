@@ -10,8 +10,8 @@ const command: SlashCommandFunction = {
         const title = inter.options.getString("title", true);
         const desc = inter.options.getString("desc", false);
 
-        const messages = await ch.messages.fetch({ limit: 50 })
-        const msg = messages.find(m => {
+        const messages = await ch.messages.fetch({ limit: 50 });
+        const msg = messages.find((m) => {
             if (!m.embeds.length) return false;
             if (m.embeds[0].title !== title) return false;
             if (!m.embeds[0].footer) return false;
@@ -21,20 +21,22 @@ const command: SlashCommandFunction = {
             return true;
         });
         if (!msg) {
-            inter.reply("The requested react-roles are either too far back or does not exist.");
+            inter.reply(
+                "The requested react-roles are either too far back or does not exist."
+            );
             return;
         }
 
-        const embed = msg.embeds[0]
-        embed.setDescription(desc ?? "")
+        const embed = msg.embeds[0];
+        embed.setDescription(desc ?? "");
 
         msg.edit({ embeds: [embed] });
         if (desc) {
-            inter.reply(`Description for ${title} changed to "${desc}"`)
+            inter.reply(`Description for ${title} changed to "${desc}"`);
         } else {
-            inter.reply(`Removed description from ${title}`)
+            inter.reply(`Removed description from ${title}`);
         }
-    }
-}
+    },
+};
 
 export default command;

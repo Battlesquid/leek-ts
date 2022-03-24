@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { CommandInteraction, Formatters } from "discord.js";
-import VerifyEntry from 'entities/VerifyEntry';
+import VerifyEntry from "entities/VerifyEntry";
 import VerifySettings from "entities/VerifySettings";
 import { SlashCommandFunction } from "types/CommandTypes";
 import { patterns } from "util/regexes";
@@ -13,7 +14,9 @@ const command: SlashCommandFunction = {
 
         const em = client.orm.em.fork();
 
-        const settings = await em.findOne(VerifySettings, { gid: inter.guildId });
+        const settings = await em.findOne(VerifySettings, {
+            gid: inter.guildId,
+        });
         if (!settings) {
             inter.reply("Verification must be enabled first.");
             return;
@@ -21,7 +24,11 @@ const command: SlashCommandFunction = {
 
         const ch = await client.channels.fetch(settings.join_ch);
         if (!ch || ch.type !== "GUILD_TEXT") {
-            inter.reply(`${Formatters.channelMention(settings.join_ch)} was not found, check that the channel exists or update your settings, then try again`);
+            inter.reply(
+                `${Formatters.channelMention(
+                    settings.join_ch
+                )} was not found, check that the channel exists or update your settings, then try again`
+            );
             return;
         }
 
@@ -32,29 +39,38 @@ const command: SlashCommandFunction = {
             .sort((msg1, msg2) => msg2.createdTimestamp - msg1.createdTimestamp)
             .filter((msg, key, coll) => {
                 const isUser = msg.author.bot === false;
-                const nickMatch = msg.content.match(patterns.VERIFY_REGEX) !== null;
-                const unverified = msg.member?.roles.cache.hasAny(...settings.roles) === false;
-                const noExistingEntry = entries.find(e => e.uid === msg.author.id) === undefined;
-                const unique = key === coll.find(m => m.author.id === msg.author.id)?.id
+                const nickMatch =
+                    msg.content.match(patterns.VERIFY_REGEX) !== null;
+                const unverified =
+                    msg.member?.roles.cache.hasAny(...settings.roles) === false;
+                const noExistingEntry =
+                    entries.find((e) => e.uid === msg.author.id) === undefined;
+                const unique =
+                    key === coll.find((m) => m.author.id === msg.author.id)?.id;
 
-                return isUser && nickMatch && unverified && noExistingEntry && unique;
-            })
+                return (
+                    isUser &&
+                    nickMatch &&
+                    unverified &&
+                    noExistingEntry &&
+                    unique
+                );
+            });
 
-        validMsgs.forEach(msg => {
+        validMsgs.forEach((msg) => {
             const match = msg.content.match(patterns.VERIFY_REGEX)!;
 
-            let nick = "";
-            if (match.groups!.vrc_team) {
-                nick = `${match.groups!.nick.slice(0, 29 - match.groups!.vrc_team.length)} | ${match.groups!.vrc_team}`;
-            } else {
-                nick = `${match.groups!.nick.slice(0, 29 - match.groups!.vexu_team.length)} | ${match.groups!.vexu_team}`;
-            }
+            const { nick, team } = match.groups!;
+            const trimmedNick = nick.slice(0, 29 - team.length);
+            const formattedNick = `${trimmedNick} | ${team}`;
 
-            em.persistAndFlush(new VerifyEntry(inter.guildId!, msg.author.id, nick))
+            em.persistAndFlush(
+                new VerifyEntry(inter.guildId!, msg.author.id, formattedNick)
+            );
         });
 
-        inter.reply("Rescan complete, verification list updated.")
-    }
-}
+        inter.reply("Rescan complete, verification list updated.");
+    },
+};
 
 export default command;

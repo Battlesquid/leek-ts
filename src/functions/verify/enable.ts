@@ -1,7 +1,7 @@
-import { CommandInteraction } from "discord.js"
-import VerifySettings from "entities/VerifySettings"
-import { SlashCommandFunction } from "types/CommandTypes"
-import LeekClient from "../../LeekClient"
+import { CommandInteraction } from "discord.js";
+import VerifySettings from "entities/VerifySettings";
+import { SlashCommandFunction } from "types/CommandTypes";
+import LeekClient from "../../LeekClient";
 
 const command: SlashCommandFunction = {
     name: "verify",
@@ -17,17 +17,21 @@ const command: SlashCommandFunction = {
         const autogreet = inter.options.getBoolean("autogreet", false) ?? false;
 
         const em = client.orm.em.fork();
-        const settings = await em.findOne(VerifySettings, { gid: inter.guildId });
+        const settings = await em.findOne(VerifySettings, {
+            gid: inter.guildId,
+        });
 
         if (settings) {
             inter.reply("Verification is already enabled.");
             return;
         }
 
-        em.persistAndFlush(new VerifySettings(inter.guildId, join_ch.id, [role.id], autogreet));
+        em.persistAndFlush(
+            new VerifySettings(inter.guildId, join_ch.id, [role.id], autogreet)
+        );
 
         inter.reply("Verification enabled.");
-    }
-}
+    },
+};
 
 export default command;

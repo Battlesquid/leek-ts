@@ -1,4 +1,8 @@
-import { CommandInteraction, GuildApplicationCommandPermissionData, Permissions } from "discord.js";
+import {
+    CommandInteraction,
+    GuildApplicationCommandPermissionData,
+    Permissions,
+} from "discord.js";
 import LeekClient from "src/LeekClient";
 import { SlashCommandFunction } from "types/CommandTypes";
 
@@ -28,42 +32,56 @@ const command: SlashCommandFunction = {
 
         if (cmdName === "all") {
             const perms = client.application.commands.cache
-                .filter(cmd => cmd.name !== command.name)
-                .map<GuildApplicationCommandPermissionData>(cmd => ({
+                .filter((cmd) => cmd.name !== command.name)
+                .map<GuildApplicationCommandPermissionData>((cmd) => ({
                     id: cmd.id,
-                    permissions: [{
-                        id: role.id,
-                        type: "ROLE",
-                        permission: allowed
-                    }]
-                }))
+                    permissions: [
+                        {
+                            id: role.id,
+                            type: "ROLE",
+                            permission: allowed,
+                        },
+                    ],
+                }));
 
             client.application.commands.permissions.set({
                 guild: inter.guildId,
-                fullPermissions: perms
-            })
+                fullPermissions: perms,
+            });
 
-            inter.reply(`Permissions updated, ${role} ${allowed ? "allowed" : "is not allowed"} to use all commands.`);
+            inter.reply(
+                `Permissions updated, ${role} ${
+                    allowed ? "allowed" : "is not allowed"
+                } to use all commands.`
+            );
         } else {
-            const targetCmd = commands.find(cmd => cmd.name === cmdName);
+            const targetCmd = commands.find((cmd) => cmd.name === cmdName);
             if (!targetCmd) {
-                inter.reply(`Could not find ${cmdName}, please contact the owner`)
+                inter.reply(
+                    `Could not find ${cmdName}, please contact the owner`
+                );
                 return;
             }
 
             client.application.commands.permissions.set({
                 guild: inter.guildId,
                 command: targetCmd.id,
-                permissions: [{
-                    id: role.id,
-                    type: "ROLE",
-                    permission: allowed
-                }]
-            })
+                permissions: [
+                    {
+                        id: role.id,
+                        type: "ROLE",
+                        permission: allowed,
+                    },
+                ],
+            });
 
-            inter.reply(`Permissions updated, ${role} is ${allowed ? "allowed" : "not allowed"} to use ${cmdName}.`)
+            inter.reply(
+                `Permissions updated, ${role} is ${
+                    allowed ? "allowed" : "not allowed"
+                } to use ${cmdName}.`
+            );
         }
-    }
-}
+    },
+};
 
 export default command;

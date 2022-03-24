@@ -8,15 +8,18 @@ const command: SlashCommandFunction = {
     execute: async (client: LeekClient, inter: CommandInteraction) => {
         const ch = inter.options.getChannel("channel", true) as TextChannel;
         const title = inter.options.getString("title", true);
-        const color = `#${inter.options.getString("color", true)}` as ColorResolvable;
+        const color = `#${inter.options.getString(
+            "color",
+            true
+        )}` as ColorResolvable;
 
         if (!/^(?:#[A-Fa-f0-9]{6}|#[A-Fa-f0-9]{3})$/.test(color.toString())) {
             inter.reply("Invalid color, exiting.");
             return;
         }
 
-        const messages = await ch.messages.fetch({ limit: 50 })
-        const msg = messages.find(m => {
+        const messages = await ch.messages.fetch({ limit: 50 });
+        const msg = messages.find((m) => {
             if (!m.embeds.length) return false;
             if (m.embeds[0].title !== title) return false;
             if (!m.embeds[0].footer) return false;
@@ -24,9 +27,11 @@ const command: SlashCommandFunction = {
             if (!client.user) return false;
             if (!m.author.equals(client.user)) return false;
             return true;
-        })
+        });
         if (!msg) {
-            inter.reply("The requested react-roles are either too far back or does not exist.");
+            inter.reply(
+                "The requested react-roles are either too far back or does not exist."
+            );
             return;
         }
 
@@ -35,7 +40,7 @@ const command: SlashCommandFunction = {
 
         msg.edit({ embeds: [embed] });
         inter.reply(`${title}'s color has been set to ${color}.`);
-    }
-}
+    },
+};
 
 export default command;

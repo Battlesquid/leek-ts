@@ -1,11 +1,11 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Message } from "discord.js";
 import VerifyEntry from "../entities/VerifyEntry";
 import { Event } from "types/EventTypes";
 import { patterns } from "util/regexes";
 import LeekClient from "../LeekClient";
 
-const event: Event = {
-    id: "verifyRequest",
+const event: Event<"messageCreate"> = {
     eventName: "messageCreate",
     async handle(client: LeekClient, message: Message) {
         if (!message.guildId) return;
@@ -16,20 +16,28 @@ const event: Event = {
         if (!match) return;
 
         const em = client.orm.em.fork();
-        let nick = "";
-        if (match.groups!.vrc_team)
-            nick = `${match.groups!.nick.slice(0, 29 - match.groups!.vrc_team.length)} | ${match.groups!.vrc_team}`;
-        else
-            nick = `${match.groups!.nick.slice(0, 29 - match.groups!.vexu_team.length)} | ${match.groups!.vexu_team}`;
 
-        const entry = await em.findOne(VerifyEntry, { gid: message.guildId, uid: message.author.id });
+        const { nick, team } = match.groups!;
+        const trimmedNick = nick.slice(0, 29 - team.length);
+        const formattedNick = `${trimmedNick} | ${team}`;
+
+        const entry = await em.findOne(VerifyEntry, {
+            gid: message.guildId,
+            uid: message.author.id,
+        });
         if (entry) {
-            entry.nick = nick;
+            entry.nick = formattedNick;
             em.flush();
         } else {
-            em.persistAndFlush(new VerifyEntry(message.guildId, message.author.id, nick));
+            em.persistAndFlush(
+                new VerifyEntry(
+                    message.guildId,
+                    message.author.id,
+                    formattedNick
+                )
+            );
         }
-    }
-}
+    },
+};
 
 export default event;

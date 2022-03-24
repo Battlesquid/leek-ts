@@ -1,9 +1,12 @@
-import { SlashCommandBuilder, SlashCommandSubcommandBuilder } from "@discordjs/builders";
+import {
+    SlashCommandBuilder,
+    SlashCommandSubcommandBuilder,
+} from "@discordjs/builders";
 
 const user = new SlashCommandSubcommandBuilder()
     .setName("user")
     .setDescription("Set the permission level for a specific user")
-    .addStringOption(option =>
+    .addStringOption((option) =>
         option
             .setName("command")
             .setDescription("The command to target")
@@ -12,27 +15,27 @@ const user = new SlashCommandSubcommandBuilder()
                 ["verify", "verify"],
                 ["reactroles", "reactroles"],
                 ["logs", "logs"],
-                ["mediaonly", "mediaonly"]
+                ["mediaonly", "mediaonly"],
             ])
             .setRequired(true)
     )
-    .addUserOption(option =>
+    .addUserOption((option) =>
         option
             .setName("user")
             .setDescription("The user to target")
             .setRequired(true)
     )
-    .addBooleanOption(option =>
+    .addBooleanOption((option) =>
         option
             .setName("allowed")
             .setDescription("Whether to allow this user to use this command")
             .setRequired(true)
-    )
+    );
 
 const role = new SlashCommandSubcommandBuilder()
     .setName("role")
     .setDescription("Set the permission level for a specific role")
-    .addStringOption(option =>
+    .addStringOption((option) =>
         option
             .setName("command")
             .setDescription("The command to target")
@@ -41,27 +44,29 @@ const role = new SlashCommandSubcommandBuilder()
                 ["verify", "verify"],
                 ["reactroles", "reactroles"],
                 ["logs", "logs"],
-                ["mediaonly", "mediaonly"]
+                ["mediaonly", "mediaonly"],
             ])
             .setRequired(true)
     )
-    .addRoleOption(option =>
+    .addRoleOption((option) =>
         option
             .setName("role")
             .setDescription("The role to target")
             .setRequired(true)
     )
-    .addBooleanOption(option =>
+    .addBooleanOption((option) =>
         option
             .setName("allowed")
             .setDescription("Whether to allow this role to use this command")
             .setRequired(true)
-    )
+    );
 
 const permsInteraction = new SlashCommandBuilder()
     .setName("setperms")
-    .setDescription("Set the permission level for a role or user on a specific command")
+    .setDescription(
+        "Set the permission level for a role or user on a specific command"
+    )
     .addSubcommand(user)
-    .addSubcommand(role)
+    .addSubcommand(role);
 
 export default permsInteraction;
