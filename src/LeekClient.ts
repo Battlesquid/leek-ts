@@ -27,9 +27,11 @@ export default class LeekClient extends Client {
     }
 
     async start() {
+        const reload = process.env.COMMAND_RELOAD === "true";
+        
         await Promise.all([
             this.startDatabase(),
-            loadInteractions(this.options.interactionsDir, true),
+            loadInteractions(this.options.interactionsDir, reload),
             loadFunctions(this.options.functionsDir, this.functions),
             loadEvents(this.options.eventsDir, this)
         ]);

@@ -3,10 +3,6 @@ import { Routes } from "discord-api-types/v9";
 import { loadDirFull } from ".";
 import type { SlashCommand } from "../types/CommandTypes";
 
-const rest = new REST({ version: "9" }).setToken(
-    process.env.DISCORD_BOT_TOKEN!
-);
-
 const getSlashInteractions = async (dir: string) => {
     const contents = await loadDirFull(dir);
 
@@ -20,6 +16,10 @@ const getSlashInteractions = async (dir: string) => {
 export const loadInteractions = async (dir: string, reload: boolean) => {
     console.log("loading interactions");
 
+    const rest = new REST({ version: "9" }).setToken(
+        process.env.DISCORD_BOT_TOKEN!
+    );
+    
     try {
         const slashCmds = await getSlashInteractions(dir);
 

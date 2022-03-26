@@ -95,6 +95,7 @@ const command: SlashCommandFunction = {
                                 `Verified by ${requestingUser.user.tag}`
                             );
                         } catch (e) {
+                            console.error(e);
                             successCount--;
                             failed.push(user.uid);
                         }
@@ -102,13 +103,11 @@ const command: SlashCommandFunction = {
 
                     em.removeAndFlush(list);
 
-                    if (successCount === list.length) {
-                        await inter.followUp(`Verified ${successCount} users.`);
-                    } else {
-                        await inter.followUp(
-                            `Verified ${successCount} users but failed to verify ${failed.length} users.`
-                        );
-                    }
+                    const followUpMsg = successCount === list.length
+                        ? `Verified ${successCount} user${successCount !== 1 ? "s" : ""}.`
+                        : `Verified ${successCount} user${successCount !== 1 ? "s" : ""}. Failed to verify ${failed.length} user${failed.length !== 1 ? "s" : ""}.`
+
+                    await inter.followUp(followUpMsg);
 
                     if (settings.autogreet) {
                         const mentions = list
@@ -126,7 +125,7 @@ const command: SlashCommandFunction = {
 
                     collector.stop();
                 } catch (e) {
-                    console.log(e);
+                    console.error(e);
                 }
             },
         });
