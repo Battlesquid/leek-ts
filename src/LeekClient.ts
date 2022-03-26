@@ -44,8 +44,6 @@ export default class LeekClient extends Client {
             clientUrl: process.env.DATABASE_URL,
             type: "postgresql",
         });
-        const generator = orm.getSchemaGenerator();
-        await generator.updateSchema();
 
         this.ormem = orm;
     }
