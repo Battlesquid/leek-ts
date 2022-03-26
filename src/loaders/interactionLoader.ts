@@ -1,11 +1,10 @@
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
 import { loadDirFull } from ".";
-import config from "../config.json";
 import type { SlashCommand } from "../types/CommandTypes";
 
-const rest = new REST({ version: config.DISCORD_REST_VER }).setToken(
-    config.DISCORD_BOT_TOKEN
+const rest = new REST({ version: "9" }).setToken(
+    process.env.DISCORD_BOT_TOKEN!
 );
 
 const getSlashInteractions = async (dir: string) => {
@@ -26,7 +25,7 @@ export const loadInteractions = async (dir: string, reload: boolean) => {
 
         if (reload) {
             await rest.put(
-                Routes.applicationCommands(config.DISCORD_CLIENT_ID),
+                Routes.applicationCommands(process.env.DISCORD_CLIENT_ID!),
                 {
                     body: [...slashCmds],
                 }

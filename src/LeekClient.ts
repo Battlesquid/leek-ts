@@ -26,7 +26,7 @@ export default class LeekClient extends Client {
         this.options = options;
     }
 
-    async start(token: string) {
+    async start() {
         await Promise.all([
             this.startDatabase(),
             loadInteractions(this.options.interactionsDir, false),
@@ -34,14 +34,14 @@ export default class LeekClient extends Client {
             loadEvents(this.options.eventsDir, this)
         ]);
 
-        this.login(token);
+        this.login(process.env.DISCORD_BOT_TOKEN);
     }
 
     private async startDatabase() {
         const orm = await MikroORM.init<PostgreSqlDriver>({
             entities: ["./dist/entities"],
             entitiesTs: ["./src/entities"],
-            dbName: "postgres",
+            clientUrl: process.env.DATABASE_URL,
             type: "postgresql",
         });
         const generator = orm.getSchemaGenerator();

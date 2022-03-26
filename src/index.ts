@@ -1,8 +1,12 @@
 import { Intents } from "discord.js";
 import { ActivityTypes } from "discord.js/typings/enums";
+import { config } from "dotenv";
+import { expand } from "dotenv-expand";
 import path from "path/posix";
-import config from "./config.json";
 import LeekClient from "./LeekClient";
+
+const env = config({path: path.resolve(__dirname, "../.env")})
+expand(env)
 
 const client = new LeekClient({
     interactionsDir: path.resolve(__dirname, "./interactions"),
@@ -26,4 +30,4 @@ const client = new LeekClient({
     },
 });
 
-client.start(config.DISCORD_BOT_TOKEN);
+client.start();
