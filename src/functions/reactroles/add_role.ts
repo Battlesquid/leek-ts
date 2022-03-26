@@ -1,8 +1,8 @@
 import { CommandInteraction, Formatters, TextChannel } from "discord.js";
-import twemoji from "twemoji";
 import { SlashCommandFunction } from "#types/CommandTypes";
 import { patterns } from "#util/regexes";
 import LeekClient from "LeekClient";
+import emojiRegex from "emoji-regex";
 
 const command: SlashCommandFunction = {
     name: "reactroles",
@@ -13,7 +13,7 @@ const command: SlashCommandFunction = {
         const role = inter.options.getRole("role", true);
         const emoji = inter.options.getString("emoji", true);
 
-        if (!(twemoji.test(emoji) || patterns.EMOJI_REGEX.test(emoji))) {
+        if (!(emojiRegex().test(emoji) || patterns.EMOJI_REGEX.test(emoji))) {
             inter.reply("Malformed emoji, exiting");
             return;
         }
@@ -41,8 +41,6 @@ const command: SlashCommandFunction = {
             inter.reply("Emoji already in use, exiting.");
             return;
         }
-
-        const OOG = 2;
 
         if (
             embed.fields.find(
