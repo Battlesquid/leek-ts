@@ -4,6 +4,7 @@ import VerifyEntry from "../entities/VerifyEntry";
 import { Event } from "#types/EventTypes";
 import { patterns } from "#util/regexes";
 import LeekClient from "../LeekClient";
+import VerifySettings from "#entities/VerifySettings";
 
 const event: Event<"messageCreate"> = {
     eventName: "messageCreate",
@@ -16,6 +17,11 @@ const event: Event<"messageCreate"> = {
         if (!match) return;
 
         const em = client.orm.em.fork();
+
+        const settings = await em.findOne(VerifySettings, { gid: message.guildId })
+        if(!settings) return;
+
+        if(message.channelId !== settings.join_ch) return;
 
         const { nick, team } = match.groups!;
         const trimmedNick = nick.slice(0, 29 - team.length);
