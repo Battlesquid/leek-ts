@@ -10,11 +10,11 @@
         "module": "commonjs",
         "rootDir": "src",
         "moduleResolution": "node",
-        "baseUrl": ".",
+        "baseUrl": "./src",
         "paths": {
-            "util/*": ["src/util/*"],
-            "types/*": ["src/types/*"],
-            "entities/*": ["src/entities/*"]
+            "#util/*": ["util/*"],
+            "#types/*": ["types/*"],
+            "#entities/*": ["entities/*"]
         },
         "resolveJsonModule": true,
         "outDir": "./dist",
@@ -23,5 +23,6 @@
         "strictPropertyInitialization": false,
         "strict": true,
         "skipLibCheck": true
-    }
+    },
+    "include": ["src/**/*"],
 }

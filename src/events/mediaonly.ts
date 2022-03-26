@@ -1,8 +1,8 @@
 import { Message } from "discord.js";
-import { Event } from "types/EventTypes";
-import { patterns } from "util/regexes";
-import ChannelSettings from "../entities/ChannelSettings";
-import LeekClient from "../LeekClient";
+import { Event } from "#types/EventTypes";
+import { patterns } from "#util/regexes";
+import ChannelSettings from "#entities/ChannelSettings";
+import LeekClient from "LeekClient";
 
 const event: Event<"messageCreate"> = {
     eventName: "messageCreate",

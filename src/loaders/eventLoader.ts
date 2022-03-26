@@ -1,5 +1,5 @@
 import { ClientEvents } from "discord.js";
-import { Event } from "types/EventTypes";
+import { Event } from "#types/EventTypes";
 import { loadDirFull } from ".";
 import LeekClient from "../LeekClient";
 

@@ -1,7 +1,7 @@
 import { CommandInteraction } from "discord.js";
-import { SlashCommandFunction } from "types/CommandTypes";
+import { SlashCommandFunction } from "#types/CommandTypes";
 import VerifySettings from "../../entities/VerifySettings";
-import LeekClient from "../../LeekClient";
+import LeekClient from "LeekClient";
 
 const command: SlashCommandFunction = {
     name: "verify",

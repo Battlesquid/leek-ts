@@ -3,8 +3,8 @@ import {
     GuildApplicationCommandPermissionData,
     Permissions,
 } from "discord.js";
-import LeekClient from "src/LeekClient";
-import { SlashCommandFunction } from "types/CommandTypes";
+import LeekClient from "LeekClient";
+import { SlashCommandFunction } from "#types/CommandTypes";
 
 const command: SlashCommandFunction = {
     name: "setperms",

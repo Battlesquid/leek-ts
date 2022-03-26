@@ -6,7 +6,7 @@ import {
     Collection,
     CommandInteraction,
 } from "discord.js";
-import { SlashCommandData, CommandExec } from "types/CommandTypes";
+import { SlashCommandData, CommandExec } from "#types/CommandTypes";
 import { loadEvents, loadFunctions, loadInteractions } from "./loaders/";
 
 interface LeekClientOptions extends ClientOptions {

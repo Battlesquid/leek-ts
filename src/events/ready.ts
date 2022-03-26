@@ -1,4 +1,4 @@
-import { Event } from "types/EventTypes";
+import { Event } from "#types/EventTypes";
 
 const event: Event<"ready"> = {
     eventName: "ready",

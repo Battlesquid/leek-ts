@@ -1,7 +1,7 @@
 import { CommandInteraction } from "discord.js";
 import ms from "ms";
-import LeekClient from "src/LeekClient";
-import { SlashCommandFunction } from "types/CommandTypes";
+import LeekClient from "LeekClient";
+import { SlashCommandFunction } from "#types/CommandTypes";
 
 const command: SlashCommandFunction = {
     name: "timeout",

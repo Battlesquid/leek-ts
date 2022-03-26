@@ -6,12 +6,12 @@ import {
     Permissions,
     TextChannel,
 } from "discord.js";
-import VerifyEntry from "entities/VerifyEntry";
-import VerifySettings from "entities/VerifySettings";
-import { SlashCommandFunction } from "types/CommandTypes";
-import EmojiConstants from "util/EmojiConstants";
-import PaginatedEmbed from "util/PaginatedEmbed";
-import LeekClient from "../../LeekClient";
+import VerifyEntry from "#entities/VerifyEntry";
+import VerifySettings from "#entities/VerifySettings";
+import { SlashCommandFunction } from "#types/CommandTypes";
+import EmojiConstants from "#util/EmojiConstants";
+import PaginatedEmbed from "#util/PaginatedEmbed";
+import LeekClient from "LeekClient";
 
 const command: SlashCommandFunction = {
     name: "verify",

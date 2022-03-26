@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Message } from "discord.js";
 import VerifyEntry from "../entities/VerifyEntry";
-import { Event } from "types/EventTypes";
-import { patterns } from "util/regexes";
+import { Event } from "#types/EventTypes";
+import { patterns } from "#util/regexes";
 import LeekClient from "../LeekClient";
 
 const event: Event<"messageCreate"> = {

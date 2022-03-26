@@ -1,7 +1,7 @@
 import { CommandInteraction, Formatters, TextChannel } from "discord.js";
-import { SlashCommandFunction } from "types/CommandTypes";
-import { patterns } from "util/regexes";
-import LeekClient from "../../LeekClient";
+import { SlashCommandFunction } from "#types/CommandTypes";
+import { patterns } from "#util/regexes";
+import LeekClient from "LeekClient";
 
 const command: SlashCommandFunction = {
     name: "reactroles",

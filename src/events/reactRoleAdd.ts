@@ -1,5 +1,5 @@
 import { MessageReaction, User } from "discord.js";
-import { Event } from "types/EventTypes";
+import { Event } from "#types/EventTypes";
 import LeekClient from "../LeekClient";
 
 const event: Event<"messageReactionAdd"> = {

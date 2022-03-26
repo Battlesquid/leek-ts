@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "description": "",
     "scripts": {
-        "tsrun": "npx ts-node src/index.ts",
+        "tsrun": "npx ts-node -r tsconfig-paths/register src/index.ts",
         "lint": "npx eslint . --ext .js,.jsx,.ts,.tsx",
         "build": "npm run lint && npx tsc",
         "prepare": "husky install",
@@ -34,11 +34,16 @@
         "nodemon": "^2.0.15",
         "prettier": "2.5.1",
         "ts-node": "^10.4.0",
-        "tsconfig-paths": "^3.13.0",
+        "tsconfig-paths": "^3.14.1",
         "typescript": "^4.6.2"
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx}": "eslint --cache --fix",
         "*.{js,css,md}": "prettier --write"
+    },
+    "imports": {
+        "#util/*": "./dist/util/*.js",
+        "#types/*": "./dist/types/*.js",
+        "#entities/*": "./dist/entities/*.js"
     }
 }

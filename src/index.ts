@@ -1,3 +1,4 @@
+// import "module-alias/register";
 import { Intents } from "discord.js";
 import { ActivityTypes } from "discord.js/typings/enums";
 import { config } from "dotenv";

@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { CommandInteraction, Formatters } from "discord.js";
-import VerifyEntry from "entities/VerifyEntry";
-import VerifySettings from "entities/VerifySettings";
-import { SlashCommandFunction } from "types/CommandTypes";
-import { patterns } from "util/regexes";
-import LeekClient from "../../LeekClient";
+import VerifyEntry from "#entities/VerifyEntry";
+import VerifySettings from "#entities/VerifySettings";
+import { SlashCommandFunction } from "#types/CommandTypes";
+import { patterns } from "#util/regexes";
+import LeekClient from "LeekClient";
 
 const command: SlashCommandFunction = {
     name: "verify",

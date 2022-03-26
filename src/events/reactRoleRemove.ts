@@ -1,6 +1,6 @@
 import { MessageReaction, User } from "discord.js";
 import LeekClient from "../LeekClient";
-import { Event } from "types/EventTypes";
+import { Event } from "#types/EventTypes";
 
 const event: Event<"messageReactionRemove"> = {
     eventName: "messageReactionRemove",

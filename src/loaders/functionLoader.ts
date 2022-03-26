@@ -4,7 +4,7 @@ import {
     CommandExec,
     SlashCommandData,
     SlashCommandFunction,
-} from "types/CommandTypes";
+} from "#types/CommandTypes";
 
 export const loadFunctions = async (dir: string, coll: Collection<SlashCommandData, CommandExec>) => {
     console.log("loading functions");

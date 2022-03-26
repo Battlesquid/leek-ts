@@ -1,8 +1,8 @@
 import axios from "axios";
 import { Message, MessageEmbed } from "discord.js";
-import LogSettings from "entities/LogSettings";
+import LogSettings from "#entities/LogSettings";
 import { Stream } from "stream";
-import { Event } from "types/EventTypes";
+import { Event } from "#types/EventTypes";
 import LeekClient from "../LeekClient";
 
 const event: Event<"messageDelete"> = {
