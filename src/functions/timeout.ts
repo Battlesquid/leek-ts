@@ -1,10 +1,11 @@
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, Permissions } from "discord.js";
 import ms from "ms";
 import LeekClient from "LeekClient";
 import { SlashCommandFunction } from "#types/CommandTypes";
 
 const command: SlashCommandFunction = {
     name: "timeout",
+    perms: [Permissions.FLAGS.MANAGE_GUILD],
     execute: async (client: LeekClient, inter: CommandInteraction) => {
         const user = inter.options.getUser("user", true);
         const duration = inter.options.getString("duration", true);

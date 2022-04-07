@@ -31,7 +31,6 @@ const mediaInteraction = new SlashCommandBuilder()
     .setDescription(
         "Marks a channel as media only (only links, videos, etc can be sent)"
     )
-    .setDefaultPermission(false)
     .addSubcommand(enable)
     .addSubcommand(disable);
 

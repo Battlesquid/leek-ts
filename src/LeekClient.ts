@@ -61,7 +61,7 @@ export default class LeekClient extends Client {
                 key.subcommand === subcommand &&
                 key.group === group
         );
-        return key ? this.functions.get(key) : undefined;
+        return key ? {key, fn: this.functions.get(key)} : undefined;
     }
 
     private async resolveConn(): Promise<MikroORM<PostgreSqlDriver>> {

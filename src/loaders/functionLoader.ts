@@ -19,6 +19,7 @@ export const loadFunctions = async (dir: string, coll: Collection<SlashCommandDa
                 {
                     name: fn.name,
                     subcommand: fn.subcommand,
+                    perms: fn.perms,
                     group: fn.group,
                 },
                 fn.execute

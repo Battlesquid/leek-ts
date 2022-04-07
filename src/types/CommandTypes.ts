@@ -3,7 +3,7 @@ import type {
     SlashCommandSubcommandBuilder,
     SlashCommandSubcommandGroupBuilder,
 } from "@discordjs/builders";
-import type { CommandInteraction } from "discord.js";
+import { CommandInteraction, PermissionFlags } from "discord.js";
 import type LeekClient from "../LeekClient";
 
 export type CommandExec = (
@@ -13,6 +13,7 @@ export type CommandExec = (
 
 type BaseCommand = {
     name: string;
+    perms: PermissionFlags[keyof PermissionFlags][]
 };
 
 export type SlashCommandData = BaseCommand & {

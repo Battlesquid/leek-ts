@@ -1,10 +1,11 @@
-import { ColorResolvable, CommandInteraction, MessageEmbed } from "discord.js";
+import { ColorResolvable, CommandInteraction, MessageEmbed, Permissions } from "discord.js";
 import { SlashCommandFunction } from "#types/CommandTypes";
 import LeekClient from "LeekClient";
 
 const command: SlashCommandFunction = {
     name: "reactroles",
     subcommand: "create",
+    perms: [Permissions.FLAGS.MANAGE_GUILD],
     execute: async (client: LeekClient, inter: CommandInteraction) => {
         const color = `#${
             inter.options.getString("color", false) ?? "444444"

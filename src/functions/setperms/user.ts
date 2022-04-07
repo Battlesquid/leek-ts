@@ -9,6 +9,7 @@ import { SlashCommandFunction } from "#types/CommandTypes";
 const command: SlashCommandFunction = {
     name: "setperms",
     subcommand: "user",
+    perms: [Permissions.FLAGS.MANAGE_GUILD],
     execute: async (client: LeekClient, inter: CommandInteraction) => {
         if (!inter.guild || !inter.guildId || !client.application) {
             inter.reply("An unexpected error occured, please try again later.");

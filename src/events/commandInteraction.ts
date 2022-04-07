@@ -8,14 +8,19 @@ const event: Event<"interactionCreate"> = {
         if (!inter.isCommand()) return;
 
         const command = client.getSlashCommand(inter);
-        if (!command) {
+        if (!command || !command.fn) {
             inter.reply(
                 "Command function not found, it may have been removed or moved somwhere else."
             );
             return;
         }
 
-        command(client, inter);
+        if(!inter.memberPermissions?.has(command.key.perms)) {
+            inter.reply("You do not have permission to use that command.");
+            return;
+        }
+        
+        command.fn(client, inter);
     },
 };
 

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { CommandInteraction, Formatters, MessageMentions } from "discord.js";
+import { CommandInteraction, Formatters, MessageMentions, Permissions } from "discord.js";
 import VerifyEntry from "#entities/VerifyEntry";
 import VerifySettings from "#entities/VerifySettings";
 import { SlashCommandFunction } from "#types/CommandTypes";
@@ -9,6 +9,7 @@ import LeekClient from "LeekClient";
 const command: SlashCommandFunction = {
     name: "verify",
     subcommand: "rescan",
+    perms: [Permissions.FLAGS.MANAGE_GUILD],
     execute: async (client: LeekClient, inter: CommandInteraction) => {
         if (!inter.guildId) return;
         await inter.deferReply()

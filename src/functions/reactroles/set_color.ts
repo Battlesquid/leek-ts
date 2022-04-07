@@ -1,10 +1,11 @@
-import { ColorResolvable, CommandInteraction, TextChannel } from "discord.js";
+import { ColorResolvable, CommandInteraction, Permissions, TextChannel } from "discord.js";
 import { SlashCommandFunction } from "#types/CommandTypes";
 import LeekClient from "LeekClient";
 
 const command: SlashCommandFunction = {
     name: "reactroles",
     subcommand: "set_color",
+    perms: [Permissions.FLAGS.MANAGE_GUILD],
     execute: async (client: LeekClient, inter: CommandInteraction) => {
         const ch = inter.options.getChannel("channel", true) as TextChannel;
         const title = inter.options.getString("title", true);

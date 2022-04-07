@@ -1,4 +1,4 @@
-import { CommandInteraction, Formatters, TextChannel } from "discord.js";
+import { CommandInteraction, Formatters, Permissions, TextChannel } from "discord.js";
 import { SlashCommandFunction } from "#types/CommandTypes";
 import { patterns } from "#util/regexes";
 import LeekClient from "LeekClient";
@@ -6,6 +6,7 @@ import LeekClient from "LeekClient";
 const command: SlashCommandFunction = {
     name: "reactroles",
     subcommand: "remove_role",
+    perms: [Permissions.FLAGS.MANAGE_GUILD],
     execute: async (client: LeekClient, inter: CommandInteraction) => {
         const ch = inter.options.getChannel("channel", true) as TextChannel;
         const title = inter.options.getString("title", true);
