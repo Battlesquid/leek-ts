@@ -14,7 +14,8 @@ const command: SlashCommandFunction = {
 
         const ch = inter.options.getChannel("channel", true);
 
-        const em = client.orm.em.fork();
+        const orm = await client.orm;
+        const em = orm.em.fork();
         let settings = await em.findOne(ChannelSettings, {
             gid: inter.guildId,
         });

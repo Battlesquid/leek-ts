@@ -10,7 +10,8 @@ const event: Event<"messageDelete"> = {
     handle: async (client: LeekClient, msg: Message) => {
         if (!msg.guild) return;
 
-        const em = client.orm.em.fork();
+        const orm = await client.orm;
+        const em = orm.em.fork();
         const settings = await em.findOne(LogSettings, {
             gid: msg.guildId,
         });

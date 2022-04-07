@@ -9,7 +9,8 @@ const command: SlashCommandFunction = {
     execute: async (client: LeekClient, inter: CommandInteraction) => {
         const type = inter.options.getString("type", true);
 
-        const em = client.orm.em.fork();
+        const orm = await client.orm;
+        const em = orm.em.fork();
         const settings = await em.findOne(LogSettings, { gid: inter.guildId });
 
         if (!settings) {

@@ -7,7 +7,8 @@ const command: SlashCommandFunction = {
     name: "verify",
     subcommand: "set_autogreet",
     execute: async (client: LeekClient, inter: CommandInteraction) => {
-        const em = client.orm.em.fork();
+        const orm = await client.orm;
+        const em = orm.em.fork();
 
         const settings = await em.findOne(VerifySettings, {
             gid: inter.guildId,

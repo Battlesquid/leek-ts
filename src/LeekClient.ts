@@ -64,7 +64,17 @@ export default class LeekClient extends Client {
         return key ? this.functions.get(key) : undefined;
     }
 
-    get orm(): MikroORM<PostgreSqlDriver> {
+    private async resolveConn(): Promise<MikroORM<PostgreSqlDriver>> {
+        const orm = await this.ormem;
+        const connected = await orm.isConnected();
+        if(!connected) {
+            await this.ormem.close();
+            await this.ormem.connect()
+        }
         return this.ormem;
+    }
+
+    get orm(): Promise<MikroORM<PostgreSqlDriver>> {
+        return this.resolveConn();
     }
 }

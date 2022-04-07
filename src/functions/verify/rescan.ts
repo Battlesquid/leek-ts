@@ -13,7 +13,8 @@ const command: SlashCommandFunction = {
         if (!inter.guildId) return;
         await inter.deferReply()
 
-        const em = client.orm.em.fork();
+        const orm = await client.orm;
+        const em = orm.em.fork();
 
         const settings = await em.findOne(VerifySettings, {
             gid: inter.guildId,

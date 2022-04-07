@@ -7,7 +7,8 @@ import LeekClient from "LeekClient";
 const event: Event<"messageCreate"> = {
     eventName: "messageCreate",
     async handle(client: LeekClient, msg: Message) {
-        const em = client.orm.em.fork();
+        const orm = await client.orm;
+        const em = orm.em.fork();
 
         const settings = await em.findOne(ChannelSettings, {
             gid: msg.guildId,

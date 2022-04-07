@@ -16,7 +16,8 @@ const command: SlashCommandFunction = {
         const role = inter.options.getRole("role", true);
         const autogreet = inter.options.getBoolean("autogreet", false) ?? false;
 
-        const em = client.orm.em.fork();
+        const orm = await client.orm;
+        const em = orm.em.fork();
         const settings = await em.findOne(VerifySettings, {
             gid: inter.guildId,
         });

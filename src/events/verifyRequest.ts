@@ -16,7 +16,8 @@ const event: Event<"messageCreate"> = {
         const match = message.content.match(patterns.VERIFY_REGEX);
         if (!match) return;
 
-        const em = client.orm.em.fork();
+        const orm = await client.orm;
+        const em = orm.em.fork();
 
         const settings = await em.findOne(VerifySettings, { gid: message.guildId })
         if(!settings) return;
