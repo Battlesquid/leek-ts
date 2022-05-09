@@ -69,7 +69,7 @@ export default class LeekClient extends Client {
         const connected = await orm.isConnected();
         if(!connected) {
             await this.ormem.close();
-            await this.ormem.connect()
+            await this.startDatabase();
         }
         return this.ormem;
     }
