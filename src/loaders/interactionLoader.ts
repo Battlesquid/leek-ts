@@ -14,7 +14,7 @@ const getSlashInteractions = async (dir: string) => {
 };
 
 export const loadInteractions = async (dir: string, reload: boolean) => {
-    console.log("loading interactions");
+    console.info("loading interactions")
 
     const rest = new REST({ version: "9" }).setToken(
         process.env.DISCORD_BOT_TOKEN!
@@ -30,9 +30,9 @@ export const loadInteractions = async (dir: string, reload: boolean) => {
                     body: [...slashCmds],
                 }
             );
-            console.log("Successfully reloaded application commands.");
+            console.log("successfully reloaded application commands");
         } else {
-            console.log("Skipping application command refresh");
+            console.log("skipping application command refresh");
         }
     } catch (error) {
         console.error(error);

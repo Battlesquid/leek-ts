@@ -14,7 +14,8 @@
         "paths": {
             "#util/*": ["util/*"],
             "#types/*": ["types/*"],
-            "#entities/*": ["entities/*"]
+            "#entities/*": ["entities/*"],
+            "#db/*": ["db/*"]
         },
         "resolveJsonModule": true,
         "outDir": "./dist",

@@ -1,12 +1,12 @@
-import { Intents } from "discord.js";
-import { ActivityTypes } from "discord.js/typings/enums";
 import { config } from "dotenv";
 import { expand } from "dotenv-expand";
 import path from "path/posix";
-import LeekClient from "./LeekClient";
-
-const env = config({path: path.resolve(__dirname, "../.env")})
+const env = config({ path: path.resolve(__dirname, "../.env") })
 expand(env)
+
+import { Intents } from "discord.js";
+import { ActivityTypes } from "discord.js/typings/enums";
+import LeekClient from "./LeekClient";
 
 const client = new LeekClient({
     interactionsDir: path.resolve(__dirname, "./interactions"),
