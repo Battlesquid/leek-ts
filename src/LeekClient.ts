@@ -44,7 +44,7 @@ export default class LeekClient extends Client {
             entities: ["./dist/entities"],
             entitiesTs: ["./src/entities"],
             clientUrl: process.env.DATABASE_URL,
-            type: "postgresql",
+            type: "postgresql"
         });
 
         this.ormem = orm;
