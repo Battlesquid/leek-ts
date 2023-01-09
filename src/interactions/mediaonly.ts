@@ -26,12 +26,32 @@ const disable = new SlashCommandSubcommandBuilder()
             .setRequired(true)
     );
 
+const add_exemption = new SlashCommandSubcommandBuilder()
+    .setName("add_exempt")
+    .setDescription("Allows a role to bypass media only channels")
+    .addRoleOption((option) =>
+        option
+            .setName("role")
+            .setDescription("The role to exempt")
+            .setRequired(true))
+
+const remove_exemption = new SlashCommandSubcommandBuilder()
+    .setName("remove_exempt")
+    .setDescription("Removes a role from the exemption list for media only channels")
+    .addRoleOption((option) =>
+        option
+            .setName("role")
+            .setDescription("The role to remove")
+            .setRequired(true))
+
 const mediaInteraction = new SlashCommandBuilder()
     .setName("mediaonly")
     .setDescription(
         "Marks a channel as media only (only links, videos, etc can be sent)"
     )
     .addSubcommand(enable)
-    .addSubcommand(disable);
+    .addSubcommand(disable)
+    .addSubcommand(add_exemption)
+    .addSubcommand(remove_exemption);
 
 export default mediaInteraction;

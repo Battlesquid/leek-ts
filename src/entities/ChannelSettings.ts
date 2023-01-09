@@ -9,8 +9,12 @@ export default class ChannelSettings {
     @Property()
     media_only: Snowflake[];
 
-    constructor(gid: Snowflake, media_only_chs: Snowflake[]) {
+    @Property()
+    exempted_roles: Snowflake[];
+
+    constructor(gid: Snowflake, media_only_chs: Snowflake[], exempted_roles: Snowflake[]) {
         this.gid = gid;
         this.media_only = media_only_chs;
+        this.exempted_roles = exempted_roles;
     }
 }

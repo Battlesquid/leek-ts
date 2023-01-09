@@ -15,11 +15,14 @@ const event: Event<"messageCreate"> = {
         });
         if (!settings) return;
 
+        const roles = msg.member?.roles.cache;
+
         const hasNoLink = !patterns.URL_REGEX.test(msg.content);
         const hasNoAttachments = msg.attachments.size === 0;
         const locked = settings.media_only.includes(msg.channel.id);
+        const notExempted = !roles?.hasAny(...settings.exempted_roles);
 
-        if (locked && hasNoLink && hasNoAttachments) {
+        if (locked && hasNoLink && hasNoAttachments && notExempted) {
             msg.delete();
         }
     },

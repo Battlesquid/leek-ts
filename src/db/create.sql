@@ -1,10 +1,10 @@
-CREATE TABLE DebugLogs (
-    time INTEGER NOT NULL,
+CREATE TABLE logs (
+    timestamp TEXT NOT NULL,
     data VARCHAR,
     PRIMARY KEY (time)
 );
 
-CREATE TABLE VerifySettings (
+CREATE TABLE verify_settings (
     gid VARCHAR NOT NULL,
     join_ch VARCHAR,
     roles TEXT [],
@@ -12,7 +12,7 @@ CREATE TABLE VerifySettings (
     PRIMARY KEY (gid)
 );
 
-CREATE TABLE VerifyEntry (
+CREATE TABLE verify_entry (
     id INTEGER NOT NULL,
     gid VARCHAR NOT NULL,
     uid VARCHAR NOT NULL,
@@ -20,15 +20,16 @@ CREATE TABLE VerifyEntry (
     PRIMARY KEY (id)
 );
 
-CREATE TABLE LogSettings (
+CREATE TABLE log_settings (
     gid VARCHAR NOT NULL,
     t_log_ch VARCHAR,
     i_log_ch VARCHAR,
     PRIMARY KEY (gid)
 );
 
-CREATE TABLE ChannelSettings (
+CREATE TABLE channel_settings (
     gid VARCHAR NOT NULL,
-    media_only: TEXT [] NOT NULL,
+    media_only TEXT [] NOT NULL,
+    exempted_roles TEXT [] NOT NULL,
     PRIMARY KEY (gid)
 );

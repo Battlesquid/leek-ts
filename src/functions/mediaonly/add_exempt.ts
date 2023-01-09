@@ -5,7 +5,7 @@ import LeekClient from "LeekClient";
 
 const command: SlashCommandFunction = {
     name: "mediaonly",
-    subcommand: "enable",
+    subcommand: "add_exempt",
     perms: [Permissions.FLAGS.MANAGE_GUILD],
     execute: async (client: LeekClient, inter: CommandInteraction) => {
         if (!inter.guildId) {
@@ -13,27 +13,28 @@ const command: SlashCommandFunction = {
             return;
         }
 
-        const ch = inter.options.getChannel("channel", true);
+        const role = inter.options.getRole("role", true);
 
         const orm = await client.orm;
         const em = orm.em.fork();
-        let settings = await em.findOne(ChannelSettings, {
+        const settings = await em.findOne(ChannelSettings, {
             gid: inter.guildId,
         });
 
-        if (settings) {
-            if (settings.media_only.find((t) => t === ch.id)) {
-                inter.reply(`${ch} is already marked as media only.`);
-                return;
-            }
-            settings.media_only.push(ch.id);
-            em.flush();
-        } else {
-            settings = new ChannelSettings(inter.guildId, [ch.id], []);
-            em.persistAndFlush(settings);
+        if (!settings) {
+            inter.reply("You must set up a media only channel first.");
+            return;
         }
 
-        inter.reply(`Marked ${ch} as media only.`);
+        if (settings.exempted_roles.includes(role.id)) {
+            inter.reply("Role is already exempted.");
+            return;
+        }
+
+        settings.exempted_roles.push(role.id);
+        em.flush();
+
+        inter.reply(`${role} is now exempted from media only channels`);
     },
 };
 
