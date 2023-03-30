@@ -2,7 +2,7 @@ import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
 } from "@discordjs/builders";
-import { ChannelType } from "discord-api-types";
+import { ChannelType } from "discord.js";
 
 const enable = new SlashCommandSubcommandBuilder()
     .setName("enable")
@@ -11,7 +11,7 @@ const enable = new SlashCommandSubcommandBuilder()
         option
             .setName("join_channel")
             .setDescription("Where new users join")
-            .addChannelType(ChannelType.GuildText)
+            .addChannelTypes(ChannelType.GuildText)
             .setRequired(true)
     )
     .addRoleOption((option) =>
@@ -67,7 +67,7 @@ const set_join_ch = new SlashCommandSubcommandBuilder()
         option
             .setName("channel")
             .setDescription("The channel where new users join.")
-            .addChannelType(ChannelType.GuildText)
+            .addChannelTypes(ChannelType.GuildText)
             .setRequired(true)
     );
 

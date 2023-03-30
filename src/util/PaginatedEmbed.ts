@@ -1,12 +1,9 @@
 import {
-    ButtonInteraction,
-    Collection,
-    CommandInteraction,
-    InteractionCollector,
-    Message,
-    MessageActionRow,
-    MessageButton,
-    MessageEmbed,
+    ActionRowBuilder,
+    APIButtonComponentWithCustomId,
+    ButtonBuilder, ButtonInteraction, ButtonStyle, Collection,
+    CommandInteraction, ComponentType, EmbedBuilder, InteractionCollector,
+    Message
 } from "discord.js";
 
 type OnCollectCallback = (
@@ -19,10 +16,10 @@ type OnEndCallback = (
 
 export type PaginatedEmbedOptions = {
     inter: CommandInteraction;
-    pages: MessageEmbed[];
-    prev?: MessageButton;
-    next?: MessageButton;
-    otherButtons?: MessageButton[];
+    pages: EmbedBuilder[];
+    prev?: ButtonBuilder;
+    next?: ButtonBuilder;
+    otherButtons?: ButtonBuilder[];
     timeout: number;
     onCollect?: OnCollectCallback;
     onEnd?: OnEndCallback;
@@ -31,32 +28,34 @@ export type PaginatedEmbedOptions = {
 export type PaginatedTemplateOptions<T> = {
     entries: T[];
     perPage: number;
-    perPageCallback: (page: MessageEmbed, currPage: number) => void;
-    perItemCallback: (page: MessageEmbed, data: T, currPage: number) => void;
-    base?: MessageEmbed;
+    perPageCallback: (page: EmbedBuilder, currPage: number) => void;
+    perItemCallback: (page: EmbedBuilder, data: T, currPage: number) => void;
+    base?: EmbedBuilder;
 };
 
 export default class PaginatedEmbed {
     private inter: CommandInteraction;
-    private pages: MessageEmbed[];
+    private pages: EmbedBuilder[];
     private timeout: number;
-    private prev: MessageButton;
-    private next: MessageButton;
-    private otherButtons: MessageButton[];
+    private prev: ButtonBuilder;
+    private next: ButtonBuilder;
+    private otherButtons: ButtonBuilder[];
     private currPage = 0;
+    private readonly NEXT_BUTTON_ID = "next";
+    private readonly PREV_BUTTON_ID = "prev";
 
     private onCollect?: OnCollectCallback;
     private onEnd?: OnEndCallback;
 
-    private defaultPrev = new MessageButton()
+    private defaultPrev = new ButtonBuilder()
         .setCustomId("prev")
         .setEmoji("⬅️")
-        .setStyle("PRIMARY");
+        .setStyle(ButtonStyle.Primary);
 
-    private defaultNext = new MessageButton()
+    private defaultNext = new ButtonBuilder()
         .setCustomId("next")
         .setEmoji("➡️")
-        .setStyle("PRIMARY");
+        .setStyle(ButtonStyle.Primary);
 
     constructor(options: PaginatedEmbedOptions) {
         this.inter = options.inter;
@@ -78,16 +77,17 @@ export default class PaginatedEmbed {
     private validate() {
         if (this.otherButtons.length > 3)
             throw Error("More than 3 other buttons have been given.");
-        if (this.next.style === "LINK" || this.prev.style === "LINK")
+        if (this.next.data.style === ButtonStyle.Link || this.prev.data.style === ButtonStyle.Link)
             throw Error("Link buttons cannot be used as prev/next buttons");
     }
+
     public async send() {
         this.validate();
         this.prev.setDisabled(true);
         if (this.currPage + 1 === this.pages.length)
             this.next.setDisabled(true);
 
-        const row = new MessageActionRow().addComponents(
+        const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
             this.prev,
             this.next,
             ...this.otherButtons
@@ -100,27 +100,28 @@ export default class PaginatedEmbed {
         })) as Message;
 
         const filter = (i: ButtonInteraction) => {
-            const otherCustomIds = this.otherButtons.map((b) => b.customId);
+            const otherCustomIds = this.otherButtons.map((b) => (b.data as APIButtonComponentWithCustomId).custom_id);
+            
             return (
-                i.customId === this.prev.customId ||
-                i.customId === this.next.customId ||
+                i.customId === this.PREV_BUTTON_ID ||
+                i.customId === this.NEXT_BUTTON_ID ||
                 otherCustomIds.includes(i.customId)
             );
         };
 
         const collector = msg.createMessageComponentCollector({
             filter,
-            componentType: "BUTTON",
+            componentType: ComponentType.Button,
             time: this.timeout,
         });
 
         collector.on("collect", async (inter) => {
             await inter.deferUpdate();
             if (
-                inter.customId === this.next.customId ||
-                inter.customId === this.prev.customId
+                inter.customId === this.NEXT_BUTTON_ID ||
+                inter.customId === this.PREV_BUTTON_ID
             ) {
-                if (inter.customId === this.next.customId) {
+                if (inter.customId === this.NEXT_BUTTON_ID) {
                     this.currPage++;
                     if (this.currPage + 1 === this.pages.length) {
                         this.next.setDisabled(true);
@@ -142,7 +143,7 @@ export default class PaginatedEmbed {
                     }
                 }
 
-                const updatedRow = new MessageActionRow().addComponents(
+                const updatedRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
                     this.prev,
                     this.next,
                     ...this.otherButtons
@@ -160,13 +161,13 @@ export default class PaginatedEmbed {
         });
 
         collector.on("end", (collected) => {
-            if (msg.deleted) return;
+            if (!msg) return;
 
             this.prev.setDisabled(true);
             this.next.setDisabled(true);
             this.otherButtons.forEach((b) => b.setDisabled(true));
 
-            const disabledRow = new MessageActionRow().addComponents(
+            const disabledRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
                 this.prev,
                 this.next,
                 ...this.otherButtons
@@ -187,10 +188,10 @@ export default class PaginatedEmbed {
             options;
 
         const totalPages = Math.ceil(entries.length / perPage);
-        const pages: MessageEmbed[] = new Array(totalPages);
+        const pages: EmbedBuilder[] = new Array(totalPages);
 
         for (let currPage = 0; currPage < totalPages; currPage++) {
-            pages[currPage] = new MessageEmbed(base);
+            pages[currPage] = base ?? new EmbedBuilder();
 
             perPageCallback(pages[currPage], currPage);
 

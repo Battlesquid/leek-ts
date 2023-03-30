@@ -2,7 +2,7 @@ import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
 } from "@discordjs/builders";
-import { ChannelType } from "discord-api-types";
+import { ChannelType } from "discord.js";
 
 const enable = new SlashCommandSubcommandBuilder()
     .setName("enable")
@@ -11,7 +11,7 @@ const enable = new SlashCommandSubcommandBuilder()
         option
             .setName("channel")
             .setDescription("The channel to mark as media only")
-            .addChannelType(ChannelType.GuildText)
+            .addChannelTypes(ChannelType.GuildText)
             .setRequired(true)
     );
 
@@ -22,7 +22,7 @@ const disable = new SlashCommandSubcommandBuilder()
         option
             .setName("channel")
             .setDescription("The channel to unmark")
-            .addChannelType(ChannelType.GuildText)
+            .addChannelTypes(ChannelType.GuildText)
             .setRequired(true)
     );
 

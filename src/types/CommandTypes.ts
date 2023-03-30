@@ -1,14 +1,14 @@
 import type {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
-    SlashCommandSubcommandGroupBuilder,
+    SlashCommandSubcommandGroupBuilder
 } from "@discordjs/builders";
-import { CommandInteraction, PermissionFlags } from "discord.js";
+import { ChatInputCommandInteraction, PermissionFlags } from "discord.js";
 import type LeekClient from "../LeekClient";
 
 export type CommandExec = (
     client: LeekClient,
-    inter: CommandInteraction
+    inter: ChatInputCommandInteraction
 ) => Promise<unknown> | unknown;
 
 type BaseCommand = {

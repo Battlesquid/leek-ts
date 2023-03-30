@@ -1,13 +1,13 @@
-import { CommandInteraction, Permissions } from "discord.js";
 import { SlashCommandFunction } from "#types/CommandTypes";
-import VerifySettings from "../../entities/VerifySettings";
+import { ChatInputCommandInteraction, PermissionsBitField } from "discord.js";
 import LeekClient from "LeekClient";
+import VerifySettings from "../../entities/VerifySettings";
 
 const command: SlashCommandFunction = {
     name: "verify",
     subcommand: "set_join_ch",
-    perms: [Permissions.FLAGS.MANAGE_GUILD],
-    execute: async (client: LeekClient, inter: CommandInteraction) => {
+    perms: [PermissionsBitField.Flags.ManageGuild],
+    execute: async (client: LeekClient, inter: ChatInputCommandInteraction) => {
         const orm = await client.orm;
         const em = orm.em.fork();
 

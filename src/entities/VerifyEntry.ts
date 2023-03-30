@@ -1,5 +1,5 @@
 import { Entity, PrimaryKey, Property } from "@mikro-orm/core";
-import { Snowflake } from "discord-api-types";
+import { Snowflake } from "discord.js";
 
 @Entity()
 export default class VerifyEntry {

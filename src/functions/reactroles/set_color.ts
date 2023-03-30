@@ -1,12 +1,12 @@
-import { ColorResolvable, CommandInteraction, Permissions, TextChannel } from "discord.js";
 import { SlashCommandFunction } from "#types/CommandTypes";
+import { ChatInputCommandInteraction, ColorResolvable, EmbedBuilder, PermissionsBitField, TextChannel } from "discord.js";
 import LeekClient from "LeekClient";
 
 const command: SlashCommandFunction = {
     name: "reactroles",
     subcommand: "set_color",
-    perms: [Permissions.FLAGS.MANAGE_GUILD],
-    execute: async (client: LeekClient, inter: CommandInteraction) => {
+    perms: [PermissionsBitField.Flags.ManageGuild],
+    execute: async (client: LeekClient, inter: ChatInputCommandInteraction) => {
         const ch = inter.options.getChannel("channel", true) as TextChannel;
         const title = inter.options.getString("title", true);
         const color = `#${inter.options.getString(
@@ -36,7 +36,7 @@ const command: SlashCommandFunction = {
             return;
         }
 
-        const embed = msg.embeds[0];
+        const embed = EmbedBuilder.from(msg.embeds[0]);
         embed.setColor(color);
 
         msg.edit({ embeds: [embed] });

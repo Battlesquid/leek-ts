@@ -2,7 +2,7 @@ import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
 } from "@discordjs/builders";
-import { ChannelType } from "discord-api-types";
+import { ChannelType } from "discord.js";
 
 const create = new SlashCommandSubcommandBuilder()
     .setName("create")
@@ -11,7 +11,7 @@ const create = new SlashCommandSubcommandBuilder()
         opt
             .setName("channel")
             .setDescription("The channel to create the reaction-roles in.")
-            .addChannelType(ChannelType.GuildText)
+            .addChannelTypes(ChannelType.GuildText)
             .setRequired(true)
     )
     .addStringOption((opt) =>
@@ -45,7 +45,7 @@ const add_role = new SlashCommandSubcommandBuilder()
         opt
             .setName("channel")
             .setDescription("The channel where the react-role is")
-            .addChannelType(ChannelType.GuildText)
+            .addChannelTypes(ChannelType.GuildText)
             .setRequired(true)
     )
     .addStringOption((opt) =>
@@ -74,7 +74,7 @@ const delete_role = new SlashCommandSubcommandBuilder()
         opt
             .setName("channel")
             .setDescription("The channel the react-roles are in")
-            .addChannelType(ChannelType.GuildText)
+            .addChannelTypes(ChannelType.GuildText)
             .setRequired(true)
     )
     .addStringOption((opt) =>
@@ -97,7 +97,7 @@ const set_color = new SlashCommandSubcommandBuilder()
         opt
             .setName("channel")
             .setDescription("The channel where the react-role is")
-            .addChannelType(ChannelType.GuildText)
+            .addChannelTypes(ChannelType.GuildText)
             .setRequired(true)
     )
     .addStringOption((opt) =>
@@ -122,7 +122,7 @@ const set_desc = new SlashCommandSubcommandBuilder()
         opt
             .setName("channel")
             .setDescription("The channel where the react-role is")
-            .addChannelType(ChannelType.GuildText)
+            .addChannelTypes(ChannelType.GuildText)
             .setRequired(true)
     )
     .addStringOption((opt) =>
@@ -144,7 +144,7 @@ const set_msg = new SlashCommandSubcommandBuilder()
         opt
             .setName("channel")
             .setDescription("The channel where the react-role is")
-            .addChannelType(ChannelType.GuildText)
+            .addChannelTypes(ChannelType.GuildText)
             .setRequired(true)
     )
     .addStringOption((opt) =>
@@ -166,7 +166,7 @@ const set_name = new SlashCommandSubcommandBuilder()
         opt
             .setName("channel")
             .setDescription("The channel where the react-role is")
-            .addChannelType(ChannelType.GuildText)
+            .addChannelTypes(ChannelType.GuildText)
             .setRequired(true)
     )
     .addStringOption((opt) =>

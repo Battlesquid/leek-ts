@@ -2,7 +2,7 @@ import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
 } from "@discordjs/builders";
-import { ChannelType } from "discord-api-types";
+import { ChannelType } from "discord.js";
 
 const enable = new SlashCommandSubcommandBuilder()
     .setName("enable")
@@ -11,17 +11,17 @@ const enable = new SlashCommandSubcommandBuilder()
         opt
             .setName("type")
             .setDescription("The type of log to enable")
-            .addChoices([
-                ["text", "text"],
-                ["image", "image"],
-            ])
+            .addChoices(
+                { name: "text", value: "text" },
+                { name: "image", value: "image" },
+            )
             .setRequired(true)
     )
     .addChannelOption((opt) =>
         opt
             .setName("channel")
             .setDescription("The channel to send these logs to")
-            .addChannelType(ChannelType.GuildText)
+            .addChannelTypes(ChannelType.GuildText)
             .setRequired(true)
     );
 
@@ -32,10 +32,10 @@ const disable = new SlashCommandSubcommandBuilder()
         opt
             .setName("type")
             .setDescription("The type of log to disable")
-            .addChoices([
-                ["text", "text"],
-                ["image", "image"],
-            ])
+            .addChoices(
+                { name: "text", value: "text" },
+                { name: "image", value: "image" }
+            )
             .setRequired(true)
     );
 

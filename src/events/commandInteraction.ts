@@ -1,12 +1,12 @@
-import { Interaction, TextChannel } from "discord.js";
 import { Event } from "#types/EventTypes";
-import LeekClient from "../LeekClient";
 import logger from "#util/logger/logger";
+import { Interaction, TextChannel } from "discord.js";
+import LeekClient from "../LeekClient";
 
 const event: Event<"interactionCreate"> = {
     eventName: "interactionCreate",
     handle: async (client: LeekClient, inter: Interaction) => {
-        if (!inter.isCommand()) return;
+        if (!inter.isChatInputCommand()) return;
         try {
             const command = client.getSlashCommand(inter);
 
@@ -31,7 +31,7 @@ const event: Event<"interactionCreate"> = {
 
             command.fn(client, inter);
         } catch (e) {
-            logger.error({event: e})
+            logger.error({ event: e })
         }
     },
 };

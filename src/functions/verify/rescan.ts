@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { CommandInteraction, Formatters, MessageMentions, Permissions } from "discord.js";
 import VerifyEntry from "#entities/VerifyEntry";
 import VerifySettings from "#entities/VerifySettings";
 import { SlashCommandFunction } from "#types/CommandTypes";
 import { patterns } from "#util/regexes";
+import { ChannelType, ChatInputCommandInteraction, Formatters, MessageMentions, PermissionsBitField } from "discord.js";
 import LeekClient from "LeekClient";
 
 const command: SlashCommandFunction = {
     name: "verify",
     subcommand: "rescan",
-    perms: [Permissions.FLAGS.MANAGE_GUILD],
-    execute: async (client: LeekClient, inter: CommandInteraction) => {
+    perms: [PermissionsBitField.Flags.ManageGuild],
+    execute: async (client: LeekClient, inter: ChatInputCommandInteraction) => {
         if (!inter.guildId) return;
         await inter.deferReply()
 
@@ -26,7 +26,7 @@ const command: SlashCommandFunction = {
         }
 
         const ch = await client.channels.fetch(settings.join_ch);
-        if (!ch || ch.type !== "GUILD_TEXT") {
+        if (!ch || ch.type !== ChannelType.GuildText) {
             inter.editReply(
                 `${Formatters.channelMention(
                     settings.join_ch
@@ -68,9 +68,9 @@ const command: SlashCommandFunction = {
             const { nick, team } = match.groups!;
 
             const trimmedNick = nick
-                .replace(MessageMentions.USERS_PATTERN, "")
-                .replace(MessageMentions.CHANNELS_PATTERN, "")
-                .replace(MessageMentions.EVERYONE_PATTERN, "")
+                .replace(MessageMentions.UsersPattern, "")
+                .replace(MessageMentions.ChannelsPattern, "")
+                .replace(MessageMentions.EveryonePattern, "")
                 .slice(0, 29 - team.length);
             const formattedNick = `${trimmedNick} | ${team}`;
 

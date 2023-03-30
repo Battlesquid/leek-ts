@@ -33,11 +33,11 @@ const event: Event<"messageReactionAdd"> = {
         const member = await fullMessage.guild.members.fetch(user.id);
         member.roles
             .add(role)
-            .catch(() =>
+            .catch(() => {
                 member.send(
                     `I could not give you the role "${role.name}". Contact the server administration to make sure that my role (leekbeta) is above the requested role.`
                 )
-            );
+            });
     },
 };
 

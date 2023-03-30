@@ -4,8 +4,7 @@ import path from "path/posix";
 const env = config({ path: path.resolve(__dirname, "../.env") })
 expand(env)
 
-import { Intents } from "discord.js";
-import { ActivityTypes } from "discord.js/typings/enums";
+import { ActivityType, GatewayIntentBits, Partials } from "discord.js";
 import LeekClient from "./LeekClient";
 
 const client = new LeekClient({
@@ -13,17 +12,18 @@ const client = new LeekClient({
     functionsDir: path.resolve(__dirname, "./functions"),
     eventsDir: path.resolve(__dirname, "./events"),
     intents: [
-        Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_MESSAGES,
-        Intents.FLAGS.GUILD_MEMBERS,
-        Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildMessageReactions,
     ],
-    partials: ["MESSAGE", "CHANNEL", "REACTION"],
+    partials: [Partials.Message, Partials.Channel, Partials.Reaction],
     presence: {
         status: "dnd",
         activities: [
             {
-                type: ActivityTypes.PLAYING,
+                type: ActivityType.Playing,
                 name: 'I\'ve been updated! Type "/" to see what I can do.',
             },
         ],

@@ -1,13 +1,13 @@
-import { CommandInteraction, Formatters, Permissions, TextChannel } from "discord.js";
 import { SlashCommandFunction } from "#types/CommandTypes";
 import { patterns } from "#util/regexes";
+import { ChatInputCommandInteraction, EmbedBuilder, PermissionsBitField, roleMention, TextChannel } from "discord.js";
 import LeekClient from "LeekClient";
 
 const command: SlashCommandFunction = {
     name: "reactroles",
     subcommand: "remove_role",
-    perms: [Permissions.FLAGS.MANAGE_GUILD],
-    execute: async (client: LeekClient, inter: CommandInteraction) => {
+    perms: [PermissionsBitField.Flags.ManageGuild],
+    execute: async (client: LeekClient, inter: ChatInputCommandInteraction) => {
         const ch = inter.options.getChannel("channel", true) as TextChannel;
         const title = inter.options.getString("title", true);
         const role = inter.options.getRole("role", true);
@@ -33,7 +33,7 @@ const command: SlashCommandFunction = {
 
         // verify that the role exists
         const roleField = embed.fields.find(
-            (f) => f.value === Formatters.roleMention(role.id)
+            (f) => f.value === roleMention(role.id)
         );
         if (!roleField) {
             inter.reply(`${role} does not exist on ${title}`);
@@ -42,10 +42,12 @@ const command: SlashCommandFunction = {
 
         // filter out the field we want to remove
         const fields = embed.fields.filter(
-            (f) => f.value !== Formatters.roleMention(role.id)
+            (f) => f.value !== roleMention(role.id)
         );
-        embed.fields = fields;
-        msg.edit({ embeds: [embed] });
+
+        const builder = EmbedBuilder.from(embed);
+        builder.setFields(fields)
+        msg.edit({ embeds: [builder] });
 
         // resolve the emoji, fetch the reaction and remove it
         const match = roleField.name.match(patterns.EMOJI_REGEX);

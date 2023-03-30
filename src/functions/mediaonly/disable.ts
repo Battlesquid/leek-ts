@@ -1,13 +1,13 @@
-import { CommandInteraction, Permissions } from "discord.js";
 import ChannelSettings from "#entities/ChannelSettings";
 import { SlashCommandFunction } from "#types/CommandTypes";
+import { ChatInputCommandInteraction, PermissionsBitField } from "discord.js";
 import LeekClient from "LeekClient";
 
 const command: SlashCommandFunction = {
     name: "mediaonly",
     subcommand: "disable",
-    perms: [Permissions.FLAGS.MANAGE_GUILD],
-    execute: async (client: LeekClient, inter: CommandInteraction) => {
+    perms: [PermissionsBitField.Flags.ManageGuild],
+    execute: async (client: LeekClient, inter: ChatInputCommandInteraction) => {
         const ch = inter.options.getChannel("channel", true);
 
         const orm = await client.orm;

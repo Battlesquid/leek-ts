@@ -1,14 +1,14 @@
-import { CommandInteraction, Formatters, Permissions, TextChannel } from "discord.js";
 import { SlashCommandFunction } from "#types/CommandTypes";
 import { patterns } from "#util/regexes";
-import LeekClient from "LeekClient";
+import { ChatInputCommandInteraction, roleMention, PermissionsBitField, TextChannel, EmbedBuilder } from "discord.js";
 import emojiRegex from "emoji-regex";
+import LeekClient from "LeekClient";
 
 const command: SlashCommandFunction = {
     name: "reactroles",
     subcommand: "add_role",
-    perms: [Permissions.FLAGS.MANAGE_GUILD],
-    execute: async (client: LeekClient, inter: CommandInteraction) => {
+    perms: [PermissionsBitField.Flags.ManageGuild],
+    execute: async (client: LeekClient, inter: ChatInputCommandInteraction) => {
         const ch = inter.options.getChannel("channel", true) as TextChannel;
         const title = inter.options.getString("title", true);
         const role = inter.options.getRole("role", true);
@@ -45,14 +45,15 @@ const command: SlashCommandFunction = {
 
         if (
             embed.fields.find(
-                (f) => f.value === Formatters.roleMention(role.id)
+                (f) => f.value === roleMention(role.id)
             )
         ) {
             inter.reply("Role already included, exiting.");
             return;
         }
 
-        embed.addField(emoji, Formatters.roleMention(role.id), true);
+        const builder = EmbedBuilder.from(embed);
+        builder.addFields([{ name: emoji, value: roleMention(role.id), inline: true }]);
         msg.edit({ embeds: [embed] });
         msg.react(emoji);
 

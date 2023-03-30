@@ -1,12 +1,12 @@
+import { CommandExec, SlashCommandData } from "#types/CommandTypes";
 import { MikroORM } from "@mikro-orm/core";
 import { PostgreSqlDriver } from "@mikro-orm/postgresql";
 import {
+    ChatInputCommandInteraction,
     Client,
     ClientOptions,
-    Collection,
-    CommandInteraction,
+    Collection
 } from "discord.js";
-import { SlashCommandData, CommandExec } from "#types/CommandTypes";
 import { loadEvents, loadFunctions, loadInteractions } from "./loaders/";
 
 interface LeekClientOptions extends ClientOptions {
@@ -16,14 +16,14 @@ interface LeekClientOptions extends ClientOptions {
 }
 
 export default class LeekClient extends Client {
-    public options: LeekClientOptions;
+    public customOptions: LeekClientOptions;
     private functions: Collection<SlashCommandData, CommandExec> =
         new Collection();
     private ormem: MikroORM<PostgreSqlDriver>;
 
     constructor(options: LeekClientOptions) {
         super(options);
-        this.options = options;
+        this.customOptions = options;
     }
 
     async start() {
@@ -31,9 +31,9 @@ export default class LeekClient extends Client {
         
         await Promise.all([
             this.startDatabase(),
-            loadInteractions(this.options.interactionsDir, reload),
-            loadFunctions(this.options.functionsDir, this.functions),
-            loadEvents(this.options.eventsDir, this)
+            loadInteractions(this.customOptions.interactionsDir, reload),
+            loadFunctions(this.customOptions.functionsDir, this.functions),
+            loadEvents(this.customOptions.eventsDir, this)
         ]);
 
         this.login(process.env.DISCORD_BOT_TOKEN);
@@ -51,7 +51,7 @@ export default class LeekClient extends Client {
         this.ormem = orm;
     }
 
-    public getSlashCommand(inter: CommandInteraction) {
+    public getSlashCommand(inter: ChatInputCommandInteraction) {
         const name = inter.commandName;
         const subcommand = inter.options.getSubcommand(false) ?? undefined;
         const group = inter.options.getSubcommandGroup(false) ?? undefined;

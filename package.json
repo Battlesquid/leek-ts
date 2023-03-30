@@ -10,13 +10,10 @@
         "start": "node dist/index.js"
     },
     "dependencies": {
-        "@discordjs/builders": "^0.11.0",
-        "@discordjs/rest": "^0.4.1",
         "@mikro-orm/core": "^5.1.4",
         "@mikro-orm/postgresql": "^5.1.4",
         "axios": "^0.27.2",
-        "discord-api-types": "^0.26.1",
-        "discord.js": "^13.7.0",
+        "discord.js": "^14.8.0",
         "dotenv-expand": "^8.0.3",
         "emoji-regex": "^10.1.0",
         "ms": "^2.1.3",

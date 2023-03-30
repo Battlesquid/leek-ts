@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Message, MessageEmbed } from "discord.js";
+import { Message, EmbedBuilder, Colors, ChannelType } from "discord.js";
 import LogSettings from "#entities/LogSettings";
 import { Stream } from "stream";
 import { Event } from "#types/EventTypes";
@@ -20,7 +20,7 @@ const event: Event<"messageDelete"> = {
 
         if (settings.i_log_ch) {
             const ch = await msg.guild?.channels.fetch(settings.i_log_ch);
-            if (!ch || ch.type !== "GUILD_TEXT") return;
+            if (!ch || ch.type !== ChannelType.GuildText) return;
 
             // TODO add support for plain urls
 
@@ -45,12 +45,12 @@ const event: Event<"messageDelete"> = {
                                 "png|jpg|jpeg|gif|webp"
                             ) ?? "png";
 
-                        const embed = new MessageEmbed()
+                        const embed = new EmbedBuilder()
                             .setTitle("Image Deleted")
                             .setDescription(
                                 `Sent by ${msg.member} in ${msg.channel}`
                             )
-                            .setColor("DARK_RED")
+                            .setColor(Colors.DarkRed)
                             .setImage(`attachment://deleted.${ext}`)
                             .setTimestamp(Date.now());
 
@@ -70,7 +70,7 @@ const event: Event<"messageDelete"> = {
 
         if (settings.t_log_ch) {
             const ch = await msg.guild?.channels.fetch(settings.t_log_ch);
-            if (!ch || ch.type !== "GUILD_TEXT") return;
+            if (!ch || ch.type !== ChannelType.GuildText) return;
 
             const msgs = await msg.channel.messages.fetch({
                 before: msg.id,
@@ -82,7 +82,7 @@ const event: Event<"messageDelete"> = {
                 ? `[Jump to context](${first.url})`
                 : `\`No context available\``;
 
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setTitle("Message Deleted")
                 .setDescription(
                     `
@@ -93,7 +93,7 @@ const event: Event<"messageDelete"> = {
                     ${context}
                     `
                 )
-                .setColor("DARK_RED")
+                .setColor(Colors.DarkRed)
                 .setTimestamp(Date.now());
             ch.send({ embeds: [embed] });
         }

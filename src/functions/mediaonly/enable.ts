@@ -1,4 +1,4 @@
-import { CommandInteraction, Permissions } from "discord.js";
+import { ChatInputCommandInteraction, CommandInteraction, Permissions, PermissionsBitField } from "discord.js";
 import ChannelSettings from "#entities/ChannelSettings";
 import { SlashCommandFunction } from "#types/CommandTypes";
 import LeekClient from "LeekClient";
@@ -6,8 +6,8 @@ import LeekClient from "LeekClient";
 const command: SlashCommandFunction = {
     name: "mediaonly",
     subcommand: "enable",
-    perms: [Permissions.FLAGS.MANAGE_GUILD],
-    execute: async (client: LeekClient, inter: CommandInteraction) => {
+    perms: [PermissionsBitField.Flags.ManageGuild],
+    execute: async (client: LeekClient, inter: ChatInputCommandInteraction) => {
         if (!inter.guildId) {
             inter.reply("An unexpected error occured");
             return;
