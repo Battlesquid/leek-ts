@@ -67,8 +67,8 @@ const add_role = new SlashCommandSubcommandBuilder()
             .setRequired(true)
     );
 
-const delete_role = new SlashCommandSubcommandBuilder()
-    .setName("delete_role")
+const remove_role = new SlashCommandSubcommandBuilder()
+    .setName("remove_role")
     .setDescription("Remove a role from a group")
     .addChannelOption((opt) =>
         opt
@@ -187,7 +187,7 @@ const reactrolesInteraction = new SlashCommandBuilder()
     .setDescription("Reaction-role commands")
     .addSubcommand(create)
     .addSubcommand(add_role)
-    .addSubcommand(delete_role)
+    .addSubcommand(remove_role)
     .addSubcommand(set_color)
     .addSubcommand(set_desc)
     .addSubcommand(set_msg)
