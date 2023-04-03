@@ -54,7 +54,7 @@ const command: SlashCommandFunction = {
 
         const builder = EmbedBuilder.from(embed);
         builder.addFields([{ name: emoji, value: roleMention(role.id), inline: true }]);
-        msg.edit({ embeds: [embed] });
+        msg.edit({ embeds: [builder] });
         msg.react(emoji);
 
         inter.reply(
