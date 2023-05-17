@@ -191,7 +191,7 @@ export default class PaginatedEmbed {
         const pages: EmbedBuilder[] = new Array(totalPages);
 
         for (let currPage = 0; currPage < totalPages; currPage++) {
-            pages[currPage] = base ?? new EmbedBuilder();
+            pages[currPage] = EmbedBuilder.from(base ?? new EmbedBuilder());
 
             perPageCallback(pages[currPage], currPage);
 
