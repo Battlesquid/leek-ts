@@ -3,6 +3,7 @@ import VerifySettings from "#entities/VerifySettings";
 import { SlashCommandFunction } from "#types/CommandTypes";
 import EmojiConstants from "#util/EmojiConstants";
 import PaginatedEmbed from "#util/PaginatedEmbed";
+import { fail } from "assert";
 import {
     ButtonBuilder,
     ButtonStyle,
@@ -30,15 +31,15 @@ const command: SlashCommandFunction = {
             return;
         }
 
-        const list = await em.find(VerifyEntry, { gid: inter.guildId });
-        if (!list.length) {
+        const pendingUsers = await em.find(VerifyEntry, { gid: inter.guildId });
+        if (!pendingUsers.length) {
             inter.reply("No pending verifications.");
             return;
         }
 
         const pages = PaginatedEmbed.generateFromTemplate<VerifyEntry>({
             perPage: 6,
-            entries: list,
+            entries: pendingUsers,
             base: new EmbedBuilder().setFooter({ text: "verify_approve" }),
             perPageCallback(page, currPage) {
                 page.setTitle(`Verify List - Page ${currPage + 1}`);
@@ -84,36 +85,39 @@ const command: SlashCommandFunction = {
                         return;
                     }
 
-                    let successCount = list.length;
+                    let successCount = pendingUsers.length;
+                    console.log(successCount)
                     const failed: string[] = [];
 
-                    for (const user of list) {
-                        try {
-                            await inter.guild.members.edit(
+                    await Promise.all(
+                        pendingUsers.map(async user => {
+                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                            return inter.guild!.members.edit(
                                 user.uid,
                                 {
                                     roles: settings.roles,
                                     nick: user.nick,
                                     reason: `Verified by ${requestingUser.user.tag}`
                                 }
-                            );
-                        } catch (e) {
-                            console.error(e);
-                            successCount--;
-                            failed.push(user.uid);
-                        }
-                    }
+                            )
+                                .catch(e => {
+                                    console.error(e);
+                                    successCount--;
+                                    failed.push(user.uid);
+                                })
+                        })
+                    )
 
-                    em.removeAndFlush(list);
+                    em.removeAndFlush(pendingUsers);
 
-                    const followUpMsg = successCount === list.length
+                    const followUpMsg = successCount === pendingUsers.length
                         ? `Verified ${successCount} user${successCount !== 1 ? "s" : ""}.`
                         : `Verified ${successCount} user${successCount !== 1 ? "s" : ""}. Failed to verify ${failed.length} user${failed.length !== 1 ? "s" : ""}.`
 
                     await inter.followUp(followUpMsg);
 
-                    if (settings.autogreet) {
-                        const mentions = list
+                    if (settings.autogreet && successCount === pendingUsers.length) {
+                        const mentions = pendingUsers
                             .filter((u) => !failed.includes(u.uid))
                             .map((u) => userMention(u.uid))
                             .join(", ");

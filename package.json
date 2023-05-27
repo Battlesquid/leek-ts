@@ -6,6 +6,7 @@
         "tsrun": "npx ts-node -r tsconfig-paths/register src/index.ts",
         "lint": "npx eslint . --ext .js,.jsx,.ts,.tsx",
         "build": "npm run lint && npx tsc",
+        "clean": "rm -rf dist/",
         "prepare": "husky install",
         "start": "node dist/index.js"
     },
