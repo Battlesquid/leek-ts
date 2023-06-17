@@ -60,30 +60,28 @@ const remove_role = new SlashCommandSubcommandBuilder()
             .setRequired(true)
     );
 
-const set_join_ch = new SlashCommandSubcommandBuilder()
-    .setName("set_join_ch")
-    .setDescription("Set the join channel.")
+const edit = new SlashCommandSubcommandBuilder()
+    .setName("edit")
+    .setDescription("Edit verification settings.")
     .addChannelOption((option) =>
         option
             .setName("channel")
             .setDescription("The channel where new users join.")
             .addChannelTypes(ChannelType.GuildText)
-            .setRequired(true)
-    );
-
-const set_autogreet = new SlashCommandSubcommandBuilder()
-    .setName("set_autogreet")
-    .setDescription(
-        "Automatically generate a welcome message for verified users"
+            .setRequired(false)
     )
     .addBooleanOption((option) =>
         option
-            .setName("autogreet")
-            .setDescription("True to enable, false to disable")
-            .setRequired(true)
+            .setName("create_greeting")
+            .setDescription("Whether to automatically create a copyable greeting message upon verification")
+            .setRequired(false)
     );
 
-const verifyInteraction = new SlashCommandBuilder()
+const request = new SlashCommandSubcommandBuilder()
+    .setName("request")
+    .setDescription("Request verification");
+
+export const verifyInteraction = new SlashCommandBuilder()
     .setName("verify")
     .setDescription("Allows server staff to approve users into the server")
     .addSubcommand(enable)
@@ -92,7 +90,5 @@ const verifyInteraction = new SlashCommandBuilder()
     .addSubcommand(rescan)
     .addSubcommand(add_role)
     .addSubcommand(remove_role)
-    .addSubcommand(set_join_ch)
-    .addSubcommand(set_autogreet);
-
-export default verifyInteraction;
+    .addSubcommand(edit)
+    .addSubcommand(request);

@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model imageboard {
+  gid       String   @id @db.VarChar
+  boards    String[]
+  whitelist String[]
+}
+
+model log_settings {
+  gid      String  @id @db.VarChar
+  t_log_ch String? @db.VarChar
+  i_log_ch String? @db.VarChar
+}
+
+model logs {
+  timestamp String  @id
+  data      String? @db.VarChar
+}
+
+model verify_entry {
+  id   Int    @id @default(autoincrement())
+  gid  String @db.VarChar
+  uid  String @db.VarChar
+  nick String @db.VarChar(32)
+}
+
+model verify_settings {
+  gid       String   @id @db.VarChar
+  join_ch   String?  @db.VarChar
+  roles     String[]
+  autogreet Boolean?
+}

@@ -39,10 +39,8 @@ const disable = new SlashCommandSubcommandBuilder()
             .setRequired(true)
     );
 
-const logsInteraction = new SlashCommandBuilder()
+export const logsInteraction = new SlashCommandBuilder()
     .setName("logs")
     .setDescription("Manage server wide message logging.")
     .addSubcommand(enable)
     .addSubcommand(disable);
-
-export default logsInteraction;

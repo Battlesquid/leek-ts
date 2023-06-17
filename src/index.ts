@@ -1,33 +1,43 @@
-import { config } from "dotenv";
-import { expand } from "dotenv-expand";
-import path from "path/posix";
-const env = config({ path: path.resolve(__dirname, "../.env") })
-expand(env)
+import "module-alias/register";
 
+import env from "dotenv";
+import path from "path";
+env.config({ path: path.resolve(__dirname, "../.env") })
+
+import { PrismaClient } from "@prisma/client";
+import { SapphireClient, container } from '@sapphire/framework';
 import { ActivityType, GatewayIntentBits, Partials } from "discord.js";
-import LeekClient from "./LeekClient";
 
-const client = new LeekClient({
-    interactionsDir: path.resolve(__dirname, "./interactions"),
-    functionsDir: path.resolve(__dirname, "./functions"),
-    eventsDir: path.resolve(__dirname, "./events"),
+const client = new SapphireClient({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.MessageContent,
-        GatewayIntentBits.GuildMessageReactions,
+        GatewayIntentBits.GuildMessageReactions
     ],
     partials: [Partials.Message, Partials.Channel, Partials.Reaction],
     presence: {
-        status: "dnd",
+        status: "online",
         activities: [
             {
                 type: ActivityType.Playing,
-                name: 'I\'ve been updated! Type "/" to see what I can do.',
+                name: '/help',
             },
         ],
     },
+    
 });
 
-client.start();
+
+async function main() {
+    container.prisma = new PrismaClient();
+    await container.prisma.$connect();
+    await client.login(process.env.DISCORD_BOT_TOKEN);
+}
+
+main()
+    .finally(async () => {
+        await container.prisma.$disconnect()
+    })
+

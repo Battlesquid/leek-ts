@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 
-const timeoutInteraction = new SlashCommandBuilder()
+export const timeoutInteraction = new SlashCommandBuilder()
     .setName("timeout")
     .setDescription("Timeout a user")
     .addUserOption((option) =>
@@ -20,5 +20,3 @@ const timeoutInteraction = new SlashCommandBuilder()
             .setName("reason")
             .setDescription("The reason for timing this user out")
     );
-
-export default timeoutInteraction;

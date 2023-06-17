@@ -90,9 +90,9 @@ const remove_role = new SlashCommandSubcommandBuilder()
             .setRequired(true)
     );
 
-const set_color = new SlashCommandSubcommandBuilder()
-    .setName("set_color")
-    .setDescription("Set the color for the react-role group")
+const edit = new SlashCommandSubcommandBuilder()
+    .setName("edit")
+    .setDescription("Edit reactroles")
     .addChannelOption((opt) =>
         opt
             .setName("channel")
@@ -105,92 +105,12 @@ const set_color = new SlashCommandSubcommandBuilder()
             .setName("title")
             .setDescription("The react-role to modify")
             .setRequired(true)
-    )
-    .addStringOption((opt) =>
-        opt
-            .setName("color")
-            .setDescription(
-                "The color to set the react-role group to (e.g. #FFFFFF)"
-            )
-            .setRequired(true)
     );
 
-const set_desc = new SlashCommandSubcommandBuilder()
-    .setName("set_desc")
-    .setDescription("Set the description for the react-role group")
-    .addChannelOption((opt) =>
-        opt
-            .setName("channel")
-            .setDescription("The channel where the react-role is")
-            .addChannelTypes(ChannelType.GuildText)
-            .setRequired(true)
-    )
-    .addStringOption((opt) =>
-        opt
-            .setName("title")
-            .setDescription("The react-role to modify")
-            .setRequired(true)
-    )
-    .addStringOption((opt) =>
-        opt
-            .setName("desc")
-            .setDescription("The new description for the react-role group")
-    );
-
-const set_msg = new SlashCommandSubcommandBuilder()
-    .setName("set_msg")
-    .setDescription("Set the prepended message for the react-role")
-    .addChannelOption((opt) =>
-        opt
-            .setName("channel")
-            .setDescription("The channel where the react-role is")
-            .addChannelTypes(ChannelType.GuildText)
-            .setRequired(true)
-    )
-    .addStringOption((opt) =>
-        opt
-            .setName("title")
-            .setDescription("The react-role to modify")
-            .setRequired(true)
-    )
-    .addStringOption((opt) =>
-        opt
-            .setName("msg")
-            .setDescription("The new message to give to the react-role")
-    );
-
-const set_name = new SlashCommandSubcommandBuilder()
-    .setName("set_name")
-    .setDescription("Set the name for a react-role")
-    .addChannelOption((opt) =>
-        opt
-            .setName("channel")
-            .setDescription("The channel where the react-role is")
-            .addChannelTypes(ChannelType.GuildText)
-            .setRequired(true)
-    )
-    .addStringOption((opt) =>
-        opt
-            .setName("title")
-            .setDescription("The react-role to modify")
-            .setRequired(true)
-    )
-    .addStringOption((opt) =>
-        opt
-            .setName("new_title")
-            .setDescription("The new title for the react-role group")
-            .setRequired(true)
-    );
-
-const reactrolesInteraction = new SlashCommandBuilder()
+export const reactrolesInteraction = new SlashCommandBuilder()
     .setName("reactroles")
     .setDescription("Reaction-role commands")
     .addSubcommand(create)
     .addSubcommand(add_role)
     .addSubcommand(remove_role)
-    .addSubcommand(set_color)
-    .addSubcommand(set_desc)
-    .addSubcommand(set_msg)
-    .addSubcommand(set_name);
-
-export default reactrolesInteraction;
+    .addSubcommand(edit)

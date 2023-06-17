@@ -1,29 +1,36 @@
 {
     "ts-node": {
-        "require": ["tsconfig-paths/register"]
+        "require": [
+            "tsconfig-paths/register"
+        ]
     },
     "compilerOptions": {
         "target": "es2017",
-        "lib": ["es5", "es6"],
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
+        "lib": [
+            "es5",
+            "es6"
+        ],
         "module": "commonjs",
-        "rootDir": "src",
-        "moduleResolution": "node",
         "baseUrl": "./src",
         "paths": {
-            "#util/*": ["util/*"],
-            "#types/*": ["types/*"],
-            "#entities/*": ["entities/*"],
-            "#db/*": ["db/*"]
+            "@utils": [
+                "utils/"
+            ],
+            "@db": [
+                "db/"
+            ],
+            "@interactions": [
+                "interactions/"
+            ]
         },
         "resolveJsonModule": true,
         "outDir": "./dist",
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
-        "strictPropertyInitialization": false,
         "strict": true,
         "skipLibCheck": true
     },
-    "include": ["src/**/*"],
+    "include": [
+        "src/**/*"
+    ],
 }
