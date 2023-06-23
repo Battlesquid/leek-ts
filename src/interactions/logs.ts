@@ -2,7 +2,7 @@ import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
 } from "@discordjs/builders";
-import { ChannelType } from "discord.js";
+import { ChannelType, PermissionFlagsBits } from "discord.js";
 
 const enable = new SlashCommandSubcommandBuilder()
     .setName("enable")
@@ -42,5 +42,6 @@ const disable = new SlashCommandSubcommandBuilder()
 export const logsInteraction = new SlashCommandBuilder()
     .setName("logs")
     .setDescription("Manage server wide message logging.")
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
     .addSubcommand(enable)
     .addSubcommand(disable);

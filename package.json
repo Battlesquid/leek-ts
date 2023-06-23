@@ -53,6 +53,7 @@
     "_moduleAliases": {
         "@utils": "dist/utils",
         "@db": "dist/db",
-        "@interactions": "dist/interactions"
+        "@interactions": "dist/interactions",
+        "@modals": "dist/modals"
     }
 }

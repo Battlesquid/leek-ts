@@ -1,7 +1,7 @@
+import { verifyInteraction } from '@interactions';
 import { container } from '@sapphire/framework';
 import { Subcommand } from '@sapphire/plugin-subcommands';
-import { ActionRowBuilder, ModalActionRowComponentBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from 'discord.js';
-import { verifyInteraction } from '@interactions';
+import { verifyModal } from '@modals';
 
 export class VerifyCommand extends Subcommand {
     public constructor(context: Subcommand.Context, options: Subcommand.Options) {
@@ -54,26 +54,7 @@ export class VerifyCommand extends Subcommand {
     }
 
     public async chatInputRequest(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
-        const modal = new ModalBuilder()
-            .setCustomId(`verify_request`)
-            .setTitle('Verification');
-
-        const nameInput = new TextInputBuilder()
-            .setCustomId('name')
-            .setLabel("Name")
-            .setStyle(TextInputStyle.Short);
-
-        const teamInput = new TextInputBuilder()
-            .setCustomId('team')
-            .setLabel("Team")
-            .setStyle(TextInputStyle.Short);
-
-        const nameRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(nameInput);
-        const teamRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(teamInput);
-
-        modal.addComponents(nameRow, teamRow);
-
-        await inter.showModal(modal);
+        await inter.showModal(verifyModal.modal);
     }
 
     public async chatInputList(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
@@ -83,17 +64,19 @@ export class VerifyCommand extends Subcommand {
             inter.reply("Verification must be enabled first.");
             return;
         }
+
         const pendingList = await prisma.verify_entry.findMany({
             where: {
                 gid: inter.guildId
             }
-        })
+        });
+
         if (pendingList?.length === 0) {
             inter.reply("No pending verifications.");
             return;
         }
-
     }
+
     public async chatInputEnable(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
         const join_ch = inter.options.getChannel("join_channel", true);
         const role = inter.options.getRole("role", true);
@@ -172,14 +155,14 @@ export class VerifyCommand extends Subcommand {
 
         if (settings.roles.length === 1) {
             inter.reply(
-                `Minimum role size reached. Add more roles, then try again.`
+                `Unable to remove role: a minimum of one role is required. Add more roles, then try again.`
             );
             return;
         }
 
         container.prisma.verify_settings.update({
             where: {
-                gid: inter.guildId ?? undefined
+                gid: inter.guildId
             },
             data: {
                 roles: { set: settings.roles.filter((r) => r !== role.id) }

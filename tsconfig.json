@@ -21,6 +21,9 @@
             ],
             "@interactions": [
                 "interactions/"
+            ],
+            "@modals": [
+                "modals/"
             ]
         },
         "resolveJsonModule": true,

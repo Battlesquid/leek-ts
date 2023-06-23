@@ -1,5 +1,4 @@
 import { Listener } from "@sapphire/framework";
-import { Client } from "discord.js";
 
 export class ReadyListener extends Listener {
     public constructor(context: Listener.Context, options: Listener.Options) {
@@ -9,8 +8,7 @@ export class ReadyListener extends Listener {
             event: "ready"
         })
     }
-    run(_client: Client) {
+    run() {
         this.container.logger.info("leekbot online")
     }
-
 }

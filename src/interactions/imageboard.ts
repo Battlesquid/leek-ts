@@ -2,7 +2,7 @@ import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
 } from "@discordjs/builders";
-import { ChannelType } from "discord.js";
+import { ChannelType, PermissionFlagsBits } from "discord.js";
 
 const enable = new SlashCommandSubcommandBuilder()
     .setName("enable")
@@ -49,6 +49,7 @@ export const imageboardInteraction = new SlashCommandBuilder()
     .setDescription(
         "Marks a channel as an imageboard, where only links, videos, and other media can be sent."
     )
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
     .addSubcommand(enable)
     .addSubcommand(disable)
     .addSubcommand(whitelist_add)

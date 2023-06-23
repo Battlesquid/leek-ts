@@ -59,12 +59,7 @@ export class LogsCommand extends Subcommand {
             ? ["t_log_ch", "i_log_ch"]
             : ["i_log_ch", "t_log_ch"];
 
-        if (settings === null) {
-            inter.reply("Logging must be enabled first.");
-            return;
-        }
-
-        if (settings[targetKey] === null) {
+        if (settings === null || settings[targetKey] === null) {
             inter.reply(`${type.toUpperCase()} logging must be enabled first.`);
             return;
         }

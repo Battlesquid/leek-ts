@@ -2,7 +2,7 @@ import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
 } from "@discordjs/builders";
-import { ChannelType } from "discord.js";
+import { ChannelType, PermissionFlagsBits } from "discord.js";
 
 const enable = new SlashCommandSubcommandBuilder()
     .setName("enable")
@@ -84,6 +84,7 @@ const request = new SlashCommandSubcommandBuilder()
 export const verifyInteraction = new SlashCommandBuilder()
     .setName("verify")
     .setDescription("Allows server staff to approve users into the server")
+    .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
     .addSubcommand(enable)
     .addSubcommand(disable)
     .addSubcommand(list)

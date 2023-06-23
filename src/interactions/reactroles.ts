@@ -2,7 +2,7 @@ import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
 } from "@discordjs/builders";
-import { ChannelType } from "discord.js";
+import { ChannelType, PermissionFlagsBits } from "discord.js";
 
 const create = new SlashCommandSubcommandBuilder()
     .setName("create")
@@ -110,6 +110,7 @@ const edit = new SlashCommandSubcommandBuilder()
 export const reactrolesInteraction = new SlashCommandBuilder()
     .setName("reactroles")
     .setDescription("Reaction-role commands")
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
     .addSubcommand(create)
     .addSubcommand(add_role)
     .addSubcommand(remove_role)
