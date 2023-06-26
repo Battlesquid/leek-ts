@@ -165,16 +165,11 @@ export class ReactRolesCommand extends Subcommand {
         const builder = EmbedBuilder.from(reactrole);
         builder.addFields([{ name: emoji, value: roleMention(role.id), inline: true }]);
 
-        msg.edit({ embeds: [builder] })
-            .then(() => msg.react(emoji))
-            .then(() => inter.reply(
-                `Users can now react to ${title} with ${emoji} to get the ${role} role`
-            ))
-            .catch((e) => {
-                container.logger.error(e);
-                inter.reply("An error occurred, please try again later.");
-            })
-
+        await msg.edit({ embeds: [builder] })
+        await msg.react(emoji)
+        inter.reply(
+            `Users can now react to ${title} with ${emoji} to get the ${role} role`
+        );
     }
 
     public async chatInputRemoveRole(inter: Subcommand.ChatInputCommandInteraction) {
@@ -209,10 +204,6 @@ export class ReactRolesCommand extends Subcommand {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const emoji = match ? match.groups!.id : roleField.name;
         msg.reactions.cache.get(emoji)?.remove()
-            .then(() => inter.reply(`Removed ${role} from ${title}`))
-            .catch((e) => {
-                container.logger.error(e);
-                inter.reply("An error occurred, please try again later.");
-            });
+        inter.reply(`Removed ${role} from ${title}`);
     }
 }

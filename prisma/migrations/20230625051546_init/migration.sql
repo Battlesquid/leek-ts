@@ -1,10 +1,10 @@
 -- CreateTable
-CREATE TABLE "channel_settings" (
+CREATE TABLE "imageboard" (
     "gid" VARCHAR NOT NULL,
-    "media_only" TEXT[],
-    "exempted_roles" TEXT[],
+    "boards" TEXT[],
+    "whitelist" TEXT[],
 
-    CONSTRAINT "channel_settings_pkey" PRIMARY KEY ("gid")
+    CONSTRAINT "imageboard_pkey" PRIMARY KEY ("gid")
 );
 
 -- CreateTable
@@ -26,12 +26,11 @@ CREATE TABLE "logs" (
 
 -- CreateTable
 CREATE TABLE "verify_entry" (
-    "id" SERIAL NOT NULL,
     "gid" VARCHAR NOT NULL,
     "uid" VARCHAR NOT NULL,
     "nick" VARCHAR(32) NOT NULL,
 
-    CONSTRAINT "verify_entry_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "uid_gid_pkey" PRIMARY KEY ("uid","gid")
 );
 
 -- CreateTable
@@ -43,4 +42,3 @@ CREATE TABLE "verify_settings" (
 
     CONSTRAINT "verify_settings_pkey" PRIMARY KEY ("gid")
 );
-

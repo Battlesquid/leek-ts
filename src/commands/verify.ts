@@ -87,7 +87,8 @@ export class VerifyCommand extends Subcommand {
             inter.reply("Verification is already enabled.");
             return;
         }
-        container.prisma.verify_settings.create({
+
+        await container.prisma.verify_settings.create({
             data: {
                 gid: inter.guildId,
                 autogreet,
@@ -95,12 +96,7 @@ export class VerifyCommand extends Subcommand {
                 join_ch: join_ch.id
             }
         })
-            .then(() => inter.reply("Verification enabled."))
-            .catch((e) => {
-                inter.reply("An error occured, please try again later.")
-                container.logger.error(e);
-            })
-
+        inter.reply("Verification enabled.");
     }
     public async chatInputDisable(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
         const settings = await this.getSettings(inter.guildId);
@@ -109,12 +105,8 @@ export class VerifyCommand extends Subcommand {
             return;
         }
 
-        container.prisma.verify_settings.delete({ where: { gid: inter.guildId ?? undefined } })
-            .then(() => inter.reply("Verification disabled."))
-            .catch((e) => {
-                inter.reply("An error occured, please try again later.")
-                container.logger.error(e);
-            })
+        await container.prisma.verify_settings.delete({ where: { gid: inter.guildId } })
+        inter.reply("Verification disabled.");
     }
     public async chatInputAddRole(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
         const settings = await this.getSettings(inter.guildId);
@@ -130,14 +122,17 @@ export class VerifyCommand extends Subcommand {
             return;
         }
 
-        container.prisma.verify_settings.update({
+        await container.prisma.verify_settings.update({
             where: {
-                gid: inter.guildId ?? undefined
+                gid: inter.guildId
             },
             data: {
                 roles: { push: role.id }
             }
-        })
+        });
+
+        inter.reply(`Added ${role} to verification roles.`);
+
     }
     public async chatInputRemoveRole(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
         const settings = await this.getSettings(inter.guildId);
@@ -160,18 +155,14 @@ export class VerifyCommand extends Subcommand {
             return;
         }
 
-        container.prisma.verify_settings.update({
-            where: {
-                gid: inter.guildId
-            },
+        await container.prisma.verify_settings.update({
+            where: { gid: inter.guildId },
             data: {
                 roles: { set: settings.roles.filter((r) => r !== role.id) }
             }
-        })
+        });
 
-        await container.prisma.$transaction([
-            container.prisma.$executeRaw`UPDATE verify_settings SET roles=(array_remove(column, ${role.id})) WHERE ${role.id} = ANY(column_name)`
-        ])
+        inter.reply(`Removed ${role} from verification roles.`);
     }
 
     public async chatInputEdit(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
@@ -183,7 +174,7 @@ export class VerifyCommand extends Subcommand {
 
         const join_ch = inter.options.getChannel("join_channel", true);
         const autogreet = inter.options.getBoolean("autogreet", false) ?? false;
-        container.prisma.verify_settings.update({
+        await container.prisma.verify_settings.update({
             where: {
                 gid: inter.guildId ?? undefined
             },
@@ -191,11 +182,8 @@ export class VerifyCommand extends Subcommand {
                 join_ch: join_ch.id,
                 autogreet
             }
-        })
-            .then(() => inter.reply("Successfully updated verification settings."))
-            .catch((e) => {
-                container.logger.error(e);
-                inter.reply("An error occured, please try again later.");
-            })
+        });
+
+        inter.reply("Successfully updated verification settings.")
     }
 }

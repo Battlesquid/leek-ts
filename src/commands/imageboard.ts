@@ -42,27 +42,22 @@ export class ImageBoardCommand extends Subcommand {
             inter.reply(`${ch} is already an imageboard.`);
             return;
         }
-        try {
-            if (settings !== null) {
-                await container.prisma.imageboard.update({
-                    where: { gid: inter.guildId },
-                    data: { boards: { push: ch.id } }
-                })
-            } else {
-                await container.prisma.imageboard.create({
-                    data: {
-                        gid: inter.guildId,
-                        boards: [ch.id]
-                    }
-                })
-            }
 
-            inter.reply(`${ch} is now an imageboard.`)
+        if (settings !== null) {
+            await container.prisma.imageboard.update({
+                where: { gid: inter.guildId },
+                data: { boards: { push: ch.id } }
+            })
+        } else {
+            await container.prisma.imageboard.create({
+                data: {
+                    gid: inter.guildId,
+                    boards: [ch.id]
+                }
+            })
         }
-        catch (e) {
-            container.logger.error(e);
-            inter.reply("An error occurred, please try again later.");
-        }
+
+        inter.reply(`Imageboards enabled on ${ch}`);
     }
 
     public async chatInputDisable(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
@@ -75,15 +70,12 @@ export class ImageBoardCommand extends Subcommand {
         }
 
         const newBoards = settings.boards.filter(b => b !== ch.id);
-        container.prisma.imageboard.update({
+        await container.prisma.imageboard.update({
             where: { gid: inter.guildId },
             data: { boards: { set: newBoards } }
-        })
-            .then(() => inter.reply(`Imageboards disabled on ${ch}`))
-            .catch((e) => {
-                container.logger.error(e);
-                inter.reply("An error occurred, please try again later.");
-            })
+        });
+
+        inter.reply(`Imageboards disabled on ${ch}`);
     }
 
     public async chatInputWhitelistAdd(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
@@ -91,7 +83,7 @@ export class ImageBoardCommand extends Subcommand {
 
         const settings = await this.getSettings(inter.guildId);
         if (settings === null) {
-            inter.reply("You must set up a media only channel first.");
+            inter.reply("You must set up an imageboard first.");
             return;
         }
 
@@ -100,17 +92,14 @@ export class ImageBoardCommand extends Subcommand {
             return;
         }
 
-        container.prisma.imageboard.update({
+        await container.prisma.imageboard.update({
             where: { gid: inter.guildId },
             data: {
                 whitelist: { push: role.id }
             }
-        })
-            .then(() => inter.reply(`${role} whitelisted from imageboard channels.`))
-            .catch((e) => {
-                container.logger.error(e);
-                inter.reply("An error occurred, please try again later.");
-            })
+        });
+
+        inter.reply(`${role} whitelisted from imageboard channels.`);
     }
 
     public async chatInputWhitelistRemove(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
@@ -118,25 +107,20 @@ export class ImageBoardCommand extends Subcommand {
 
         const settings = await this.getSettings(inter.guildId);
         if (settings === null) {
-            inter.reply("You must set up a media only channel first.");
+            inter.reply("You must set up an imageboard first.");
             return;
         }
 
         if (!settings.whitelist.includes(role.id)) {
-            inter.reply("Role is already not whitelisted.");
+            inter.reply("Role is not whitelisted.");
             return;
         }
 
-        const newWhitelist = settings.whitelist.filter(id => id !== role.id);
-        container.prisma.imageboard.update({
+        await container.prisma.imageboard.update({
             where: { gid: inter.guildId },
-            data: { boards: { set: newWhitelist } }
+            data: { boards: { set: settings.whitelist.filter(id => id !== role.id) } }
         })
-            .then(() => inter.reply(`${role} removed from imageboard whitelist.`))
-            .catch((e) => {
-                container.logger.error(e);
-                inter.reply("An error occurred, please try again later.");
-            })
+        inter.reply(`${role} removed from imageboard whitelist.`);
     }
 
     private async getSettings(guildId: string) {

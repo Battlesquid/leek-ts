@@ -25,10 +25,11 @@ model logs {
 }
 
 model verify_entry {
-  id   Int    @id @default(autoincrement())
   gid  String @db.VarChar
   uid  String @db.VarChar
   nick String @db.VarChar(32)
+
+  @@id([uid, gid], map: "uid_gid_pkey")
 }
 
 model verify_settings {

@@ -26,10 +26,10 @@ export type PaginatedEmbedOptions = {
 };
 
 export type PaginatedTemplateOptions<T> = {
-    entries: T[];
+    items: T[];
     perPage: number;
-    perPageCallback: (page: EmbedBuilder, currPage: number) => void;
-    perItemCallback: (page: EmbedBuilder, data: T, currPage: number) => void;
+    pageRender: (page: EmbedBuilder, pageNum: number) => void;
+    itemRender: (page: EmbedBuilder, data: T, pageNum: number) => void;
     base?: EmbedBuilder;
 };
 
@@ -40,7 +40,7 @@ export default class PaginatedEmbed {
     private prev: ButtonBuilder;
     private next: ButtonBuilder;
     private otherButtons: ButtonBuilder[];
-    private currPage = 0;
+    private pageNum = 0;
     private readonly NEXT_BUTTON_ID = "next";
     private readonly PREV_BUTTON_ID = "prev";
 
@@ -83,9 +83,11 @@ export default class PaginatedEmbed {
 
     public async send() {
         this.validate();
+
         this.prev.setDisabled(true);
-        if (this.currPage + 1 === this.pages.length)
+        if (this.pageNum + 1 === this.pages.length) {
             this.next.setDisabled(true);
+        }
 
         const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
             this.prev,
@@ -94,14 +96,14 @@ export default class PaginatedEmbed {
         );
 
         const msg = (await this.inter.reply({
-            embeds: [this.pages[this.currPage]],
+            embeds: [this.pages[this.pageNum]],
             components: [row],
             fetchReply: true,
         })) as Message;
 
         const filter = (i: ButtonInteraction) => {
             const otherCustomIds = this.otherButtons.map((b) => (b.data as APIButtonComponentWithCustomId).custom_id);
-            
+
             return (
                 i.customId === this.PREV_BUTTON_ID ||
                 i.customId === this.NEXT_BUTTON_ID ||
@@ -115,91 +117,86 @@ export default class PaginatedEmbed {
             time: this.timeout,
         });
 
-        collector.on("collect", async (inter) => {
-            await inter.deferUpdate();
-            if (
-                inter.customId === this.NEXT_BUTTON_ID ||
-                inter.customId === this.PREV_BUTTON_ID
-            ) {
-                if (inter.customId === this.NEXT_BUTTON_ID) {
-                    this.currPage++;
-                    if (this.currPage + 1 === this.pages.length) {
-                        this.next.setDisabled(true);
+        return new Promise((resolve, reject) => {
+            collector.on("collect", async (inter) => {
+                await inter.deferUpdate();
+                if (
+                    inter.customId === this.NEXT_BUTTON_ID ||
+                    inter.customId === this.PREV_BUTTON_ID
+                ) {
+                    if (inter.customId === this.NEXT_BUTTON_ID) {
+                        this.pageNum++;
+                        this.next.setDisabled(this.pageNum + 1 === this.pages.length);
+                        if (this.pageNum > 0) {
+                            this.prev.setDisabled(false);
+                        }
                     } else {
-                        this.next.setDisabled(false);
+                        this.pageNum--;
+                        this.prev.setDisabled(this.pageNum === 0);
+                        if (this.pageNum + 1 < this.pages.length) {
+                            this.next.setDisabled(false);
+                        }
                     }
-                    if (this.currPage > 0) {
-                        this.prev.setDisabled(false);
-                    }
-                } else {
-                    this.currPage--;
-                    if (this.currPage === 0) {
-                        this.prev.setDisabled(true);
-                    } else {
-                        this.prev.setDisabled(false);
-                    }
-                    if (this.currPage + 1 < this.pages.length) {
-                        this.next.setDisabled(false);
-                    }
+
+                    const updatedRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
+                        this.prev,
+                        this.next,
+                        ...this.otherButtons
+                    );
+
+                    await inter.editReply({
+                        embeds: [this.pages[this.pageNum]],
+                        components: [updatedRow],
+                    });
+
+                    collector.resetTimer();
                 }
 
-                const updatedRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
+                if (this.onCollect) this.onCollect(collector, inter);
+            });
+
+            collector.on("end", (collected) => {
+                if (!msg) return;
+
+                this.prev.setDisabled(true);
+                this.next.setDisabled(true);
+                this.otherButtons.forEach((b) => b.setDisabled(true));
+
+                const disabledRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
                     this.prev,
                     this.next,
                     ...this.otherButtons
                 );
 
-                inter.editReply({
-                    embeds: [this.pages[this.currPage]],
-                    components: [updatedRow],
+                msg.edit({
+                    components: [disabledRow],
                 });
 
-                collector.resetTimer();
-            }
-
-            if (this.onCollect) this.onCollect(collector, inter);
-        });
-
-        collector.on("end", (collected) => {
-            if (!msg) return;
-
-            this.prev.setDisabled(true);
-            this.next.setDisabled(true);
-            this.otherButtons.forEach((b) => b.setDisabled(true));
-
-            const disabledRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
-                this.prev,
-                this.next,
-                ...this.otherButtons
-            );
-
-            msg.edit({
-                components: [disabledRow],
+                if (this.onEnd) this.onEnd(collected);
             });
+        })
 
-            if (this.onEnd) this.onEnd(collected);
-        });
     }
 
     public static generateFromTemplate<T>(
         options: PaginatedTemplateOptions<T>
     ) {
-        const { entries, perPage, perPageCallback, perItemCallback, base } =
+        const { items, perPage, pageRender, itemRender, base } =
             options;
 
-        const totalPages = Math.ceil(entries.length / perPage);
+        const totalPages = Math.ceil(items.length / perPage);
         const pages: EmbedBuilder[] = new Array(totalPages);
 
         for (let currPage = 0; currPage < totalPages; currPage++) {
             pages[currPage] = EmbedBuilder.from(base ?? new EmbedBuilder());
 
-            perPageCallback(pages[currPage], currPage);
+            pageRender(pages[currPage], currPage);
 
             const start = currPage * perPage;
-            const end = Math.min(entries.length, start + perPage);
+            const end = Math.min(items.length, start + perPage);
 
             for (let i = start; i < end; i++) {
-                perItemCallback(pages[currPage], entries[i], currPage);
+                itemRender(pages[currPage], items[i], currPage);
             }
         }
 

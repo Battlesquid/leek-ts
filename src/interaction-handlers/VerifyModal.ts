@@ -30,25 +30,7 @@ export class VerifyModalHandler extends InteractionHandler {
 
     const name = inter.fields.getTextInputValue(verifyModal.schema.inputs.name.customId);
     const team = inter.fields.getTextInputValue(verifyModal.schema.inputs.team.customId);
-
     const nick = `${name} | ${team}`;
-
-    // const entry = await em.findOne(VerifyEntry, {
-    //     gid: message.guildId,
-    //     uid: message.author.id,
-    // });
-    // if (entry) {
-    //     entry.nick = formattedNick;
-    //     em.flush();
-    // } else {
-    //     em.persistAndFlush(
-    //         new VerifyEntry(
-    //             message.guildId,
-    //             message.author.id,
-    //             formattedNick
-    //         )
-    //     );
-    // }
 
     await this.container.prisma.verify_entry.upsert({
       create: {
@@ -58,11 +40,14 @@ export class VerifyModalHandler extends InteractionHandler {
       },
       update: { nick },
       where: {
-        id: undefined
+        uid_gid: {
+          gid: inter.guildId,
+          uid: inter.user.id
+        }
       }
     });
 
-    await inter.reply({
+    inter.reply({
       content: 'Your verification request was sent.',
       ephemeral: true
     });

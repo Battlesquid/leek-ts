@@ -2,6 +2,8 @@ import { container } from '@sapphire/framework';
 import { Subcommand } from '@sapphire/plugin-subcommands';
 import { logsInteraction } from '@interactions';
 
+type LogTypes = "text" | "image" | "moderation";
+
 export class LogsCommand extends Subcommand {
     public constructor(context: Subcommand.Context, options: Subcommand.Options) {
         super(context, {
@@ -29,7 +31,7 @@ export class LogsCommand extends Subcommand {
 
     public async chatInputEnable(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
         const ch = inter.options.getChannel("channel", true);
-        const type = inter.options.getString("type", true) as "image" | "text";
+        const type = inter.options.getString("type", true) as LogTypes;
         const settings = await this.getSettings(inter.guildId);
         const key: "t_log_ch" | "i_log_ch" = type === "image"
             ? "t_log_ch"
@@ -83,5 +85,4 @@ export class LogsCommand extends Subcommand {
             where: { gid: guildId }
         });
     }
-
 }

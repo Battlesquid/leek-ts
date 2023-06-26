@@ -48,12 +48,9 @@ export class TimeoutCommand extends Command {
                 return;
             }
 
-            member
+            await member
                 .disableCommunicationUntil(Date.now() + millis, reason)
-                .then(() => inter.reply(`Timed out ${user} for ${durationStr}`))
-                .catch(() =>
-                    inter.reply("An error occured, make sure I have permission")
-                );
+            inter.reply(`Timed out ${user} for ${durationStr}`);
         } catch (e) {
             inter.reply("An invalid duration was provided.");
             return;
