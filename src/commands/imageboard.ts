@@ -70,10 +70,16 @@ export class ImageBoardCommand extends Subcommand {
         }
 
         const newBoards = settings.boards.filter(b => b !== ch.id);
-        await container.prisma.imageboard.update({
-            where: { gid: inter.guildId },
-            data: { boards: { set: newBoards } }
-        });
+        if (newBoards.length === 0) {
+            await container.prisma.imageboard.delete({
+                where: { gid: inter.guildId }
+            })
+        } else {
+            await container.prisma.imageboard.update({
+                where: { gid: inter.guildId },
+                data: { boards: { set: newBoards } }
+            });
+        }
 
         inter.reply(`Imageboards disabled on ${ch}`);
     }

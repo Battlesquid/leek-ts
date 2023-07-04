@@ -5,7 +5,7 @@ import path from "path";
 env.config({ path: path.resolve(__dirname, "../.env") })
 
 import { PrismaClient } from "@prisma/client";
-import { SapphireClient, container } from '@sapphire/framework';
+import { LogLevel, SapphireClient, container } from '@sapphire/framework';
 import { ActivityType, GatewayIntentBits, Partials } from "discord.js";
 
 const client = new SapphireClient({
@@ -16,6 +16,9 @@ const client = new SapphireClient({
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildMessageReactions
     ],
+    logger: {
+        level: process.env.NODE_ENV === 'development' ? LogLevel.Debug : LogLevel.Info
+    },
     partials: [Partials.Message, Partials.Channel, Partials.Reaction],
     presence: {
         status: "online",
@@ -26,7 +29,7 @@ const client = new SapphireClient({
             },
         ],
     },
-    
+
 });
 
 

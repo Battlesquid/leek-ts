@@ -1,10 +1,9 @@
-import { patterns } from '@utils';
+import { reactrolesInteraction } from '@interactions';
 import { container } from '@sapphire/framework';
 import { Subcommand } from '@sapphire/plugin-subcommands';
-import { ActionRowBuilder, ChannelType, ColorResolvable, Embed, EmbedBuilder, Message, ModalActionRowComponentBuilder, ModalBuilder, TextChannel, TextInputBuilder, TextInputStyle, roleMention } from 'discord.js';
+import { patterns } from '@utils';
+import { ChannelType, ColorResolvable, Embed, EmbedBuilder, Message, TextChannel, roleMention } from 'discord.js';
 import emojiRegex from 'emoji-regex';
-import { reactrolesInteraction } from '@interactions';
-import { NullishTextInputBuilder } from '@utils';
 
 export class ReactRolesCommand extends Subcommand {
     public constructor(context: Subcommand.Context, options: Subcommand.Options) {
@@ -29,7 +28,7 @@ export class ReactRolesCommand extends Subcommand {
                     chatInputRun: 'chatInputRemoveRole'
                 },
             ],
-            preconditions: ["GuildTextOnly"]
+            preconditions: ["GuildOnly"]
         });
     }
 
@@ -54,20 +53,23 @@ export class ReactRolesCommand extends Subcommand {
     }
 
     public async chatInputCreate(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
+        const ch = inter.options.getChannel("channel", true);
+        const title = inter.options.getString("title", true);
+        const desc = inter.options.getString("desc", false);
         const color = `#${inter.options.getString("color", false) ?? "444444"
             }` as ColorResolvable;
-        const ch = inter.options.getChannel("channel", true);
-        const name = inter.options.getString("name", true);
-        const desc = inter.options.getString("desc", true);
         const msg = inter.options.getString("msg", false) ?? undefined;
 
         if (!/^(?:#[A-Fa-f0-9]{6}|#[A-Fa-f0-9]{3})$/.test(color.toString())) {
-            inter.reply("Invalid color, exiting.");
+            inter.reply({
+                content: "Invalid color, exiting.",
+                ephemeral: true
+            });
             return;
         }
 
         const reactEmbed = new EmbedBuilder()
-            .setTitle(name)
+            .setTitle(title)
             .setDescription(desc)
             .setColor(color)
             .setFooter({ text: "reactroles" });
@@ -78,7 +80,7 @@ export class ReactRolesCommand extends Subcommand {
             return;
         }
 
-        channel?.send({ content: msg, embeds: [reactEmbed] });
+        channel.send({ content: msg, embeds: [reactEmbed] });
 
         inter.reply(`New react roles created in ${ch}.`);
     }
@@ -86,48 +88,36 @@ export class ReactRolesCommand extends Subcommand {
     public async chatInputEdit(inter: Subcommand.ChatInputCommandInteraction) {
         const ch: TextChannel = inter.options.getChannel("channel", true);
         const title = inter.options.getString("title", true);
-        const [msg, reactrole] = await this.findReactRole(ch, title);
-        if (reactrole === undefined || msg === undefined) {
+        const newTitle = inter.options.getString("new_title", false);
+        const desc = inter.options.getString("desc", false);
+        const color: ColorResolvable = `#${inter.options.getString("color", false) ?? ""}`;
+        const msg = inter.options.getString("msg", false) ?? undefined;
+
+        const [reactroleMsg, reactrole] = await this.findReactRole(ch, title);
+        if (reactrole === undefined || reactroleMsg === undefined) {
             inter.reply(
                 "The requested react-roles are either too far back or does not exist."
             );
             return;
         }
-        const modal = new ModalBuilder()
-            .setCustomId(`reactroles_edit_${title}`)
-            .setTitle('Edit React Roles');
 
-        const titleInput = new NullishTextInputBuilder()
-            .setCustomId('titleInput')
-            .setLabel("Title")
-            .setStyle(TextInputStyle.Short)
-            .setNullishValue(reactrole.title);
+        const editedReactrole = EmbedBuilder.from(reactrole);
+        if (/^#[A-Fa-f0-9]{6}$/.test(color.toString())) {
+            editedReactrole.setColor(color);
+        }
+        if (desc !== null) {
+            editedReactrole.setDescription(desc);
+        }
+        if (newTitle !== null) {
+            editedReactrole.setTitle(newTitle)
+        }
 
-        const descInput = new NullishTextInputBuilder()
-            .setCustomId('descInput')
-            .setLabel("Description")
-            .setStyle(TextInputStyle.Paragraph)
-            .setNullishValue(reactrole.description)
+        await reactroleMsg.edit({
+            content: msg,
+            embeds: [editedReactrole]
+        });
 
-        const colorInput = new NullishTextInputBuilder()
-            .setCustomId('colorInput')
-            .setLabel("Color")
-            .setStyle(TextInputStyle.Short)
-            .setNullishValue(reactrole.hexColor);
-
-        const msgInput = new TextInputBuilder()
-            .setCustomId('msgInput')
-            .setLabel("Message")
-            .setStyle(TextInputStyle.Paragraph);
-
-        const titleRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(titleInput);
-        const descRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(descInput);
-        const colorRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(colorInput);
-        const msgRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(msgInput);
-
-        modal.addComponents(titleRow, descRow, colorRow, msgRow);
-
-        await inter.showModal(modal);
+        inter.reply(`Reactrole '${title}' updated successfully.`);
     }
 
     public async chatInputAddRole(inter: Subcommand.ChatInputCommandInteraction) {

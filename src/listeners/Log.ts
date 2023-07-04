@@ -1,6 +1,6 @@
 import { Listener } from "@sapphire/framework";
 import axios from "axios";
-import { Client, Colors, EmbedBuilder, Message, TextChannel } from "discord.js";
+import { Colors, EmbedBuilder, Message, TextChannel } from "discord.js";
 import { Stream } from "stream";
 
 export class LogListener extends Listener {
@@ -10,19 +10,19 @@ export class LogListener extends Listener {
             event: "messageDelete",
         })
     }
-    async run(_client: Client, msg: Message) {
+    async run(msg: Message) {
         if (!msg.inGuild()) return;
 
-        const settings = await this.container.prisma.log_settings.findFirst({
+        const settings = await this.container.prisma.logSettings.findFirst({
             where: { gid: msg.guildId }
         });
         if (settings === null) return;
 
-        if (settings.i_log_ch) {
-            processImageLog(msg, settings.i_log_ch);
+        if (settings.image) {
+            processImageLog(msg, settings.image);
         }
-        if (settings.t_log_ch) {
-            processTextLog(msg, settings.t_log_ch);
+        if (settings.text) {
+            processTextLog(msg, settings.text);
         }
     }
 }

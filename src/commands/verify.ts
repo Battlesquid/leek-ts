@@ -1,7 +1,10 @@
 import { verifyInteraction } from '@interactions';
+import { VerifyRequestModal } from '@modals';
+import { Prisma, VerifySettings } from '@prisma/client';
 import { container } from '@sapphire/framework';
 import { Subcommand } from '@sapphire/plugin-subcommands';
-import { verifyModal } from '@modals';
+import { PaginatedEmbed, emojis } from '@utils';
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, InteractionCollector, ModalActionRowComponentBuilder, ModalBuilder, TextChannel, TextInputBuilder, TextInputStyle, inlineCode, userMention } from 'discord.js';
 
 export class VerifyCommand extends Subcommand {
     public constructor(context: Subcommand.Context, options: Subcommand.Options) {
@@ -37,7 +40,8 @@ export class VerifyCommand extends Subcommand {
                     name: 'request',
                     chatInputRun: 'chatInputRequest'
                 }
-            ]
+            ],
+            preconditions: ["GuildOnly"]
         });
     }
 
@@ -48,16 +52,39 @@ export class VerifyCommand extends Subcommand {
     }
 
     private async getSettings(guildId: string) {
-        return container.prisma.verify_settings.findFirst({
+        return container.prisma.verifySettings.findFirst({
             where: { gid: guildId }
         });
     }
 
     public async chatInputRequest(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
-        await inter.showModal(verifyModal.modal);
+        const modal = new ModalBuilder()
+            .setCustomId(VerifyRequestModal.Id)
+            .setTitle('Edit React Roles');
+
+        const nameInput = new TextInputBuilder()
+            .setCustomId(VerifyRequestModal.NameInput)
+            .setLabel("Name")
+            .setStyle(TextInputStyle.Paragraph)
+
+        const teamInput = new TextInputBuilder()
+            .setCustomId(VerifyRequestModal.TeamInput)
+            .setLabel("Team")
+            .setStyle(TextInputStyle.Short)
+
+        modal.addComponents(
+            new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(nameInput),
+            new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(teamInput)
+        );
+
+        await inter.showModal(modal);
     }
 
     public async chatInputList(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
+        if (inter.guild === null) {
+            return;
+        }
+
         const { prisma } = container;
         const settings = await this.getSettings(inter.guildId);
         if (settings === null) {
@@ -65,15 +92,102 @@ export class VerifyCommand extends Subcommand {
             return;
         }
 
-        const pendingList = await prisma.verify_entry.findMany({
+        const users = await prisma.verifyEntry.findMany({
             where: {
                 gid: inter.guildId
             }
         });
 
-        if (pendingList?.length === 0) {
+        if (users.length === 0) {
             inter.reply("No pending verifications.");
             return;
+        }
+
+        const PER_PAGE = 6;
+        const pages = PaginatedEmbed.createEmbedPages({
+            perPage: PER_PAGE,
+            items: users,
+            pageRender(pageEmbed, pageNum): void {
+                pageEmbed.setTitle(`Verification List`);
+                pageEmbed.setFooter({ text: `Page ${pageNum}/${Math.ceil(users.length / PER_PAGE)}` });
+            },
+            itemRender(page, data) {
+                page.addFields([{ name: data.nick, value: userMention(data.uid) }]);
+            },
+        });
+
+        const embed = new PaginatedEmbed({
+            inter,
+            pages,
+            prev: new ButtonBuilder()
+                .setEmoji(emojis.LEFT_ARROW)
+                .setStyle(ButtonStyle.Primary),
+            next: new ButtonBuilder()
+                .setEmoji(emojis.RIGHT_ARROW)
+                .setStyle(ButtonStyle.Primary),
+            otherButtons: [
+                new ButtonBuilder()
+                    .setCustomId("verify_approve")
+                    .setEmoji(emojis.CHECKMARK)
+                    .setStyle(ButtonStyle.Success),
+            ],
+            timeout: 15000,
+            onCollect: (collector, inter) => this.handleVerifyConfirmation(settings, users, collector, inter)
+        });
+
+        await embed.send();
+    }
+
+    private async handleVerifyConfirmation(settings: VerifySettings, users: Prisma.VerifyEntryCreateInput[], collector: InteractionCollector<ButtonInteraction>, inter: ButtonInteraction<"cached" | "raw">) {
+        if (inter.guild === null) {
+            this.container.logger.warn(`Guild ${inter.guildId} unavailable, exiting verification processing.`);
+            collector.stop();
+            return;
+        }
+
+        if (inter.customId !== "verify_approve") {
+            return;
+        }
+
+        const promises = await Promise.all(
+            users.map(async user => {
+                try {
+                    /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion*/
+                    await inter.guild!.members.edit(user.uid, {
+                        roles: settings.roles,
+                        nick: user.nick,
+                        reason: `Verified by ${inter.user.tag}`
+                    });
+                    return user;
+                } catch (e) {
+                    container.logger.error(e);
+                }
+            })
+        );
+
+        const verified = promises.filter((u): u is Prisma.VerifyEntryCreateInput => u !== undefined);
+        const failedCount = users.length - verified.length;
+
+        let response = `Verified ${verified.length} user${verified.length !== 1 ? "s" : ""}.`;
+        if (users.length !== verified.length) {
+            response += `Failed to verify ${failedCount} user${failedCount !== 1 ? "s" : ""}.`
+        }
+
+        await inter.followUp(response);
+
+        if (settings.autogreet && verified.length > 0) {
+            const mentions = users
+                .filter((u) => verified.find(v => v.uid === u.uid))
+                .map((u) => userMention(u.uid))
+                .join(", ");
+
+            const channel = (await inter.guild.channels.fetch(
+                inter.channelId
+            )) as TextChannel;
+
+            channel.send(
+                inlineCode(`Welcome ${mentions}!`)
+            );
         }
     }
 
@@ -88,7 +202,7 @@ export class VerifyCommand extends Subcommand {
             return;
         }
 
-        await container.prisma.verify_settings.create({
+        await container.prisma.verifySettings.create({
             data: {
                 gid: inter.guildId,
                 autogreet,
@@ -105,7 +219,7 @@ export class VerifyCommand extends Subcommand {
             return;
         }
 
-        await container.prisma.verify_settings.delete({ where: { gid: inter.guildId } })
+        await container.prisma.verifySettings.delete({ where: { gid: inter.guildId } })
         inter.reply("Verification disabled.");
     }
     public async chatInputAddRole(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
@@ -122,7 +236,7 @@ export class VerifyCommand extends Subcommand {
             return;
         }
 
-        await container.prisma.verify_settings.update({
+        await container.prisma.verifySettings.update({
             where: {
                 gid: inter.guildId
             },
@@ -155,7 +269,7 @@ export class VerifyCommand extends Subcommand {
             return;
         }
 
-        await container.prisma.verify_settings.update({
+        await container.prisma.verifySettings.update({
             where: { gid: inter.guildId },
             data: {
                 roles: { set: settings.roles.filter((r) => r !== role.id) }
@@ -174,7 +288,7 @@ export class VerifyCommand extends Subcommand {
 
         const join_ch = inter.options.getChannel("join_channel", true);
         const autogreet = inter.options.getBoolean("autogreet", false) ?? false;
-        await container.prisma.verify_settings.update({
+        await container.prisma.verifySettings.update({
             where: {
                 gid: inter.guildId ?? undefined
             },

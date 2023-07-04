@@ -1,5 +1,5 @@
 import { Listener } from "@sapphire/framework";
-import { Client, MessageReaction, User } from "discord.js";
+import { MessageReaction, User } from "discord.js";
 
 export class ReactRoleAddListener extends Listener {
     public constructor(context: Listener.Context, options: Listener.Options) {
@@ -8,7 +8,7 @@ export class ReactRoleAddListener extends Listener {
             event: "messageReactionAdd",
         })
     }
-    async run(client: Client, reaction: MessageReaction, user: User) {
+    async run(reaction: MessageReaction, user: User) {
         if (user.bot) return;
 
         const message = reaction.message.partial

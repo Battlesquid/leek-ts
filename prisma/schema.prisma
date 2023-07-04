@@ -7,24 +7,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model imageboard {
+model Imageboard {
   gid       String   @id @db.VarChar
   boards    String[]
   whitelist String[]
 }
 
-model log_settings {
+model LogSettings {
   gid      String  @id @db.VarChar
-  t_log_ch String? @db.VarChar
-  i_log_ch String? @db.VarChar
+  text String? @db.VarChar
+  image String? @db.VarChar
+  moderation String? @db.VarChar
 }
 
-model logs {
+model Logs {
   timestamp String  @id
   data      String? @db.VarChar
 }
 
-model verify_entry {
+model VerifyEntry {
   gid  String @db.VarChar
   uid  String @db.VarChar
   nick String @db.VarChar(32)
@@ -32,7 +33,7 @@ model verify_entry {
   @@id([uid, gid], map: "uid_gid_pkey")
 }
 
-model verify_settings {
+model VerifySettings {
   gid       String   @id @db.VarChar
   join_ch   String?  @db.VarChar
   roles     String[]

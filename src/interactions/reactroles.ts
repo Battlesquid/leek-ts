@@ -16,8 +16,8 @@ const create = new SlashCommandSubcommandBuilder()
     )
     .addStringOption((opt) =>
         opt
-            .setName("name")
-            .setDescription("The name of the react-role group")
+            .setName("title")
+            .setDescription("The title of the react-role group")
             .setRequired(true)
     )
     .addStringOption((opt) =>
@@ -105,6 +105,28 @@ const edit = new SlashCommandSubcommandBuilder()
             .setName("title")
             .setDescription("The react-role to modify")
             .setRequired(true)
+    )
+    .addStringOption((opt) =>
+        opt
+            .setName("new_title")
+            .setDescription("The new title of the react-role")
+    )
+    .addStringOption((opt) =>
+        opt
+            .setName("desc")
+            .setDescription("The description for the react-role group")
+    )
+    .addStringOption((opt) =>
+        opt
+            .setName("color")
+            .setDescription(
+                "The color to set the react-role group to, in the format FFFFFF"
+            )
+    )
+    .addStringOption((opt) =>
+        opt
+            .setName("msg")
+            .setDescription("The message to prepend to the react-role group")
     );
 
 export const reactrolesInteraction = new SlashCommandBuilder()

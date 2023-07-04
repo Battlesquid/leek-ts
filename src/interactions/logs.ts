@@ -14,6 +14,7 @@ const enable = new SlashCommandSubcommandBuilder()
             .addChoices(
                 { name: "text", value: "text" },
                 { name: "image", value: "image" },
+                { name: "moderation", value: "moderation" },
             )
             .setRequired(true)
     )

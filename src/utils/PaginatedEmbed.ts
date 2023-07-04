@@ -1,28 +1,28 @@
 import {
     ActionRowBuilder,
     APIButtonComponentWithCustomId,
-    ButtonBuilder, ButtonInteraction, ButtonStyle, Collection,
-    CommandInteraction, ComponentType, EmbedBuilder, InteractionCollector,
-    Message
+    ButtonBuilder, ButtonInteraction, ButtonStyle,
+    CommandInteraction, ComponentType, EmbedBuilder, InteractionCollector
 } from "discord.js";
+import { emojis } from "./emojis";
+
+type NavigationButton = ButtonBuilder & {
+    setStyle: (style: Exclude<ButtonStyle, ButtonStyle.Link>) => NavigationButton;
+}
 
 type OnCollectCallback = (
     collector: InteractionCollector<ButtonInteraction>,
-    inter: ButtonInteraction
-) => Promise<void> | void;
-type OnEndCallback = (
-    coll: Collection<string, ButtonInteraction>
+    inter: ButtonInteraction<"cached" | "raw">
 ) => Promise<void> | void;
 
 export type PaginatedEmbedOptions = {
     inter: CommandInteraction;
     pages: EmbedBuilder[];
-    prev?: ButtonBuilder;
-    next?: ButtonBuilder;
-    otherButtons?: ButtonBuilder[];
+    prev?: NavigationButton;
+    next?: NavigationButton;
+    otherButtons?: [NavigationButton?, NavigationButton?, NavigationButton?];
     timeout: number;
     onCollect?: OnCollectCallback;
-    onEnd?: OnEndCallback;
 };
 
 export type PaginatedTemplateOptions<T> = {
@@ -33,61 +33,49 @@ export type PaginatedTemplateOptions<T> = {
     base?: EmbedBuilder;
 };
 
-export default class PaginatedEmbed {
+export class PaginatedEmbed {
     private inter: CommandInteraction;
     private pages: EmbedBuilder[];
     private timeout: number;
-    private prev: ButtonBuilder;
-    private next: ButtonBuilder;
-    private otherButtons: ButtonBuilder[];
+    private prev: NavigationButton;
+    private next: NavigationButton;
+    private otherButtons: NavigationButton[];
     private pageNum = 0;
     private readonly NEXT_BUTTON_ID = "next";
     private readonly PREV_BUTTON_ID = "prev";
 
     private onCollect?: OnCollectCallback;
-    private onEnd?: OnEndCallback;
-
-    private defaultPrev = new ButtonBuilder()
-        .setCustomId("prev")
-        .setEmoji("⬅️")
-        .setStyle(ButtonStyle.Primary);
-
-    private defaultNext = new ButtonBuilder()
-        .setCustomId("next")
-        .setEmoji("➡️")
-        .setStyle(ButtonStyle.Primary);
 
     constructor(options: PaginatedEmbedOptions) {
         this.inter = options.inter;
         this.pages = options.pages;
         this.timeout = options.timeout;
 
-        this.prev = options.prev ?? this.defaultPrev;
-        this.prev.setCustomId("prev");
+        this.prev = options.prev ?? new ButtonBuilder()
+            .setCustomId("prev")
+            .setEmoji(emojis.LEFT_ARROW)
+            .setStyle(ButtonStyle.Primary);
+        this.prev
+            .setCustomId("prev")
+            .setDisabled(true);
 
-        this.next = options.next ?? this.defaultNext;
+        this.next = options.next ?? new ButtonBuilder()
+            .setCustomId("next")
+            .setEmoji(emojis.RIGHT_ARROW)
+            .setStyle(ButtonStyle.Primary);
         this.next.setCustomId("next");
-
-        this.otherButtons = options.otherButtons ?? [];
-
-        this.onCollect = options.onCollect;
-        this.onEnd = options.onEnd;
-    }
-
-    private validate() {
-        if (this.otherButtons.length > 3)
-            throw Error("More than 3 other buttons have been given.");
-        if (this.next.data.style === ButtonStyle.Link || this.prev.data.style === ButtonStyle.Link)
-            throw Error("Link buttons cannot be used as prev/next buttons");
-    }
-
-    public async send() {
-        this.validate();
-
-        this.prev.setDisabled(true);
         if (this.pageNum + 1 === this.pages.length) {
             this.next.setDisabled(true);
         }
+
+        this.otherButtons = options.otherButtons?.filter((b): b is ButtonBuilder => {
+            return b?.setStyle !== undefined;
+        }) ?? [];
+
+        this.onCollect = options.onCollect;
+    }
+
+    async send() {
 
         const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
             this.prev,
@@ -95,11 +83,11 @@ export default class PaginatedEmbed {
             ...this.otherButtons
         );
 
-        const msg = (await this.inter.reply({
+        const msg = await this.inter.reply({
             embeds: [this.pages[this.pageNum]],
             components: [row],
             fetchReply: true,
-        })) as Message;
+        });
 
         const filter = (i: ButtonInteraction) => {
             const otherCustomIds = this.otherButtons.map((b) => (b.data as APIButtonComponentWithCustomId).custom_id);
@@ -117,68 +105,63 @@ export default class PaginatedEmbed {
             time: this.timeout,
         });
 
-        return new Promise((resolve, reject) => {
-            collector.on("collect", async (inter) => {
-                await inter.deferUpdate();
-                if (
-                    inter.customId === this.NEXT_BUTTON_ID ||
-                    inter.customId === this.PREV_BUTTON_ID
-                ) {
-                    if (inter.customId === this.NEXT_BUTTON_ID) {
-                        this.pageNum++;
-                        this.next.setDisabled(this.pageNum + 1 === this.pages.length);
-                        if (this.pageNum > 0) {
-                            this.prev.setDisabled(false);
-                        }
-                    } else {
-                        this.pageNum--;
-                        this.prev.setDisabled(this.pageNum === 0);
-                        if (this.pageNum + 1 < this.pages.length) {
-                            this.next.setDisabled(false);
-                        }
+        collector.on("collect", async (collectedInter: ButtonInteraction<"cached" | "raw">) => {
+            await collectedInter.deferUpdate();
+            if (
+                collectedInter.customId === this.NEXT_BUTTON_ID ||
+                collectedInter.customId === this.PREV_BUTTON_ID
+            ) {
+                if (collectedInter.customId === this.NEXT_BUTTON_ID) {
+                    this.pageNum++;
+                    this.next.setDisabled(this.pageNum + 1 === this.pages.length);
+                    if (this.pageNum > 0) {
+                        this.prev.setDisabled(false);
                     }
-
-                    const updatedRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
-                        this.prev,
-                        this.next,
-                        ...this.otherButtons
-                    );
-
-                    await inter.editReply({
-                        embeds: [this.pages[this.pageNum]],
-                        components: [updatedRow],
-                    });
-
-                    collector.resetTimer();
+                } else {
+                    this.pageNum--;
+                    this.prev.setDisabled(this.pageNum === 0);
+                    if (this.pageNum + 1 < this.pages.length) {
+                        this.next.setDisabled(false);
+                    }
                 }
 
-                if (this.onCollect) this.onCollect(collector, inter);
-            });
-
-            collector.on("end", (collected) => {
-                if (!msg) return;
-
-                this.prev.setDisabled(true);
-                this.next.setDisabled(true);
-                this.otherButtons.forEach((b) => b.setDisabled(true));
-
-                const disabledRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
+                const updatedRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
                     this.prev,
                     this.next,
                     ...this.otherButtons
                 );
 
-                msg.edit({
-                    components: [disabledRow],
+                await collectedInter.editReply({
+                    embeds: [this.pages[this.pageNum]],
+                    components: [updatedRow],
                 });
 
-                if (this.onEnd) this.onEnd(collected);
+                collector.resetTimer();
+            }
+
+            this.onCollect?.(collector, collectedInter)
+        });
+
+        collector.on("end", () => {
+            if (!msg) return;
+
+            this.prev.setDisabled(true);
+            this.next.setDisabled(true);
+            this.otherButtons.forEach((b) => b.setDisabled(true));
+
+            const disabledRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
+                this.prev,
+                this.next,
+                ...this.otherButtons
+            );
+
+            msg.edit({
+                components: [disabledRow],
             });
         })
-
     }
 
-    public static generateFromTemplate<T>(
+    public static createEmbedPages<T>(
         options: PaginatedTemplateOptions<T>
     ) {
         const { items, perPage, pageRender, itemRender, base } =

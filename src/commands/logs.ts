@@ -2,7 +2,7 @@ import { container } from '@sapphire/framework';
 import { Subcommand } from '@sapphire/plugin-subcommands';
 import { logsInteraction } from '@interactions';
 
-type LogTypes = "text" | "image" | "moderation";
+type LogType = "text" | "image" | "moderation";
 
 export class LogsCommand extends Subcommand {
     public constructor(context: Subcommand.Context, options: Subcommand.Options) {
@@ -31,23 +31,20 @@ export class LogsCommand extends Subcommand {
 
     public async chatInputEnable(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
         const ch = inter.options.getChannel("channel", true);
-        const type = inter.options.getString("type", true) as LogTypes;
+        const type = inter.options.getString("type", true) as LogType;
         const settings = await this.getSettings(inter.guildId);
-        const key: "t_log_ch" | "i_log_ch" = type === "image"
-            ? "t_log_ch"
-            : "i_log_ch";
 
         if (settings === null) {
-            await container.prisma.log_settings.create({
+            await container.prisma.logSettings.create({
                 data: {
                     gid: inter.guildId,
-                    [key]: ch.id
+                    [type]: ch.id
                 }
             })
         } else {
-            await container.prisma.log_settings.update({
+            await container.prisma.logSettings.update({
                 where: { gid: inter.guildId },
-                data: { [key]: ch.id }
+                data: { [type]: ch.id }
             })
         }
 
@@ -55,33 +52,24 @@ export class LogsCommand extends Subcommand {
     }
 
     public async chatInputDisable(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
-        const type = inter.options.getString("type", true) as "image" | "text";
+        const type = inter.options.getString("type", true) as LogType;
         const settings = await this.getSettings(inter.guildId);
-        const [targetKey, otherKey]: ("t_log_ch" | "i_log_ch")[] = type === "image"
-            ? ["t_log_ch", "i_log_ch"]
-            : ["i_log_ch", "t_log_ch"];
 
-        if (settings === null || settings[targetKey] === null) {
+        if (settings === null || settings[type] === null) {
             inter.reply(`${type.toUpperCase()} logging must be enabled first.`);
             return;
         }
 
-        if (settings[otherKey] === null) {
-            await container.prisma.log_settings.delete({
-                where: { gid: inter.guildId }
-            })
-        } else {
-            await container.prisma.log_settings.update({
-                where: { gid: inter.guildId },
-                data: { [targetKey]: null }
-            })
-        }
+        await container.prisma.logSettings.update({
+            where: { gid: inter.guildId },
+            data: { [type]: null }
+        });
 
         inter.reply(`Disabled ${type} logging.`);
     }
 
     private async getSettings(guildId: string) {
-        return container.prisma.log_settings.findFirst({
+        return container.prisma.logSettings.findFirst({
             where: { gid: guildId }
         });
     }

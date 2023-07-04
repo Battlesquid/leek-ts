@@ -1,6 +1,6 @@
+import { VerifyRequestModal } from '@modals';
 import { InteractionHandler, InteractionHandlerTypes, PieceContext } from '@sapphire/framework';
 import type { ModalSubmitInteraction } from 'discord.js';
-import { verifyModal } from '@modals';
 
 export class VerifyModalHandler extends InteractionHandler {
   public constructor(ctx: PieceContext, options: InteractionHandler.Options) {
@@ -11,28 +11,32 @@ export class VerifyModalHandler extends InteractionHandler {
   }
 
   public override parse(interaction: ModalSubmitInteraction) {
-    if (interaction.customId !== verifyModal.schema.id) {
+    if (interaction.customId !== VerifyRequestModal.Id) {
       return this.none();
     }
     return this.some();
   }
 
   public async run(inter: ModalSubmitInteraction<"cached" | "raw">) {
-    const settings = await this.container.prisma.verify_settings.findFirst({
+    const settings = await this.container.prisma.verifySettings.findFirst({
       where: {
         gid: inter.guildId
       }
     });
 
     if (settings === null || inter.channelId !== settings.join_ch) {
+      inter.reply({
+        content: "This server does not have verification enabled.",
+        ephemeral: true
+      })
       return;
     }
 
-    const name = inter.fields.getTextInputValue(verifyModal.schema.inputs.name.customId);
-    const team = inter.fields.getTextInputValue(verifyModal.schema.inputs.team.customId);
+    const name = inter.fields.getTextInputValue(VerifyRequestModal.NameInput);
+    const team = inter.fields.getTextInputValue(VerifyRequestModal.TeamInput);
     const nick = `${name} | ${team}`;
 
-    await this.container.prisma.verify_entry.upsert({
+    await this.container.prisma.verifyEntry.upsert({
       create: {
         gid: inter.guildId,
         nick,

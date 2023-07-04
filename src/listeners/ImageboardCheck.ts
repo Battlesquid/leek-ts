@@ -1,15 +1,15 @@
-import { patterns } from "@utils";
 import { Listener } from "@sapphire/framework";
-import { Client, Message } from "discord.js";
+import { patterns } from "@utils";
+import { Message } from "discord.js";
 
-export class LogListener extends Listener {
+export class ImageboardCheckListener extends Listener {
     public constructor(context: Listener.Context, options: Listener.Options) {
         super(context, {
             ...options,
-            event: "messageReactionAdd",
+            event: "messageCreate",
         })
     }
-    async run(_client: Client, msg: Message) {
+    async run(msg: Message) {
         if (!msg.inGuild()) return;
 
         const settings = await this.container.prisma.imageboard.findFirst({
