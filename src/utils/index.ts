@@ -3,3 +3,4 @@ export * from "./PaginatedEmbed";
 export * from "./regexes";
 export * from "./NullishTextInputBuilder";
 export * from "./ModerationLogBuilder";
+export * from "./timestring";

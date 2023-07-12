@@ -1,4 +1,4 @@
-import { reactrolesInteraction } from '@interactions';
+import { reactrolesSlashCommand } from '@interactions';
 import { container } from '@sapphire/framework';
 import { Subcommand } from '@sapphire/plugin-subcommands';
 import { patterns } from '@utils';
@@ -33,7 +33,7 @@ export class ReactRolesCommand extends Subcommand {
     }
 
     public override registerApplicationCommands(registry: Subcommand.Registry) {
-        registry.registerChatInputCommand(reactrolesInteraction, {
+        registry.registerChatInputCommand(reactrolesSlashCommand, {
             idHints: ["922949939909259264"]
         })
     }

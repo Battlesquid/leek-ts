@@ -129,7 +129,7 @@ const edit = new SlashCommandSubcommandBuilder()
             .setDescription("The message to prepend to the react-role group")
     );
 
-export const reactrolesInteraction = new SlashCommandBuilder()
+export const reactrolesSlashCommand = new SlashCommandBuilder()
     .setName("reactroles")
     .setDescription("Reaction-role commands")
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)

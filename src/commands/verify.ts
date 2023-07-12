@@ -1,4 +1,4 @@
-import { verifyInteraction } from '@interactions';
+import { verifySlashCommand } from '@interactions';
 import { VerifyRequestModal } from '@modals';
 import { Prisma, VerifySettings } from '@prisma/client';
 import { container } from '@sapphire/framework';
@@ -46,7 +46,7 @@ export class VerifyCommand extends Subcommand {
     }
 
     public override registerApplicationCommands(registry: Subcommand.Registry) {
-        registry.registerChatInputCommand(verifyInteraction, {
+        registry.registerChatInputCommand(verifySlashCommand, {
             idHints: ["919820845126385737"]
         })
     }

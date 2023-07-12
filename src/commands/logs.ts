@@ -1,6 +1,6 @@
 import { container } from '@sapphire/framework';
 import { Subcommand } from '@sapphire/plugin-subcommands';
-import { logsInteraction } from '@interactions';
+import { logsSlashCommand } from '@interactions';
 
 type LogType = "text" | "image" | "moderation";
 
@@ -24,7 +24,7 @@ export class LogsCommand extends Subcommand {
     }
 
     public override registerApplicationCommands(registry: Subcommand.Registry) {
-        registry.registerChatInputCommand(logsInteraction, {
+        registry.registerChatInputCommand(logsSlashCommand, {
             idHints: ["926913960391893072"]
         })
     }

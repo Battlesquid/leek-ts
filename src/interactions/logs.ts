@@ -40,7 +40,7 @@ const disable = new SlashCommandSubcommandBuilder()
             .setRequired(true)
     );
 
-export const logsInteraction = new SlashCommandBuilder()
+export const logsSlashCommand = new SlashCommandBuilder()
     .setName("logs")
     .setDescription("Manage server wide message logging.")
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)

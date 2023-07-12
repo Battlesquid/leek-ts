@@ -39,3 +39,8 @@ model VerifySettings {
   roles     String[]
   autogreet Boolean?
 }
+
+model HallOfFame {
+  gid       String  @id @db.VarChar
+  halls     String[]
+}

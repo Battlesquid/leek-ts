@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { PermissionFlagsBits } from "discord.js";
 
-export const timeoutInteraction = new SlashCommandBuilder()
+export const timeoutSlashCommand = new SlashCommandBuilder()
     .setName("timeout")
     .setDescription("Timeout a user")
     .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)

@@ -1,4 +1,4 @@
-import { imageboardInteraction } from '@interactions';
+import { imageboardSlashCommand } from '@interactions';
 import { container } from '@sapphire/framework';
 import { Subcommand } from '@sapphire/plugin-subcommands';
 
@@ -30,7 +30,7 @@ export class ImageBoardCommand extends Subcommand {
     }
 
     public override registerApplicationCommands(registry: Subcommand.Registry) {
-        registry.registerChatInputCommand(imageboardInteraction, {
+        registry.registerChatInputCommand(imageboardSlashCommand, {
             idHints: ["1119674243404279909"]
         })
     }

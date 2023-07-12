@@ -17,7 +17,7 @@ const enable = new SlashCommandSubcommandBuilder()
 
 const disable = new SlashCommandSubcommandBuilder()
     .setName("disable")
-    .setDescription("Disable imageboards on a givenc hannel")
+    .setDescription("Disable imageboards on a given channel")
     .addChannelOption((option) =>
         option
             .setName("channel")
@@ -44,7 +44,7 @@ const whitelist_remove = new SlashCommandSubcommandBuilder()
             .setDescription("The role to remove from the whitelist")
             .setRequired(true))
 
-export const imageboardInteraction = new SlashCommandBuilder()
+export const imageboardSlashCommand = new SlashCommandBuilder()
     .setName("imageboard")
     .setDescription(
         "Marks a channel as an imageboard, where only links, videos, and other media can be sent."

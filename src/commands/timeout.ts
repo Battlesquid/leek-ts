@@ -1,4 +1,4 @@
-import { timeoutInteraction } from '@interactions';
+import { timeoutSlashCommand } from '@interactions';
 import { Command, container } from '@sapphire/framework';
 import { ModerationLogBuilder } from '@utils';
 import { ChannelType, userMention } from 'discord.js';
@@ -15,7 +15,7 @@ export class TimeoutCommand extends Command {
     }
 
     public override registerApplicationCommands(registry: Command.Registry) {
-        registry.registerChatInputCommand(timeoutInteraction, {
+        registry.registerChatInputCommand(timeoutSlashCommand, {
             idHints: ["950533839120367626"]
         })
     }

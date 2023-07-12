@@ -81,7 +81,7 @@ const request = new SlashCommandSubcommandBuilder()
     .setName("request")
     .setDescription("Request verification");
 
-export const verifyInteraction = new SlashCommandBuilder()
+export const verifySlashCommand = new SlashCommandBuilder()
     .setName("verify")
     .setDescription("Allows server staff to approve users into the server")
     .setDefaultMemberPermissions(PermissionFlagsBits.SendMessages)
