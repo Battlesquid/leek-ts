@@ -18,7 +18,7 @@ import LeekClient from "LeekClient";
 const command: SlashCommandFunction = {
     name: "verify",
     subcommand: "list",
-    perms: [PermissionsBitField.Flags.ManageGuild],
+    perms: [PermissionsBitField.Flags.ManageNicknames],
     execute: async (client: LeekClient, inter: CommandInteraction) => {
         const orm = await client.orm;
         const em = orm.em.fork();
