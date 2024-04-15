@@ -139,11 +139,11 @@ export class PaginatedEmbed {
                 collector.resetTimer();
             }
 
-            this.onCollect?.(collector, collectedInter)
+            this.onCollect?.(collector, collectedInter);
         });
 
         collector.on("end", () => {
-            if (!msg) return;
+            if (!msg) {return;}
 
             this.prev.setDisabled(true);
             this.next.setDisabled(true);
@@ -158,7 +158,7 @@ export class PaginatedEmbed {
             msg.edit({
                 components: [disabledRow],
             });
-        })
+        });
     }
 
     public static createEmbedPages<T>(

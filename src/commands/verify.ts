@@ -1,44 +1,45 @@
-import { verifySlashCommand } from '@interactions';
-import { VerifyRequestModal } from '@modals';
-import { Prisma, VerifySettings } from '@prisma/client';
-import { container } from '@sapphire/framework';
-import { Subcommand } from '@sapphire/plugin-subcommands';
-import { PaginatedEmbed, emojis } from '@utils';
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, InteractionCollector, ModalActionRowComponentBuilder, ModalBuilder, TextChannel, TextInputBuilder, TextInputStyle, inlineCode, userMention } from 'discord.js';
+import { verifySlashCommand } from "@interactions";
+import { VerifyRequestModal } from "@modals";
+import { Prisma, VerifySettings } from "@prisma/client";
+import { container } from "@sapphire/framework";
+import { Subcommand } from "@sapphire/plugin-subcommands";
+import { PaginatedEmbed } from "@utils";
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, InteractionCollector, ModalActionRowComponentBuilder, ModalBuilder, TextChannel, TextInputBuilder, TextInputStyle, inlineCode, userMention } from "discord.js";
+import emojis from "utils/emojis";
 
 export class VerifyCommand extends Subcommand {
     public constructor(context: Subcommand.Context, options: Subcommand.Options) {
         super(context, {
             ...options,
-            name: 'verify',
+            name: "verify",
             subcommands: [
                 {
-                    name: 'list',
-                    chatInputRun: 'chatInputList',
+                    name: "list",
+                    chatInputRun: "chatInputList",
                 },
                 {
-                    name: 'enable',
-                    chatInputRun: 'chatInputEnable'
+                    name: "enable",
+                    chatInputRun: "chatInputEnable"
                 },
                 {
-                    name: 'disable',
-                    chatInputRun: 'chatInputDisable'
+                    name: "disable",
+                    chatInputRun: "chatInputDisable"
                 },
                 {
-                    name: 'add_role',
-                    chatInputRun: 'chatInputAddRole'
+                    name: "add_role",
+                    chatInputRun: "chatInputAddRole"
                 },
                 {
-                    name: 'remove_role',
-                    chatInputRun: 'chatInputRemoveRole'
+                    name: "remove_role",
+                    chatInputRun: "chatInputRemoveRole"
                 },
                 {
-                    name: 'edit',
-                    chatInputRun: 'chatInputEdit'
+                    name: "edit",
+                    chatInputRun: "chatInputEdit"
                 },
                 {
-                    name: 'request',
-                    chatInputRun: 'chatInputRequest'
+                    name: "request",
+                    chatInputRun: "chatInputRequest"
                 }
             ],
             preconditions: ["GuildOnly"]
@@ -48,7 +49,7 @@ export class VerifyCommand extends Subcommand {
     public override registerApplicationCommands(registry: Subcommand.Registry) {
         registry.registerChatInputCommand(verifySlashCommand, {
             idHints: ["919820845126385737"]
-        })
+        });
     }
 
     private async getSettings(guildId: string) {
@@ -60,17 +61,17 @@ export class VerifyCommand extends Subcommand {
     public async chatInputRequest(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
         const modal = new ModalBuilder()
             .setCustomId(VerifyRequestModal.Id)
-            .setTitle('Edit React Roles');
+            .setTitle("Edit React Roles");
 
         const nameInput = new TextInputBuilder()
             .setCustomId(VerifyRequestModal.NameInput)
             .setLabel("Name")
-            .setStyle(TextInputStyle.Paragraph)
+            .setStyle(TextInputStyle.Paragraph);
 
         const teamInput = new TextInputBuilder()
             .setCustomId(VerifyRequestModal.TeamInput)
             .setLabel("Team")
-            .setStyle(TextInputStyle.Short)
+            .setStyle(TextInputStyle.Short);
 
         modal.addComponents(
             new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(nameInput),
@@ -108,7 +109,7 @@ export class VerifyCommand extends Subcommand {
             perPage: PER_PAGE,
             items: users,
             pageRender(pageEmbed, pageNum): void {
-                pageEmbed.setTitle(`Verification List`);
+                pageEmbed.setTitle("Verification List");
                 pageEmbed.setFooter({ text: `Page ${pageNum}/${Math.ceil(users.length / PER_PAGE)}` });
             },
             itemRender(page, data) {
@@ -152,7 +153,7 @@ export class VerifyCommand extends Subcommand {
         const promises = await Promise.all(
             users.map(async user => {
                 try {
-                    /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion*/
+                     
                     await inter.guild!.members.edit(user.uid, {
                         roles: settings.roles,
                         nick: user.nick,
@@ -170,7 +171,7 @@ export class VerifyCommand extends Subcommand {
 
         let response = `Verified ${verified.length} user${verified.length !== 1 ? "s" : ""}.`;
         if (users.length !== verified.length) {
-            response += `Failed to verify ${failedCount} user${failedCount !== 1 ? "s" : ""}.`
+            response += `Failed to verify ${failedCount} user${failedCount !== 1 ? "s" : ""}.`;
         }
 
         await inter.followUp(response);
@@ -209,7 +210,7 @@ export class VerifyCommand extends Subcommand {
                 roles: [role.id],
                 join_ch: join_ch.id
             }
-        })
+        });
         inter.reply("Verification enabled.");
     }
     public async chatInputDisable(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
@@ -219,7 +220,7 @@ export class VerifyCommand extends Subcommand {
             return;
         }
 
-        await container.prisma.verifySettings.delete({ where: { gid: inter.guildId } })
+        await container.prisma.verifySettings.delete({ where: { gid: inter.guildId } });
         inter.reply("Verification disabled.");
     }
     public async chatInputAddRole(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
@@ -264,7 +265,7 @@ export class VerifyCommand extends Subcommand {
 
         if (settings.roles.length === 1) {
             inter.reply(
-                `Unable to remove role: a minimum of one role is required. Add more roles, then try again.`
+                "Unable to remove role: a minimum of one role is required. Add more roles, then try again."
             );
             return;
         }
@@ -298,6 +299,6 @@ export class VerifyCommand extends Subcommand {
             }
         });
 
-        inter.reply("Successfully updated verification settings.")
+        inter.reply("Successfully updated verification settings.");
     }
 }

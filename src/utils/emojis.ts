@@ -1,4 +1,4 @@
-export const emojis = {
+export default {
     LEFT_ARROW: "950173517603819550",
     RIGHT_ARROW: "950173517515726909",
     CHECKMARK: "950173517486379010",

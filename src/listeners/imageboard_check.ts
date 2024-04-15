@@ -7,15 +7,15 @@ export class ImageboardCheckListener extends Listener {
         super(context, {
             ...options,
             event: "messageCreate",
-        })
+        });
     }
     async run(msg: Message) {
-        if (!msg.inGuild()) return;
+        if (!msg.inGuild()) {return;}
 
         const settings = await this.container.prisma.imageboard.findFirst({
             where: { gid: msg.guildId }
         });
-        if (settings === null) return;
+        if (settings === null) {return;}
 
         const roles = msg.member?.roles.cache;
 

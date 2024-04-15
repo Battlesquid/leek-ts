@@ -6,9 +6,9 @@ export class ReadyListener extends Listener {
             ...options,
             once: true,
             event: "ready"
-        })
+        });
     }
     run() {
-        this.container.logger.info("leekbot online")
+        this.container.logger.info("leekbot online");
     }
 }

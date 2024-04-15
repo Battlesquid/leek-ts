@@ -1,47 +1,48 @@
 import { Listener } from "@sapphire/framework";
 import { MessageReaction, User } from "discord.js";
 
-export class ReactRoleRemoveListener extends Listener {
+export class ReactRoleAddListener extends Listener {
     public constructor(context: Listener.Context, options: Listener.Options) {
         super(context, {
             ...options,
-            event: "messageReactionRemove",
-        })
+            event: "messageReactionAdd",
+        });
     }
     async run(reaction: MessageReaction, user: User) {
-        if (user.bot) return;
+        if (user.bot) {return;}
 
         const message = reaction.message.partial
             ? await reaction.message.fetch()
             : reaction.message;
 
-        if (!message.guild) return;
-        if (message.embeds.length === 0) return;
+        if (!message.guild) {return;}
+        if (message.embeds.length === 0) {return;}
 
         const embed = message.embeds[0];
-        if (embed.footer?.text.match("reactroles") === null) return;
+        if (embed.footer?.text.match("reactroles") === null) {return;}
 
         const field = embed.fields.find(
             (f) => f.name === reaction.emoji.toString()
         );
-        if (!field) return;
+        if (!field) {return;}
 
         const match = field.value.match(/^<@&(?<id>\d+)>$/);
-        if (!match) return;
+        if (!match) {return;}
 
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+         
         const roleID = match.groups!.id;
         const role = await message.guild.roles.fetch(roleID);
-        if (!role) return;
+        if (!role) {return;}
 
         const member = await message.guild.members.fetch(user.id);
         member.roles
-            .remove(role)
-            .catch(() =>
+            .add(role)
+            .catch((e) => {
+                this.container.logger.error(e);
                 member.send(
                     `I could not give you the role "${role.name}". Contact the server administration to make sure that my role (leekbeta) is above the requested role.`
-                )
-            );
+                );
+            });
     }
 
 }

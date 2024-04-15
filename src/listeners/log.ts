@@ -3,30 +3,6 @@ import axios from "axios";
 import { Colors, EmbedBuilder, Message, TextChannel } from "discord.js";
 import { Stream } from "stream";
 
-export class LogListener extends Listener {
-    public constructor(context: Listener.Context, options: Listener.Options) {
-        super(context, {
-            ...options,
-            event: "messageDelete",
-        })
-    }
-    async run(msg: Message) {
-        if (!msg.inGuild()) return;
-
-        const settings = await this.container.prisma.logSettings.findFirst({
-            where: { gid: msg.guildId }
-        });
-        if (settings === null) return;
-
-        if (settings.image) {
-            processImageLog(msg, settings.image);
-        }
-        if (settings.text) {
-            processTextLog(msg, settings.text);
-        }
-    }
-}
-
 function fetchImage(url: string) {
     return new Promise<Buffer>((resolve, reject) => {
         const bytes: Uint8Array[] = [];
@@ -41,13 +17,13 @@ function fetchImage(url: string) {
                     resolve(Buffer.concat(bytes));
                 });
             })
-            .catch(e => reject(e))
-    })
+            .catch(e => reject(e));
+    });
 }
 
 async function processImageLog(msg: Message<true>, img_ch: string) {
     const ch = await msg.guild.channels.fetch(img_ch) as TextChannel | null;
-    if (ch === null) return;
+    if (ch === null) {return;}
 
     // TODO add support for plain urls
 
@@ -60,10 +36,10 @@ async function processImageLog(msg: Message<true>, img_ch: string) {
             return {
                 url: attach.proxyURL,
                 ext
-            }
+            };
         })
         .forEach(async (attach) => {
-            if (attach === undefined) return;
+            if (attach === undefined) {return;}
 
             const buffer = await fetchImage(attach.url);
 
@@ -91,7 +67,7 @@ async function processImageLog(msg: Message<true>, img_ch: string) {
 
 async function processTextLog(msg: Message<true>, txt_ch: string) {
     const ch = await msg.guild.channels.fetch(txt_ch) as TextChannel | null;
-    if (ch === null) return;
+    if (ch === null) {return;}
 
     const msgs = await msg.channel.messages.fetch({
         before: msg.id,
@@ -101,7 +77,7 @@ async function processTextLog(msg: Message<true>, txt_ch: string) {
     const first = msgs.first();
     const context = first
         ? `[Jump to context](${first.url})`
-        : `\`No context available\``;
+        : "`No context available`";
 
     const embed = new EmbedBuilder()
         .setTitle("Message Deleted")
@@ -117,4 +93,28 @@ async function processTextLog(msg: Message<true>, txt_ch: string) {
         .setColor(Colors.DarkRed)
         .setTimestamp(Date.now());
     ch.send({ embeds: [embed] });
+}
+
+export class LogListener extends Listener {
+    public constructor(context: Listener.LoaderContext, options: Listener.Options) {
+        super(context, {
+            ...options,
+            event: "messageDelete",
+        });
+    }
+    async run(msg: Message) {
+        if (!msg.inGuild()) {return;}
+
+        const settings = await this.container.prisma.logSettings.findFirst({
+            where: { gid: msg.guildId }
+        });
+        if (settings === null) {return;}
+
+        if (settings.image) {
+            processImageLog(msg, settings.image);
+        }
+        if (settings.text) {
+            processTextLog(msg, settings.text);
+        }
+    }
 }

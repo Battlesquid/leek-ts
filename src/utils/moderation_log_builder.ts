@@ -6,7 +6,7 @@ export class ModerationLogBuilder {
     constructor(action: string, initiatior: User) {
         this.embed = new EmbedBuilder()
             .setTitle(action)
-            .setFooter({ text: `Initiated by ${initiatior.username}`, iconURL: initiatior.avatarURL() ?? undefined })
+            .setFooter({ text: `Initiated by ${initiatior.username}`, iconURL: initiatior.avatarURL() ?? undefined });
     }
 
     addField(name: string, value: string, inline?: boolean) {
