@@ -1,9 +1,9 @@
-import { VerifyRequestModal } from '@modals';
-import { InteractionHandler, InteractionHandlerTypes, PieceContext } from '@sapphire/framework';
-import type { ModalSubmitInteraction } from 'discord.js';
+import { VerifyRequestModal } from "@modals";
+import { InteractionHandler, InteractionHandlerTypes } from "@sapphire/framework";
+import type { ModalSubmitInteraction } from "discord.js";
 
 export class VerifyModalHandler extends InteractionHandler {
-  public constructor(ctx: PieceContext, options: InteractionHandler.Options) {
+  public constructor(ctx: InteractionHandler.LoaderContext, options: InteractionHandler.Options) {
     super(ctx, {
       ...options,
       interactionHandlerType: InteractionHandlerTypes.ModalSubmit
@@ -28,7 +28,7 @@ export class VerifyModalHandler extends InteractionHandler {
       inter.reply({
         content: "This server does not have verification enabled.",
         ephemeral: true
-      })
+      });
       return;
     }
 
@@ -52,7 +52,7 @@ export class VerifyModalHandler extends InteractionHandler {
     });
 
     inter.reply({
-      content: 'Your verification request was sent.',
+      content: "Your verification request was sent.",
       ephemeral: true
     });
   }
