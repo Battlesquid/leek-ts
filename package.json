@@ -10,12 +10,11 @@
         "build:bot": "yarn build",
         "build:all": "yarn build:clean && yarn prisma:generate",
         "build:clean": "yarn clean && yarn build:bot",
-        "postinstall": "yarn build:all",
         "dev": "yarn build && yarn start | pino-pretty",
         "dev:ts": "ts-node -r tsconfig-paths/register src/index.ts",
         "lint": "eslint src/**",
         "clean": "rm -rf dist",
-        "clean:all": "yarn clean && rm -rf dist",
+        "clean:all": "yarn clean && rm -rf node_modules",
         "prepare": "husky",
         "prisma:generate": "prisma generate",
         "start": "node dist/index.js"

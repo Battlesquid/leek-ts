@@ -14,9 +14,9 @@ model Imageboard {
 }
 
 model LogSettings {
-  gid      String  @id @db.VarChar
-  text String? @db.VarChar
-  image String? @db.VarChar
+  gid        String  @id @db.VarChar
+  text       String? @db.VarChar
+  image      String? @db.VarChar
   moderation String? @db.VarChar
 }
 
@@ -35,12 +35,13 @@ model VerifyEntry {
 
 model VerifySettings {
   gid       String   @id @db.VarChar
+  type      String
   join_ch   String?  @db.VarChar
   roles     String[]
   autogreet Boolean?
 }
 
 model HallOfFame {
-  gid       String  @id @db.VarChar
-  halls     String[]
+  gid   String   @id @db.VarChar
+  halls String[]
 }

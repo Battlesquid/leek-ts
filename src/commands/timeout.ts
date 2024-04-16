@@ -69,7 +69,7 @@ export class TimeoutCommand extends Command {
         const logCh = await inter.guild?.channels.fetch(logSettings.moderation);
         if (!logCh || logCh.type !== ChannelType.GuildText) {
             await inter.followUp({
-                content: `The moderation logging channel ${logSettings.moderation} is missing. Verify that the channel exists, then try again.`
+                content:  `The moderation logging channel ${logSettings.moderation} is missing. Verify that the channel exists, then try again.`
             });
             await container.prisma.logSettings.update({
                 where: { gid: inter.guildId },
@@ -88,6 +88,7 @@ export class TimeoutCommand extends Command {
 
         logCh.send({
             embeds: [embed]
-        });
+        })
+            .catch(e => this.container.logger.error(`An error occurred while recording the timeout log: ${e}`));
     }
 }

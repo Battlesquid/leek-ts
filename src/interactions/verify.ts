@@ -7,6 +7,16 @@ import { ChannelType, PermissionFlagsBits } from "discord.js";
 const enable = new SlashCommandSubcommandBuilder()
     .setName("enable")
     .setDescription("Enable new member verification")
+    .addStringOption((opt) =>
+        opt
+            .setName("type")
+            .setDescription("The type of verification to enable")
+            .addChoices(
+                { name: "Self Verification", value: "self" },
+                { name: "Staff Verification", value: "staff" },
+            )
+            .setRequired(true)
+    )
     .addChannelOption((option) =>
         option
             .setName("join_channel")
