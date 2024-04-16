@@ -1,8 +1,8 @@
-import { HallOfFameIds, hallOfFameContextCommand, hallOfFameSlashCommand } from '@interactions';
-import { container } from '@sapphire/framework';
-import { Subcommand } from '@sapphire/plugin-subcommands';
-import { timestring } from '@utils';
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, EmbedBuilder, Snowflake, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextChannel, TimestampStyles } from 'discord.js';
+import { HallOfFameIds, hallOfFameContextCommand, hallOfFameSlashCommand } from "@interactions";
+import { container } from "@sapphire/framework";
+import { Subcommand } from "@sapphire/plugin-subcommands";
+import { timestring } from "@utils";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, EmbedBuilder, Snowflake, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextChannel, TimestampStyles } from "discord.js";
 
 type HallChannel<> = {
     id: Snowflake;
@@ -11,22 +11,22 @@ type HallChannel<> = {
 }
 
 export class HallOfFameCommand extends Subcommand {
-    public constructor(context: Subcommand.Context, options: Subcommand.Options) {
+    public constructor(context: Subcommand.LoaderContext, options: Subcommand.Options) {
         super(context, {
             ...options,
-            name: 'hall_of_fame',
+            name: "hall_of_fame",
             subcommands: [
                 {
-                    name: 'enable',
-                    chatInputRun: 'chatInputEnable',
+                    name: "enable",
+                    chatInputRun: "chatInputEnable",
                 },
                 {
-                    name: 'disable',
-                    chatInputRun: 'chatInputDisable'
+                    name: "disable",
+                    chatInputRun: "chatInputDisable"
                 },
                 {
-                    name: 'promote',
-                    messageRun: 'messagePromote'
+                    name: "promote",
+                    messageRun: "messagePromote"
                 }
             ],
             preconditions: ["GuildTextOnly"]
@@ -39,7 +39,7 @@ export class HallOfFameCommand extends Subcommand {
         });
         registry.registerContextMenuCommand(hallOfFameContextCommand, {
             idHints: ["1126901837249904672"]
-        })
+        });
     }
 
     public async chatInputEnable(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
@@ -52,12 +52,12 @@ export class HallOfFameCommand extends Subcommand {
                     gid: inter.guildId,
                     halls: [ch.id]
                 }
-            })
+            });
         } else {
             await container.prisma.hallOfFame.update({
                 where: { gid: inter.guildId },
                 data: { halls: { push: ch.id } }
-            })
+            });
         }
 
         inter.reply(`Enabled hall of fame on ${ch}.`);
@@ -103,7 +103,7 @@ export class HallOfFameCommand extends Subcommand {
                     exists: ch !== null,
                     name: ch?.name,
                     id: hall
-                }
+                };
             })
         );
 
@@ -124,11 +124,11 @@ export class HallOfFameCommand extends Subcommand {
 
         const select = new StringSelectMenuBuilder()
             .setCustomId(HallOfFameIds.SELECT)
-            .setPlaceholder('Select a hall of fame')
+            .setPlaceholder("Select a hall of fame")
             .setOptions(options);
 
         await inter.reply({
-            content: 'Select a hall of fame to send this message to.',
+            content: "Select a hall of fame to send this message to.",
             ephemeral: true,
             components: [
                 new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(select)
@@ -164,7 +164,7 @@ export class HallOfFameCommand extends Subcommand {
             const files: string[] = [];
             // TODO check if attachment is an image
             if (msg.attachments.size === 1) {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                 
                 embed.setImage(msg.attachments.first()!.url);
             } else {
                 files.push(...msg.attachments.map(a => a.url));
@@ -207,7 +207,7 @@ export class HallOfFameCommand extends Subcommand {
                     components: []
                 });
             }
-        })
+        });
     }
 
     private async getSettings(guildId: string) {

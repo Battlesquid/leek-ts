@@ -2,7 +2,7 @@ import { Listener } from "@sapphire/framework";
 import { MessageReaction, User } from "discord.js";
 
 export class ReactRoleRemoveListener extends Listener {
-    public constructor(context: Listener.Context, options: Listener.Options) {
+    public constructor(context: Listener.LoaderContext, options: Listener.Options) {
         super(context, {
             ...options,
             event: "messageReactionRemove",

@@ -1,22 +1,22 @@
-import { container } from '@sapphire/framework';
-import { Subcommand } from '@sapphire/plugin-subcommands';
-import { logsSlashCommand } from '@interactions';
+import { container } from "@sapphire/framework";
+import { Subcommand } from "@sapphire/plugin-subcommands";
+import { logsSlashCommand } from "@interactions";
 
 type LogType = "text" | "image" | "moderation";
 
 export class LogsCommand extends Subcommand {
-    public constructor(context: Subcommand.Context, options: Subcommand.Options) {
+    public constructor(context: Subcommand.LoaderContext, options: Subcommand.Options) {
         super(context, {
             ...options,
-            name: 'logs',
+            name: "logs",
             subcommands: [
                 {
-                    name: 'enable',
-                    chatInputRun: 'chatInputEnable',
+                    name: "enable",
+                    chatInputRun: "chatInputEnable",
                 },
                 {
-                    name: 'disable',
-                    chatInputRun: 'chatInputDisable'
+                    name: "disable",
+                    chatInputRun: "chatInputDisable"
                 },
             ],
             preconditions: ["GuildTextOnly"]
@@ -26,7 +26,7 @@ export class LogsCommand extends Subcommand {
     public override registerApplicationCommands(registry: Subcommand.Registry) {
         registry.registerChatInputCommand(logsSlashCommand, {
             idHints: ["926913960391893072"]
-        })
+        });
     }
 
     public async chatInputEnable(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
@@ -40,12 +40,12 @@ export class LogsCommand extends Subcommand {
                     gid: inter.guildId,
                     [type]: ch.id
                 }
-            })
+            });
         } else {
             await container.prisma.logSettings.update({
                 where: { gid: inter.guildId },
                 data: { [type]: ch.id }
-            })
+            });
         }
 
         inter.reply(`Enabled ${type} logging on ${ch}.`);

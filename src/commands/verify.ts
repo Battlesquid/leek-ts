@@ -120,12 +120,6 @@ export class VerifyCommand extends Subcommand {
         const embed = new PaginatedEmbed({
             inter,
             pages,
-            prev: new ButtonBuilder()
-                .setEmoji(emojis.LEFT_ARROW)
-                .setStyle(ButtonStyle.Primary),
-            next: new ButtonBuilder()
-                .setEmoji(emojis.RIGHT_ARROW)
-                .setStyle(ButtonStyle.Primary),
             otherButtons: [
                 new ButtonBuilder()
                     .setCustomId("verify_approve")

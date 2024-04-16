@@ -4,7 +4,7 @@ import {
     ButtonBuilder, ButtonInteraction, ButtonStyle,
     CommandInteraction, ComponentType, EmbedBuilder, InteractionCollector
 } from "discord.js";
-import { emojis } from "./emojis";
+import emojis from "./emojis";
 
 type NavigationButton = ButtonBuilder & {
     setStyle: (style: Exclude<ButtonStyle, ButtonStyle.Link>) => NavigationButton;

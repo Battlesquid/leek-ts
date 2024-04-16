@@ -1,28 +1,28 @@
-import { imageboardSlashCommand } from '@interactions';
-import { container } from '@sapphire/framework';
-import { Subcommand } from '@sapphire/plugin-subcommands';
+import { imageboardSlashCommand } from "@interactions";
+import { container } from "@sapphire/framework";
+import { Subcommand } from "@sapphire/plugin-subcommands";
 
 export class ImageBoardCommand extends Subcommand {
-    public constructor(context: Subcommand.Context, options: Subcommand.Options) {
+    public constructor(context: Subcommand.LoaderContext, options: Subcommand.Options) {
         super(context, {
             ...options,
-            name: 'imageboard',
+            name: "imageboard",
             subcommands: [
                 {
-                    name: 'enable',
-                    chatInputRun: 'chatInputEnable',
+                    name: "enable",
+                    chatInputRun: "chatInputEnable",
                 },
                 {
-                    name: 'disable',
-                    chatInputRun: 'chatInputDisable'
+                    name: "disable",
+                    chatInputRun: "chatInputDisable"
                 },
                 {
-                    name: 'whitelist_add',
-                    chatInputRun: 'chatInputWhitelistAdd'
+                    name: "whitelist_add",
+                    chatInputRun: "chatInputWhitelistAdd"
                 },
                 {
-                    name: 'whitelist_remove',
-                    chatInputRun: 'chatInputWhitelistRemove'
+                    name: "whitelist_remove",
+                    chatInputRun: "chatInputWhitelistRemove"
                 },
             ],
             preconditions: ["GuildTextOnly"],
@@ -32,7 +32,7 @@ export class ImageBoardCommand extends Subcommand {
     public override registerApplicationCommands(registry: Subcommand.Registry) {
         registry.registerChatInputCommand(imageboardSlashCommand, {
             idHints: ["1119674243404279909"]
-        })
+        });
     }
 
     public async chatInputEnable(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
@@ -47,14 +47,14 @@ export class ImageBoardCommand extends Subcommand {
             await container.prisma.imageboard.update({
                 where: { gid: inter.guildId },
                 data: { boards: { push: ch.id } }
-            })
+            });
         } else {
             await container.prisma.imageboard.create({
                 data: {
                     gid: inter.guildId,
                     boards: [ch.id]
                 }
-            })
+            });
         }
 
         inter.reply(`Imageboards enabled on ${ch}`);
@@ -73,7 +73,7 @@ export class ImageBoardCommand extends Subcommand {
         if (newBoards.length === 0) {
             await container.prisma.imageboard.delete({
                 where: { gid: inter.guildId }
-            })
+            });
         } else {
             await container.prisma.imageboard.update({
                 where: { gid: inter.guildId },
@@ -125,7 +125,7 @@ export class ImageBoardCommand extends Subcommand {
         await container.prisma.imageboard.update({
             where: { gid: inter.guildId },
             data: { boards: { set: settings.whitelist.filter(id => id !== role.id) } }
-        })
+        });
         inter.reply(`${role} removed from imageboard whitelist.`);
     }
 

@@ -1,31 +1,31 @@
-import { reactrolesSlashCommand } from '@interactions';
-import { container } from '@sapphire/framework';
-import { Subcommand } from '@sapphire/plugin-subcommands';
-import { patterns } from '@utils';
-import { ChannelType, ColorResolvable, Embed, EmbedBuilder, Message, TextChannel, roleMention } from 'discord.js';
-import emojiRegex from 'emoji-regex';
+import { reactrolesSlashCommand } from "@interactions";
+import { container } from "@sapphire/framework";
+import { Subcommand } from "@sapphire/plugin-subcommands";
+import { patterns } from "@utils";
+import { ChannelType, ColorResolvable, Embed, EmbedBuilder, Message, TextChannel, roleMention } from "discord.js";
+import emojiRegex from "emoji-regex";
 
 export class ReactRolesCommand extends Subcommand {
-    public constructor(context: Subcommand.Context, options: Subcommand.Options) {
+    public constructor(context: Subcommand.LoaderContext, options: Subcommand.Options) {
         super(context, {
             ...options,
-            name: 'reactroles',
+            name: "reactroles",
             subcommands: [
                 {
-                    name: 'create',
-                    chatInputRun: 'chatInputCreate',
+                    name: "create",
+                    chatInputRun: "chatInputCreate",
                 },
                 {
-                    name: 'edit',
-                    chatInputRun: 'chatInputEdit'
+                    name: "edit",
+                    chatInputRun: "chatInputEdit"
                 },
                 {
-                    name: 'add_role',
-                    chatInputRun: 'chatInputAddRole'
+                    name: "add_role",
+                    chatInputRun: "chatInputAddRole"
                 },
                 {
-                    name: 'remove_role',
-                    chatInputRun: 'chatInputRemoveRole'
+                    name: "remove_role",
+                    chatInputRun: "chatInputRemoveRole"
                 },
             ],
             preconditions: ["GuildOnly"]
@@ -35,18 +35,18 @@ export class ReactRolesCommand extends Subcommand {
     public override registerApplicationCommands(registry: Subcommand.Registry) {
         registry.registerChatInputCommand(reactrolesSlashCommand, {
             idHints: ["922949939909259264"]
-        })
+        });
     }
 
     private async findReactRole(ch: TextChannel, name: string): Promise<[Message | undefined, Embed | undefined]> {
         const messages = await ch.messages.fetch({ limit: 50 });
         const msg = messages.find((m) => {
-            if (!m.embeds.length) return false;
-            if (m.embeds[0].title !== name) return false;
-            if (!m.embeds[0].footer) return false;
-            if (!m.embeds[0].footer.text.match("reactroles")) return false;
-            if (!container.client.user) return false;
-            if (!m.author.equals(container.client.user)) return false;
+            if (!m.embeds.length) {return false;}
+            if (m.embeds[0].title !== name) {return false;}
+            if (!m.embeds[0].footer) {return false;}
+            if (!m.embeds[0].footer.text.match("reactroles")) {return false;}
+            if (!container.client.user) {return false;}
+            if (!m.author.equals(container.client.user)) {return false;}
             return true;
         });
         return [msg, msg?.embeds[0]];
@@ -109,7 +109,7 @@ export class ReactRolesCommand extends Subcommand {
             editedReactrole.setDescription(desc);
         }
         if (newTitle !== null) {
-            editedReactrole.setTitle(newTitle)
+            editedReactrole.setTitle(newTitle);
         }
 
         await reactroleMsg.edit({
@@ -155,8 +155,8 @@ export class ReactRolesCommand extends Subcommand {
         const builder = EmbedBuilder.from(reactrole);
         builder.addFields([{ name: emoji, value: roleMention(role.id), inline: true }]);
 
-        await msg.edit({ embeds: [builder] })
-        await msg.react(emoji)
+        await msg.edit({ embeds: [builder] });
+        await msg.react(emoji);
         inter.reply(
             `Users can now react to ${title} with ${emoji} to get the ${role} role`
         );
@@ -187,13 +187,13 @@ export class ReactRolesCommand extends Subcommand {
         );
 
         const builder = EmbedBuilder.from(reactrole);
-        builder.setFields(fields)
+        builder.setFields(fields);
         msg.edit({ embeds: [builder] });
 
         const match = roleField.name.match(patterns.EMOJI_REGEX);
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+         
         const emoji = match ? match.groups!.id : roleField.name;
-        msg.reactions.cache.get(emoji)?.remove()
+        msg.reactions.cache.get(emoji)?.remove();
         inter.reply(`Removed ${role} from ${title}`);
     }
 }

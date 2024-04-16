@@ -3,7 +3,7 @@ import { patterns } from "@utils";
 import { Message } from "discord.js";
 
 export class ImageboardCheckListener extends Listener {
-    public constructor(context: Listener.Context, options: Listener.Options) {
+    public constructor(context: Listener.LoaderContext, options: Listener.Options) {
         super(context, {
             ...options,
             event: "messageCreate",

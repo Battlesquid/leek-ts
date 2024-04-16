@@ -1,14 +1,14 @@
-import { timeoutSlashCommand } from '@interactions';
-import { Command, container } from '@sapphire/framework';
-import { ModerationLogBuilder } from '@utils';
-import { ChannelType, userMention } from 'discord.js';
-import ms from 'ms';
+import { timeoutSlashCommand } from "@interactions";
+import { Command, container } from "@sapphire/framework";
+import { ModerationLogBuilder } from "@utils";
+import { ChannelType, userMention } from "discord.js";
+import ms from "ms";
 
 export class TimeoutCommand extends Command {
-    public constructor(context: Command.Context, options: Command.Options) {
+    public constructor(context: Command.LoaderContext, options: Command.Options) {
         super(context, {
             ...options,
-            name: 'timeout',
+            name: "timeout",
             description: "Timeout users",
             preconditions: ["GuildTextOnly"]
         });
@@ -17,7 +17,7 @@ export class TimeoutCommand extends Command {
     public override registerApplicationCommands(registry: Command.Registry) {
         registry.registerChatInputCommand(timeoutSlashCommand, {
             idHints: ["950533839120367626"]
-        })
+        });
     }
 
     public override async chatInputRun(inter: Command.ChatInputCommandInteraction<"cached" | "raw">) {
@@ -56,7 +56,7 @@ export class TimeoutCommand extends Command {
         }
 
         await member
-            .disableCommunicationUntil(Date.now() + millis, reason)
+            .disableCommunicationUntil(Date.now() + millis, reason);
         await inter.reply(`Timed out ${user} for ${durationStr}.`);
 
         const logSettings = await container.prisma.logSettings.findFirst({
@@ -70,7 +70,7 @@ export class TimeoutCommand extends Command {
         if (!logCh || logCh.type !== ChannelType.GuildText) {
             await inter.followUp({
                 content: `The moderation logging channel ${logSettings.moderation} is missing. Verify that the channel exists, then try again.`
-            })
+            });
             await container.prisma.logSettings.update({
                 where: { gid: inter.guildId },
                 data: { moderation: null }
@@ -83,7 +83,7 @@ export class TimeoutCommand extends Command {
             .addField("Reason", reason ?? "N/A", true)
             .addField("Duration", durationStr, true)
             .build()
-            .setColor(`#edbc37`)
+            .setColor("#edbc37")
             .setTimestamp(Date.now());
 
         logCh.send({
