@@ -86,25 +86,25 @@ const command: SlashCommandFunction = {
                     }
 
                     let successCount = pendingUsers.length;
-                    console.log(successCount)
                     const failed: string[] = [];
 
                     await Promise.all(
                         pendingUsers.map(async user => {
                             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                            return inter.guild!.members.edit(
-                                user.uid,
-                                {
-                                    roles: settings.roles,
-                                    nick: user.nick,
-                                    reason: `Verified by ${requestingUser.user.tag}`
-                                }
-                            )
-                                .catch(e => {
-                                    console.error(e);
-                                    successCount--;
-                                    failed.push(user.uid);
-                                })
+                            try { 
+                                await inter.guild!.members.edit(
+                                    user.uid,
+                                    {
+                                        roles: settings.roles,
+                                        nick: user.nick,
+                                        reason: `Verified by ${requestingUser.user.tag}`
+                                    }
+                                );
+                            } catch(e) {
+                                console.error(e);
+                                successCount--;
+                                failed.push(user.uid);
+                            }
                         })
                     )
 
