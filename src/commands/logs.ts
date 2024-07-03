@@ -2,7 +2,7 @@ import { logs } from "@interactions";
 import { ApplyOptions } from "@sapphire/decorators";
 import { container } from "@sapphire/framework";
 import { Subcommand } from "@sapphire/plugin-subcommands";
-import { LoggerSubcommand } from "utils/logger_subcommand";
+import { LoggerSubcommand } from "utils/command/logger_subcommand";
 
 type LogType = "text" | "image" | "moderation";
 

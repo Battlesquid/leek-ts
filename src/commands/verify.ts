@@ -7,7 +7,7 @@ import { PaginatedEmbed } from "@utils";
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, InteractionCollector, ModalActionRowComponentBuilder, ModalBuilder, TextChannel, TextInputBuilder, TextInputStyle, inlineCode, userMention } from "discord.js";
 import { verify } from "interactions";
 import emojis from "utils/emojis";
-import { LoggerSubcommand } from "utils/logger_subcommand";
+import { LoggerSubcommand } from "utils/command/logger_subcommand";
 
 
 @ApplyOptions<Subcommand.Options>({
@@ -207,7 +207,8 @@ export class VerifyCommand extends LoggerSubcommand {
                 gid: inter.guildId,
                 autogreet,
                 roles: [role.id],
-                join_ch: join_ch.id
+                join_ch: join_ch.id,
+                type: ""
             }
         });
         inter.reply("Verification enabled.");

@@ -4,7 +4,8 @@ import { container } from "@sapphire/framework";
 import { Subcommand } from "@sapphire/plugin-subcommands";
 import { timestring } from "@utils";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, EmbedBuilder, Snowflake, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextChannel, TimestampStyles } from "discord.js";
-import { LoggerSubcommand } from "utils/logger_subcommand";
+import { chatInputCommand, messageCommand } from "utils/command";
+import { LoggerSubcommand } from "utils/command/logger_subcommand";
 
 type HallChannel<> = {
     id: Snowflake;
@@ -15,18 +16,9 @@ type HallChannel<> = {
 @ApplyOptions<Subcommand.Options>({
     name: hall_of_fame.commands.chat.base.name,
     subcommands: [
-        {
-            name: hall_of_fame.commands.chat.subcommands.enable.name,
-            chatInputRun: "chatInputEnable",
-        },
-        {
-            name: hall_of_fame.commands.chat.subcommands.disable.name,
-            chatInputRun: "chatInputDisable"
-        },
-        {
-            name: hall_of_fame.commands.message.promote.name,
-            messageRun: "messagePromote"
-        }
+        chatInputCommand(hall_of_fame.commands.chat.subcommands.enable.name),
+        chatInputCommand(hall_of_fame.commands.chat.subcommands.disable.name),
+        messageCommand(hall_of_fame.commands.message.promote.name),
     ],
     preconditions: ["GuildTextOnly"],
     requiredUserPermissions: ["ManageChannels"],
@@ -170,7 +162,7 @@ export class HallOfFameCommand extends LoggerSubcommand {
             const files: string[] = [];
             // TODO check if attachment is an image
             if (msg.attachments.size === 1) {
-                 
+
                 embed.setImage(msg.attachments.first()!.url);
             } else {
                 files.push(...msg.attachments.map(a => a.url));

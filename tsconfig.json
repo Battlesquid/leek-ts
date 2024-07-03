@@ -12,6 +12,7 @@
         ],
         "module": "commonjs",
         "baseUrl": "./src",
+        "outDir": "./dist",
         "paths": {
             "@utils": [
                 "utils/"
@@ -26,9 +27,7 @@
                 "modals/"
             ]
         },
-        "sourceMap": true,
         "resolveJsonModule": true,
-        "outDir": "./dist",
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "strict": true,
