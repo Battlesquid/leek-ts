@@ -2,7 +2,8 @@ import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
 } from "@discordjs/builders";
-import { ChannelType, PermissionFlagsBits } from "discord.js";
+import { ChannelType } from "discord.js";
+import { CommandBundle } from "interactions";
 
 const create = new SlashCommandSubcommandBuilder()
     .setName("create")
@@ -129,11 +130,25 @@ const edit = new SlashCommandSubcommandBuilder()
             .setDescription("The message to prepend to the react-role group")
     );
 
-export const reactrolesSlashCommand = new SlashCommandBuilder()
+const reactroles = new SlashCommandBuilder()
     .setName("reactroles")
     .setDescription("Reaction-role commands")
-    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
     .addSubcommand(create)
     .addSubcommand(add_role)
     .addSubcommand(remove_role)
-    .addSubcommand(edit)
+    .addSubcommand(edit);
+
+export default {
+    commands: {
+        chat: {
+            base: reactroles,
+            subcommands: {
+                create,
+                add_role,
+                remove_role,
+                edit
+            }
+        },
+        message: {}
+    }
+} satisfies CommandBundle<"Subcommand">;

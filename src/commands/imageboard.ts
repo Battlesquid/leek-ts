@@ -1,36 +1,37 @@
-import { imageboardSlashCommand } from "@interactions";
+import { ApplyOptions } from "@sapphire/decorators";
 import { container } from "@sapphire/framework";
 import { Subcommand } from "@sapphire/plugin-subcommands";
+import { imageboard } from "interactions";
+import { LoggerSubcommand } from "utils/logger_subcommand";
 
-export class ImageBoardCommand extends Subcommand {
-    public constructor(context: Subcommand.LoaderContext, options: Subcommand.Options) {
-        super(context, {
-            ...options,
-            name: "imageboard",
-            subcommands: [
-                {
-                    name: "enable",
-                    chatInputRun: "chatInputEnable",
-                },
-                {
-                    name: "disable",
-                    chatInputRun: "chatInputDisable"
-                },
-                {
-                    name: "whitelist_add",
-                    chatInputRun: "chatInputWhitelistAdd"
-                },
-                {
-                    name: "whitelist_remove",
-                    chatInputRun: "chatInputWhitelistRemove"
-                },
-            ],
-            preconditions: ["GuildTextOnly"],
-        });
-    }
+@ApplyOptions<Subcommand.Options>({
+    name: imageboard.commands.chat.base.name,
+    subcommands: [
+        {
+            name: imageboard.commands.chat.subcommands.enable.name,
+            chatInputRun: "chatInputEnable",
+        },
+        {
+            name: imageboard.commands.chat.subcommands.disable.name,
+            chatInputRun: "chatInputDisable"
+        },
+        {
+            name: imageboard.commands.chat.subcommands.whitelist_add.name,
+            chatInputRun: "chatInputWhitelistAdd"
+        },
+        {
+            name: imageboard.commands.chat.subcommands.whitelist_remove.name,
+            chatInputRun: "chatInputWhitelistRemove"
+        },
+    ],
+    preconditions: ["GuildTextOnly"],
+    requiredUserPermissions: ["ManageChannels"],
+    requiredClientPermissions: ["ManageMessages"]
+})
+export class ImageBoardCommand extends LoggerSubcommand {
 
     public override registerApplicationCommands(registry: Subcommand.Registry) {
-        registry.registerChatInputCommand(imageboardSlashCommand, {
+        registry.registerChatInputCommand(imageboard.commands.chat.base, {
             idHints: ["1119674243404279909"]
         });
     }

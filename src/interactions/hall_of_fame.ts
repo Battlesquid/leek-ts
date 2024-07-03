@@ -2,7 +2,8 @@ import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
 } from "@discordjs/builders";
-import { ApplicationCommandType, ChannelType, ContextMenuCommandBuilder, PermissionFlagsBits } from "discord.js";
+import { ApplicationCommandType, ChannelType, ContextMenuCommandBuilder } from "discord.js";
+import { CommandBundle } from "interactions";
 
 const enable = new SlashCommandSubcommandBuilder()
     .setName("enable")
@@ -26,18 +27,33 @@ const disable = new SlashCommandSubcommandBuilder()
             .setRequired(true)
     );
 
-export const hallOfFameSlashCommand = new SlashCommandBuilder()
+const hallOfFame = new SlashCommandBuilder()
     .setName("hall_of_fame")
     .setDescription(
         "For recording noteworthy server content."
     )
-    .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
     .addSubcommand(enable)
     .addSubcommand(disable);
 
-export const hallOfFameContextCommand = new ContextMenuCommandBuilder()
+const promote = new ContextMenuCommandBuilder()
     .setName("Add to Hall of Fame")
     .setType(ApplicationCommandType.Message);
+
+export default {
+    commands: {
+        chat: {
+            base: hallOfFame,
+            subcommands: {
+                enable,
+                disable
+            }
+        },
+        message: {
+            promote
+        }
+    }
+} satisfies CommandBundle<"Subcommand">;
+
 
 export enum HallOfFameIds {
     SELECT = "hall-of-fame-select"

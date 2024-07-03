@@ -2,7 +2,8 @@ import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
 } from "@discordjs/builders";
-import { ChannelType, PermissionFlagsBits } from "discord.js";
+import { ChannelType } from "discord.js";
+import { CommandBundle } from "interactions";
 
 const enable = new SlashCommandSubcommandBuilder()
     .setName("enable")
@@ -33,7 +34,7 @@ const whitelist_add = new SlashCommandSubcommandBuilder()
         option
             .setName("role")
             .setDescription("The role to whitelist")
-            .setRequired(true))
+            .setRequired(true));
 
 const whitelist_remove = new SlashCommandSubcommandBuilder()
     .setName("whitelist_remove")
@@ -42,15 +43,29 @@ const whitelist_remove = new SlashCommandSubcommandBuilder()
         option
             .setName("role")
             .setDescription("The role to remove from the whitelist")
-            .setRequired(true))
+            .setRequired(true));
 
-export const imageboardSlashCommand = new SlashCommandBuilder()
+const imageboard = new SlashCommandBuilder()
     .setName("imageboard")
     .setDescription(
         "Marks a channel as an imageboard, where only links, videos, and other media can be sent."
     )
-    .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
     .addSubcommand(enable)
     .addSubcommand(disable)
     .addSubcommand(whitelist_add)
     .addSubcommand(whitelist_remove);
+
+export default {
+    commands: {
+        chat: {
+            base: imageboard,
+            subcommands: {
+                enable,
+                disable,
+                whitelist_add,
+                whitelist_remove
+            }
+        },
+        message: {}
+    }
+} satisfies CommandBundle<"Subcommand">;

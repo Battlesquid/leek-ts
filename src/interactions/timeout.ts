@@ -1,10 +1,9 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { PermissionFlagsBits } from "discord.js";
+import { CommandBundle } from "interactions";
 
-export const timeoutSlashCommand = new SlashCommandBuilder()
+const timeout = new SlashCommandBuilder()
     .setName("timeout")
     .setDescription("Timeout a user")
-    .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
     .addUserOption((option) =>
         option
             .setName("user")
@@ -22,3 +21,13 @@ export const timeoutSlashCommand = new SlashCommandBuilder()
             .setName("reason")
             .setDescription("The reason for timing this user out")
     );
+
+export default {
+    commands: {
+        chat: {
+            base: timeout,
+            subcommands: undefined
+        },
+        message: {}
+    }
+} satisfies CommandBundle<"Command">;

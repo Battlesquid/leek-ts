@@ -1,21 +1,22 @@
-import { timeoutSlashCommand } from "@interactions";
+import { ApplyOptions } from "@sapphire/decorators";
 import { Command, container } from "@sapphire/framework";
+import { Subcommand } from "@sapphire/plugin-subcommands";
 import { ModerationLogBuilder } from "@utils";
 import { ChannelType, userMention } from "discord.js";
+import { timeout } from "interactions";
 import ms from "ms";
 
+@ApplyOptions<Subcommand.Options>({
+    name: timeout.commands.chat.base.name,
+    description: timeout.commands.chat.base.description,
+    preconditions: ["GuildTextOnly"],
+    requiredUserPermissions: ["ModerateMembers"],
+    requiredClientPermissions: ["ModerateMembers", "SendMessages"]
+})
 export class TimeoutCommand extends Command {
-    public constructor(context: Command.LoaderContext, options: Command.Options) {
-        super(context, {
-            ...options,
-            name: "timeout",
-            description: "Timeout users",
-            preconditions: ["GuildTextOnly"]
-        });
-    }
 
     public override registerApplicationCommands(registry: Command.Registry) {
-        registry.registerChatInputCommand(timeoutSlashCommand, {
+        registry.registerChatInputCommand(timeout.commands.chat.base, {
             idHints: ["950533839120367626"]
         });
     }
@@ -69,7 +70,7 @@ export class TimeoutCommand extends Command {
         const logCh = await inter.guild?.channels.fetch(logSettings.moderation);
         if (!logCh || logCh.type !== ChannelType.GuildText) {
             await inter.followUp({
-                content:  `The moderation logging channel ${logSettings.moderation} is missing. Verify that the channel exists, then try again.`
+                content: `The moderation logging channel ${logSettings.moderation} is missing. Verify that the channel exists, then try again.`
             });
             await container.prisma.logSettings.update({
                 where: { gid: inter.guildId },

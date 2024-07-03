@@ -1,8 +1,10 @@
-import { HallOfFameIds, hallOfFameContextCommand, hallOfFameSlashCommand } from "@interactions";
+import { hall_of_fame } from "@interactions";
+import { ApplyOptions } from "@sapphire/decorators";
 import { container } from "@sapphire/framework";
 import { Subcommand } from "@sapphire/plugin-subcommands";
 import { timestring } from "@utils";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, EmbedBuilder, Snowflake, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextChannel, TimestampStyles } from "discord.js";
+import { LoggerSubcommand } from "utils/logger_subcommand";
 
 type HallChannel<> = {
     id: Snowflake;
@@ -10,34 +12,37 @@ type HallChannel<> = {
     name: string | undefined;
 }
 
-export class HallOfFameCommand extends Subcommand {
-    public constructor(context: Subcommand.LoaderContext, options: Subcommand.Options) {
-        super(context, {
-            ...options,
-            name: "hall_of_fame",
-            subcommands: [
-                {
-                    name: "enable",
-                    chatInputRun: "chatInputEnable",
-                },
-                {
-                    name: "disable",
-                    chatInputRun: "chatInputDisable"
-                },
-                {
-                    name: "promote",
-                    messageRun: "messagePromote"
-                }
-            ],
-            preconditions: ["GuildTextOnly"]
-        });
-    }
+@ApplyOptions<Subcommand.Options>({
+    name: hall_of_fame.commands.chat.base.name,
+    subcommands: [
+        {
+            name: hall_of_fame.commands.chat.subcommands.enable.name,
+            chatInputRun: "chatInputEnable",
+        },
+        {
+            name: hall_of_fame.commands.chat.subcommands.disable.name,
+            chatInputRun: "chatInputDisable"
+        },
+        {
+            name: hall_of_fame.commands.message.promote.name,
+            messageRun: "messagePromote"
+        }
+    ],
+    preconditions: ["GuildTextOnly"],
+    requiredUserPermissions: ["ManageChannels"],
+    requiredClientPermissions: ["ManageMessages", "SendMessages"]
+})
+export class HallOfFameCommand extends LoggerSubcommand {
+
+    private static readonly CHAT_INPUT_DEVELOPMENT_HINT: string = "";
+    private static readonly CHAT_INPUT_PRODUCTION_HINT: string = "";
 
     public override registerApplicationCommands(registry: Subcommand.Registry) {
-        registry.registerChatInputCommand(hallOfFameSlashCommand, {
+
+        registry.registerChatInputCommand(hall_of_fame.commands.chat.base, {
             idHints: ["1126901836243275806"]
         });
-        registry.registerContextMenuCommand(hallOfFameContextCommand, {
+        registry.registerContextMenuCommand(hall_of_fame.commands.message.promote, {
             idHints: ["1126901837249904672"]
         });
     }
@@ -122,8 +127,9 @@ export class HallOfFameCommand extends Subcommand {
                 .setValue(ch.id);
         });
 
+        const selectId = "@leekbot/promote";
         const select = new StringSelectMenuBuilder()
-            .setCustomId(HallOfFameIds.SELECT)
+            .setCustomId(selectId)
             .setPlaceholder("Select a hall of fame")
             .setOptions(options);
 
@@ -137,7 +143,7 @@ export class HallOfFameCommand extends Subcommand {
 
         const collector = channel.createMessageComponentCollector({
             componentType: ComponentType.StringSelect,
-            filter: (inter) => inter.customId === HallOfFameIds.SELECT,
+            filter: (inter) => inter.customId === selectId,
             idle: 10_000
         });
 

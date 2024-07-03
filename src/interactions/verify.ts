@@ -2,7 +2,8 @@ import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
 } from "@discordjs/builders";
-import { ChannelType, PermissionFlagsBits } from "discord.js";
+import { ChannelType } from "discord.js";
+import { CommandBundle } from "interactions";
 
 const enable = new SlashCommandSubcommandBuilder()
     .setName("enable")
@@ -91,10 +92,9 @@ const request = new SlashCommandSubcommandBuilder()
     .setName("request")
     .setDescription("Request verification");
 
-export const verifySlashCommand = new SlashCommandBuilder()
+const verify = new SlashCommandBuilder()
     .setName("verify")
     .setDescription("Allows server staff to approve users into the server")
-    .setDefaultMemberPermissions(PermissionFlagsBits.SendMessages)
     .addSubcommand(enable)
     .addSubcommand(disable)
     .addSubcommand(list)
@@ -103,3 +103,22 @@ export const verifySlashCommand = new SlashCommandBuilder()
     .addSubcommand(remove_role)
     .addSubcommand(edit)
     .addSubcommand(request);
+
+export default {
+    commands: {
+        chat: {
+            base: verify,
+            subcommands: {
+                enable,
+                disable,
+                list,
+                rescan,
+                add_role,
+                remove_role,
+                edit,
+                request
+            }
+        },
+        message: {}
+    }
+} satisfies CommandBundle<"Subcommand">;

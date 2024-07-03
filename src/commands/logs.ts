@@ -1,30 +1,32 @@
+import { logs } from "@interactions";
+import { ApplyOptions } from "@sapphire/decorators";
 import { container } from "@sapphire/framework";
 import { Subcommand } from "@sapphire/plugin-subcommands";
-import { logsSlashCommand } from "@interactions";
+import { LoggerSubcommand } from "utils/logger_subcommand";
 
 type LogType = "text" | "image" | "moderation";
 
-export class LogsCommand extends Subcommand {
-    public constructor(context: Subcommand.LoaderContext, options: Subcommand.Options) {
-        super(context, {
-            ...options,
-            name: "logs",
-            subcommands: [
-                {
-                    name: "enable",
-                    chatInputRun: "chatInputEnable",
-                },
-                {
-                    name: "disable",
-                    chatInputRun: "chatInputDisable"
-                },
-            ],
-            preconditions: ["GuildTextOnly"]
-        });
-    }
+
+@ApplyOptions<Subcommand.Options>({
+    name: "logs",
+    subcommands: [
+        {
+            name: "enable",
+            chatInputRun: "chatInputEnable",
+        },
+        {
+            name: "disable",
+            chatInputRun: "chatInputDisable"
+        },
+    ],
+    preconditions: ["GuildTextOnly"],
+    requiredUserPermissions: ["ManageGuild"],
+    requiredClientPermissions: ["ManageMessages"]
+})
+export class LogsCommand extends LoggerSubcommand {
 
     public override registerApplicationCommands(registry: Subcommand.Registry) {
-        registry.registerChatInputCommand(logsSlashCommand, {
+        registry.registerChatInputCommand(logs.commands.chat.base, {
             idHints: ["926913960391893072"]
         });
     }

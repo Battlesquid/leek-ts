@@ -1,53 +1,59 @@
-import { verifySlashCommand } from "@interactions";
 import { VerifyRequestModal } from "@modals";
 import { Prisma, VerifySettings } from "@prisma/client";
+import { ApplyOptions } from "@sapphire/decorators";
 import { container } from "@sapphire/framework";
 import { Subcommand } from "@sapphire/plugin-subcommands";
 import { PaginatedEmbed } from "@utils";
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, InteractionCollector, ModalActionRowComponentBuilder, ModalBuilder, TextChannel, TextInputBuilder, TextInputStyle, inlineCode, userMention } from "discord.js";
+import { verify } from "interactions";
 import emojis from "utils/emojis";
+import { LoggerSubcommand } from "utils/logger_subcommand";
 
-export class VerifyCommand extends Subcommand {
-    public constructor(context: Subcommand.Context, options: Subcommand.Options) {
-        super(context, {
-            ...options,
-            name: "verify",
-            subcommands: [
-                {
-                    name: "list",
-                    chatInputRun: "chatInputList",
-                },
-                {
-                    name: "enable",
-                    chatInputRun: "chatInputEnable"
-                },
-                {
-                    name: "disable",
-                    chatInputRun: "chatInputDisable"
-                },
-                {
-                    name: "add_role",
-                    chatInputRun: "chatInputAddRole"
-                },
-                {
-                    name: "remove_role",
-                    chatInputRun: "chatInputRemoveRole"
-                },
-                {
-                    name: "edit",
-                    chatInputRun: "chatInputEdit"
-                },
-                {
-                    name: "request",
-                    chatInputRun: "chatInputRequest"
-                }
-            ],
-            preconditions: ["GuildOnly"]
-        });
-    }
 
+@ApplyOptions<Subcommand.Options>({
+    name: "verify",
+    subcommands: [
+        {
+            name: verify.commands.chat.subcommands.list.name,
+            chatInputRun: "chatInputList",
+        },
+        {
+            name: verify.commands.chat.subcommands.enable.name,
+            chatInputRun: "chatInputEnable"
+        },
+        {
+            name: verify.commands.chat.subcommands.disable.name,
+            chatInputRun: "chatInputDisable"
+        },
+        {
+            name: verify.commands.chat.subcommands.add_role.name,
+            chatInputRun: "chatInputAddRole"
+        },
+        {
+            name: verify.commands.chat.subcommands.remove_role.name,
+            chatInputRun: "chatInputRemoveRole"
+        },
+        {
+            name: verify.commands.chat.subcommands.edit.name,
+            chatInputRun: "chatInputEdit"
+        },
+        {
+            name: verify.commands.chat.subcommands.request.name,
+            chatInputRun: "chatInputRequest"
+        },
+        {
+            name: verify.commands.chat.subcommands.rescan.name,
+            chatInputRun: "chatInputRescan"
+        },
+    ],
+    preconditions: ["GuildTextOnly"],
+    requiredUserPermissions: ["ManageGuild"],
+    requiredClientPermissions: ["ManageRoles", "SendMessages", "ChangeNickname", "UseExternalEmojis"]
+})
+export class VerifyCommand extends LoggerSubcommand {
+   
     public override registerApplicationCommands(registry: Subcommand.Registry) {
-        registry.registerChatInputCommand(verifySlashCommand, {
+        registry.registerChatInputCommand(verify.commands.chat.base, {
             idHints: ["919820845126385737"]
         });
     }
@@ -147,7 +153,6 @@ export class VerifyCommand extends Subcommand {
         const promises = await Promise.all(
             users.map(async user => {
                 try {
-                     
                     await inter.guild!.members.edit(user.uid, {
                         roles: settings.roles,
                         nick: user.nick,

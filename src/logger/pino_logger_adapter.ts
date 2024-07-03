@@ -1,24 +1,14 @@
-import { ILogger as ISapphireLogger } from "@sapphire/framework";
+import { ILogger as ISapphireLogger, LogLevel } from "@sapphire/framework";
 import pino, { Logger, LoggerExtras } from "pino";
 
-declare enum LogLevel {
-    Trace = "trace",
-    Debug = "debug",
-    Info = "info",
-    Warn = "warn",
-    Error = "error",
-    Fatal = "fatal",
-}
-
-export class PinoLoggerAdapter implements ISapphireLogger  {
+export class PinoLoggerAdapter implements ISapphireLogger {
     private logger: Logger;
 
     constructor(logger?: Logger) {
         this.logger = logger ?? pino();
     }
 
-    has(): boolean {
-        // Pino logs all levels by default, so returning true for all levels.
+    has(_level: LogLevel): boolean {
         return true;
     }
 
@@ -47,7 +37,31 @@ export class PinoLoggerAdapter implements ISapphireLogger  {
     }
 
     write(level: LogLevel, ...values: readonly unknown[]): void {
-        this.logger[level](values);
+        switch (level) {
+            case LogLevel.Trace:
+                this.logger.trace({ values });
+                break;
+            case LogLevel.Debug:
+                this.logger.debug({ values });
+                break;
+            case LogLevel.Info:
+                this.logger.info({ values });
+                break;
+            case LogLevel.Warn:
+                this.logger.warn({ values });
+                break;
+            case LogLevel.Error:
+                this.logger.error({ values });
+                break;
+            case LogLevel.Fatal:
+                this.logger.fatal({ values });
+                break;
+            case LogLevel.None:
+                break;
+            default:
+                ((_: never) => { })(level);
+                break;
+        }
     }
 
     child(...args: Parameters<LoggerExtras["child"]>) {
