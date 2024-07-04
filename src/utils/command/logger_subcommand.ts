@@ -12,9 +12,9 @@ export class LoggerSubcommand extends Subcommand {
             hash: randomUUID(),
         });
         return {
-            replyInfo: (infoText: string, extras?: object) => this.logInfo(child, interaction, infoText, extras),
+            info: (infoText: string, extras?: object) => this.logInfo(child, interaction, infoText, extras),
             replyWarn: (warnText: string, extras?: object) => this.logWarn(child, interaction, warnText, extras),
-            replyError: (errorText: string, error: unknown) => this.logError(child, interaction, errorText, error)
+            error: (errorText: string, error: unknown) => this.logError(child, interaction, errorText, error)
         };
     }
 

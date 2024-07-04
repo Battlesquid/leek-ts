@@ -1,8 +1,9 @@
 import { ApplyOptions } from "@sapphire/decorators";
+import { isGuildMember, isTextBasedChannel } from "@sapphire/discord.js-utilities";
 import { Command, container } from "@sapphire/framework";
 import { Subcommand } from "@sapphire/plugin-subcommands";
-import { ModerationLogBuilder } from "@utils";
-import { ChannelType, userMention } from "discord.js";
+import { CommandLogger, ModerationLogBuilder } from "@utils";
+import { userMention } from "discord.js";
 import { timeout } from "interactions";
 import ms from "ms";
 
@@ -21,56 +22,63 @@ export class TimeoutCommand extends Command {
         });
     }
 
-    public override async chatInputRun(inter: Command.ChatInputCommandInteraction<"cached" | "raw">) {
-        const user = inter.options.getUser("user", true);
-        const duration = inter.options.getString("duration", true);
-        const reason = inter.options.getString("reason", false) ?? undefined;
+    public override async chatInputRun(inter: Command.ChatInputCommandInteraction<"cached">) {
+        const logger = new CommandLogger(this.container.logger, inter);
 
-        let millis: number, durationStr: string;
+        const member = inter.options.getMember("user");
+        const duration = inter.options.getString("duration", true);
+        const reason = inter.options.getString("reason", false) ?? "No reason provided.";
+
+        if (member === null || !isGuildMember(member)) {
+            logger.warn("Unable to find member, please try again later.");
+            return;
+        }
+
+        let millis: number;
+        let durationStr: string;
         try {
             millis = ms(duration);
             durationStr = ms(millis);
         } catch (e) {
-            inter.reply("An invalid duration was provided.");
+            logger.error("An invalid duration was provided.", e);
             return;
         }
 
         if (millis < 0) {
-            inter.reply("Duration must be a positive value");
+            logger.warn("Duration must be a positive value");
             return;
         }
 
         if (millis > ms("28 days")) {
-            inter.reply("Duration must be shorter than 28 days");
+            logger.warn("Duration must be shorter than 28 days");
             return;
         }
 
         if (Number.isNaN(millis)) {
-            inter.reply(`Invalid duration ${duration}`);
+            logger.warn(`Invalid duration ${duration}`);
             return;
         }
 
-        const member = await inter.guild?.members.fetch(user.id);
-        if (!member) {
-            inter.reply(`Unable to find ${user}, please try again later.`);
+        try {
+            await member
+                .disableCommunicationUntil(Date.now() + millis, reason);
+            logger.info(`Timed out ${member} for ${durationStr} (${reason}).`);
+        } catch (error) {
+            logger.error("An error occurred", error);
             return;
         }
 
-        await member
-            .disableCommunicationUntil(Date.now() + millis, reason);
-        await inter.reply(`Timed out ${user} for ${durationStr}.`);
-
-        const logSettings = await container.prisma.logSettings.findFirst({
+        const settings = await container.prisma.logSettings.findFirst({
             where: { gid: inter.guildId }
         });
-        if (!logSettings || logSettings?.moderation === null) {
+        if (!settings || settings?.moderation === null) {
             return;
         }
 
-        const logCh = await inter.guild?.channels.fetch(logSettings.moderation);
-        if (!logCh || logCh.type !== ChannelType.GuildText) {
+        const channel = await inter.guild.channels.fetch(settings.moderation);
+        if (!isTextBasedChannel(channel)) {
             await inter.followUp({
-                content: `The moderation logging channel ${logSettings.moderation} is missing. Verify that the channel exists, then try again.`
+                content: `The moderation logging channel ${settings.moderation} is missing. Verify that the channel exists, then try again.`
             });
             await container.prisma.logSettings.update({
                 where: { gid: inter.guildId },
@@ -81,13 +89,13 @@ export class TimeoutCommand extends Command {
 
         const embed = new ModerationLogBuilder("Timeout Administered", inter.user)
             .addField("User", userMention(member.id))
-            .addField("Reason", reason ?? "N/A", true)
+            .addField("Reason", reason, true)
             .addField("Duration", durationStr, true)
             .build()
             .setColor("#edbc37")
             .setTimestamp(Date.now());
 
-        logCh.send({
+        channel.send({
             embeds: [embed]
         })
             .catch(e => this.container.logger.error(`An error occurred while recording the timeout log: ${e}`));

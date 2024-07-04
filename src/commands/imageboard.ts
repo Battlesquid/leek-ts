@@ -2,7 +2,7 @@ import { imageboard } from "@interactions";
 import { ApplyOptions } from "@sapphire/decorators";
 import { container } from "@sapphire/framework";
 import { Subcommand } from "@sapphire/plugin-subcommands";
-import { chatInputCommand } from "utils/command";
+import { CommandLogger, chatInputCommand } from "utils/command";
 import { LoggerSubcommand } from "utils/command/logger_subcommand";
 
 @ApplyOptions<Subcommand.Options>({
@@ -27,15 +27,15 @@ export class ImageBoardCommand extends LoggerSubcommand {
     }
 
     public async chatInputEnable(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
-        const logger = this.logger(inter);
+        const logger = new CommandLogger(this.container.logger, inter);
         const channel = inter.options.getChannel("channel", true);
         const { settings, error } = await this.getSettings(inter.guildId);
         if (error) {
-            logger.replyError("An error occurred", error);
+            logger.error("An error occurred", error);
             return;
         }
         if (settings?.boards.includes(channel.id)) {
-            logger.replyInfo(`${channel} is already an imageboard.`);
+            logger.info(`${channel} is already an imageboard.`);
             return;
         }
 
@@ -53,9 +53,9 @@ export class ImageBoardCommand extends LoggerSubcommand {
                     }
                 });
             }
-            logger.replyInfo(`Imageboards enabled on ${channel}`);
+            logger.info(`Imageboards enabled on ${channel}`);
         } catch (error) {
-            logger.replyError("An unexpected error occurred.", error);
+            logger.error("An unexpected error occurred.", error);
         }
     }
 
@@ -65,11 +65,11 @@ export class ImageBoardCommand extends LoggerSubcommand {
 
         const { settings, error } = await this.getSettings(inter.guildId);
         if (error) {
-            logger.replyError("An error occurred", error);
+            logger.error("An error occurred", error);
             return;
         }
         if (settings === null || !settings.boards.includes(channel.id)) {
-            logger.replyInfo(`You must enable imageboards on ${channel} first.`);
+            logger.info(`You must enable imageboards on ${channel} first.`);
             return;
         }
 
@@ -85,9 +85,9 @@ export class ImageBoardCommand extends LoggerSubcommand {
                     data: { boards: { set: newBoards } }
                 });
             }
-            logger.replyInfo(`Imageboards disabled on ${channel}`);
+            logger.info(`Imageboards disabled on ${channel}`);
         } catch (error) {
-            logger.replyError("An unexpected error occurred.", error);
+            logger.error("An unexpected error occurred.", error);
         }
     }
 
@@ -97,16 +97,16 @@ export class ImageBoardCommand extends LoggerSubcommand {
 
         const { settings, error } = await this.getSettings(inter.guildId);
         if (error) {
-            logger.replyError("An error occurred", error);
+            logger.error("An error occurred", error);
             return;
         }
         if (settings === null) {
-            logger.replyInfo("You must set up an imageboard first.");
+            logger.info("You must set up an imageboard first.");
             return;
         }
 
         if (settings.whitelist.includes(role.id)) {
-            logger.replyInfo("Role is already whitelisted.");
+            logger.info("Role is already whitelisted.");
             return;
         }
 
@@ -117,9 +117,9 @@ export class ImageBoardCommand extends LoggerSubcommand {
                     whitelist: { push: role.id }
                 }
             });
-            logger.replyInfo(`${role} whitelisted from imageboard channels.`);
+            logger.info(`${role} whitelisted from imageboard channels.`);
         } catch (error) {
-            logger.replyError("An unexpected error occurred.", error);
+            logger.error("An unexpected error occurred.", error);
         }
     }
 
@@ -129,15 +129,15 @@ export class ImageBoardCommand extends LoggerSubcommand {
 
         const { settings, error } = await this.getSettings(inter.guildId);
         if (error) {
-            logger.replyError("An error occurred", error);
+            logger.error("An error occurred", error);
             return;
         }
         if (settings === null) {
-            logger.replyInfo("You must set up an imageboard first.");
+            logger.info("You must set up an imageboard first.");
             return;
         }
         if (!settings.whitelist.includes(role.id)) {
-            logger.replyInfo("Role is not whitelisted.");
+            logger.info("Role is not whitelisted.");
             return;
         }
 
@@ -146,9 +146,9 @@ export class ImageBoardCommand extends LoggerSubcommand {
                 where: { gid: inter.guildId },
                 data: { boards: { set: settings.whitelist.filter(id => id !== role.id) } }
             });
-            logger.replyInfo(`${role} removed from imageboard whitelist.`);
+            logger.info(`${role} removed from imageboard whitelist.`);
         } catch (error) {
-            logger.replyError("An unexpected error occurred.", error);
+            logger.error("An unexpected error occurred.", error);
         }
     }
 

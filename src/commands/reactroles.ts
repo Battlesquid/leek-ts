@@ -1,7 +1,8 @@
 import { ApplyOptions } from "@sapphire/decorators";
 import { container } from "@sapphire/framework";
 import { Subcommand } from "@sapphire/plugin-subcommands";
-import { patterns } from "@utils";
+import { isNullOrUndefined } from "@sapphire/utilities";
+import { CommandLogger, LoggerSubcommand, patterns } from "@utils";
 import { ChannelType, ColorResolvable, Embed, EmbedBuilder, Message, TextChannel, roleMention } from "discord.js";
 import emojiRegex from "emoji-regex";
 import { reactroles } from "interactions";
@@ -30,7 +31,7 @@ import { reactroles } from "interactions";
     requiredUserPermissions: ["ManageRoles"],
     requiredClientPermissions: ["SendMessages", "AttachFiles", "AddReactions"]
 })
-export class ReactRolesCommand extends Subcommand {
+export class ReactRolesCommand extends LoggerSubcommand {
 
     public override registerApplicationCommands(registry: Subcommand.Registry) {
         registry.registerChatInputCommand(reactroles.commands.chat.base, {
@@ -52,13 +53,20 @@ export class ReactRolesCommand extends Subcommand {
         return [msg, msg?.embeds[0]];
     }
 
-    public async chatInputCreate(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
-        const ch = inter.options.getChannel("channel", true);
+    public async chatInputCreate(inter: Subcommand.ChatInputCommandInteraction<"cached">) {
+        const logger = new CommandLogger(this.container.logger, inter);
+
+        const channel = inter.options.getChannel<ChannelType.GuildText>("channel", true);
         const title = inter.options.getString("title", true);
         const desc = inter.options.getString("desc", false);
         const color = `#${inter.options.getString("color", false) ?? "444444"
             }` as ColorResolvable;
         const msg = inter.options.getString("msg", false) ?? undefined;
+
+        if (isNullOrUndefined(channel)) {
+            logger.warn("Channel unavailable, please try again later.");
+            return;
+        }
 
         if (!/^(?:#[A-Fa-f0-9]{6}|#[A-Fa-f0-9]{3})$/.test(color.toString())) {
             inter.reply({
@@ -68,21 +76,20 @@ export class ReactRolesCommand extends Subcommand {
             return;
         }
 
-        const reactEmbed = new EmbedBuilder()
-            .setTitle(title)
-            .setDescription(desc)
-            .setColor(color)
-            .setFooter({ text: "reactroles" });
-
-        const channel = await inter.guild?.channels.fetch(ch.id);
-        if (!channel || channel.type !== ChannelType.GuildText) {
-            inter.reply("Channel unavailable, please try again.");
-            return;
+        try {
+            await channel.send({
+                content: msg, embeds: [
+                    new EmbedBuilder()
+                        .setTitle(title)
+                        .setDescription(desc)
+                        .setColor(color)
+                        .setFooter({ text: "reactroles" })
+                ]
+            });
+            logger.info(`New react roles created in ${channel}.`);
+        } catch (error) {
+            logger.error("An error occurred", error);
         }
-
-        channel.send({ content: msg, embeds: [reactEmbed] });
-
-        inter.reply(`New react roles created in ${ch}.`);
     }
 
     public async chatInputEdit(inter: Subcommand.ChatInputCommandInteraction) {

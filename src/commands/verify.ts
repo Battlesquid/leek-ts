@@ -51,7 +51,7 @@ import { LoggerSubcommand } from "utils/command/logger_subcommand";
     requiredClientPermissions: ["ManageRoles", "SendMessages", "ChangeNickname", "UseExternalEmojis"]
 })
 export class VerifyCommand extends LoggerSubcommand {
-   
+
     public override registerApplicationCommands(registry: Subcommand.Registry) {
         registry.registerChatInputCommand(verify.commands.chat.base, {
             idHints: ["919820845126385737"]
@@ -213,6 +213,7 @@ export class VerifyCommand extends LoggerSubcommand {
         });
         inter.reply("Verification enabled.");
     }
+
     public async chatInputDisable(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
         const settings = await this.getSettings(inter.guildId);
         if (settings === null) {
