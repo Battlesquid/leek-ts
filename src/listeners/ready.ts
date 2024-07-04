@@ -1,14 +1,12 @@
-import { Listener } from "@sapphire/framework";
+import { ApplyOptions } from "@sapphire/decorators";
+import { Events, Listener } from "@sapphire/framework";
 
+@ApplyOptions<Listener.Options>({
+  once: true,
+  event: Events.ClientReady,
+})
 export class ReadyListener extends Listener {
-    public constructor(context: Listener.Context, options: Listener.Options) {
-        super(context, {
-            ...options,
-            once: true,
-            event: "ready"
-        });
-    }
-    run() {
-        this.container.logger.info("leekbot online");
-    }
+  run() {
+    this.container.logger.info("leekbot online");
+  }
 }
