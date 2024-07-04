@@ -6,25 +6,23 @@ import { LoggerSubcommand } from "utils/command/logger_subcommand";
 
 type LogType = "text" | "image" | "moderation";
 
-
 @ApplyOptions<Subcommand.Options>({
     name: "logs",
     subcommands: [
         {
             name: "enable",
-            chatInputRun: "chatInputEnable",
+            chatInputRun: "chatInputEnable"
         },
         {
             name: "disable",
             chatInputRun: "chatInputDisable"
-        },
+        }
     ],
     preconditions: ["GuildTextOnly"],
     requiredUserPermissions: ["ManageGuild"],
     requiredClientPermissions: ["ManageMessages"]
 })
 export class LogsCommand extends LoggerSubcommand {
-
     public override registerApplicationCommands(registry: Subcommand.Registry) {
         registry.registerChatInputCommand(logs.commands.chat.base, {
             idHints: ["926913960391893072"]

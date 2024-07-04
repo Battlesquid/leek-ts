@@ -59,7 +59,7 @@ export class PinoLoggerAdapter implements ISapphireLogger {
             case LogLevel.None:
                 break;
             default:
-                ((_: never) => { })(level);
+                ((_: never) => {})(level);
                 break;
         }
     }

@@ -27,7 +27,7 @@ export const getLoggerInstance = (stream: string, options?: LoggerOptions) => {
                     target: "pino/file",
                     options: { destination: 1 }
                 }
-            ] 
+            ]
         }
     });
 };

@@ -10,13 +10,7 @@ import { config } from "config";
 const logger = getLoggerInstance("leekbot");
 
 const client = new SapphireClient({
-    intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.GuildMembers,
-        GatewayIntentBits.MessageContent,
-        GatewayIntentBits.GuildMessageReactions
-    ],
+    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessageReactions],
     logger: {
         level: config.getenv("NODE_ENV") === "development" ? LogLevel.Debug : LogLevel.Info,
         instance: new PinoLoggerAdapter(logger)
@@ -27,13 +21,11 @@ const client = new SapphireClient({
         activities: [
             {
                 type: ActivityType.Playing,
-                name: "/help",
-            },
-        ],
-    },
-
+                name: "/help"
+            }
+        ]
+    }
 });
-
 
 async function main() {
     container.prisma = new PrismaClient();
@@ -41,8 +33,6 @@ async function main() {
     await client.login(config.getenv("DISCORD_TOKEN"));
 }
 
-main()
-    .finally(async () => {
-        await container.prisma.$disconnect();
-    });
-
+main().finally(async () => {
+    await container.prisma.$disconnect();
+});

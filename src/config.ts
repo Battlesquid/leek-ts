@@ -1,15 +1,9 @@
 import { config as configenv } from "dotenv";
 import * as path from "path";
 
-const ENV_VARIABLES = [
-    "DISCORD_TOKEN",
-    "NODE_ENV",
-    "PARSEABLE_ENDPOINT",
-    "PARSEABLE_USERNAME",
-    "PARSEABLE_PASSWORD"
-] as const;
+const ENV_VARIABLES = ["DISCORD_TOKEN", "NODE_ENV", "PARSEABLE_ENDPOINT", "PARSEABLE_USERNAME", "PARSEABLE_PASSWORD"] as const;
 
-type ConfigVariable = typeof ENV_VARIABLES[number];
+type ConfigVariable = (typeof ENV_VARIABLES)[number];
 
 const loadConfig = () => {
     const { error } = configenv({ path: path.resolve(__dirname, "../../../.env") });

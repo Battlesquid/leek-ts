@@ -12,14 +12,13 @@ import { LoggerSubcommand } from "utils/command/logger_subcommand";
         chatInputCommand(imageboard.commands.chat.subcommands.disable.name),
         chatInputCommand(imageboard.commands.chat.subcommands.whitelist_add.name),
         chatInputCommand(imageboard.commands.chat.subcommands.whitelist_remove.name),
-        chatInputCommand(imageboard.commands.chat.subcommands.enable.name),
+        chatInputCommand(imageboard.commands.chat.subcommands.enable.name)
     ],
     preconditions: ["GuildTextOnly"],
     requiredUserPermissions: ["ManageChannels"],
     requiredClientPermissions: ["ManageMessages"]
 })
 export class ImageBoardCommand extends LoggerSubcommand {
-
     public override registerApplicationCommands(registry: Subcommand.Registry) {
         registry.registerChatInputCommand(imageboard.commands.chat.base, {
             idHints: ["1119674243404279909"]
@@ -73,7 +72,7 @@ export class ImageBoardCommand extends LoggerSubcommand {
             return;
         }
 
-        const newBoards = settings.boards.filter(b => b !== channel.id);
+        const newBoards = settings.boards.filter((b) => b !== channel.id);
         try {
             if (newBoards.length === 0) {
                 await container.prisma.imageboard.delete({
@@ -144,7 +143,7 @@ export class ImageBoardCommand extends LoggerSubcommand {
         try {
             await container.prisma.imageboard.update({
                 where: { gid: inter.guildId },
-                data: { boards: { set: settings.whitelist.filter(id => id !== role.id) } }
+                data: { boards: { set: settings.whitelist.filter((id) => id !== role.id) } }
             });
             logger.info(`${role} removed from imageboard whitelist.`);
         } catch (error) {

@@ -1,19 +1,11 @@
-import {
-    ActionRowBuilder,
-    APIButtonComponentWithCustomId,
-    ButtonBuilder, ButtonInteraction, ButtonStyle,
-    CommandInteraction, ComponentType, EmbedBuilder, InteractionCollector
-} from "discord.js";
+import { ActionRowBuilder, APIButtonComponentWithCustomId, ButtonBuilder, ButtonInteraction, ButtonStyle, CommandInteraction, ComponentType, EmbedBuilder, InteractionCollector } from "discord.js";
 import emojis from "./emojis";
 
 type NavigationButton = ButtonBuilder & {
     setStyle: (style: Exclude<ButtonStyle, ButtonStyle.Link>) => NavigationButton;
-}
+};
 
-type OnCollectCallback = (
-    collector: InteractionCollector<ButtonInteraction>,
-    inter: ButtonInteraction<"cached" | "raw">
-) => Promise<void> | void;
+type OnCollectCallback = (collector: InteractionCollector<ButtonInteraction>, inter: ButtonInteraction<"cached" | "raw">) => Promise<void> | void;
 
 export type PaginatedEmbedOptions = {
     inter: CommandInteraction;
@@ -51,66 +43,47 @@ export class PaginatedEmbed {
         this.pages = options.pages;
         this.timeout = options.timeout;
 
-        this.prev = options.prev ?? new ButtonBuilder()
-            .setCustomId("prev")
-            .setEmoji(emojis.LEFT_ARROW)
-            .setStyle(ButtonStyle.Primary);
-        this.prev
-            .setCustomId("prev")
-            .setDisabled(true);
+        this.prev = options.prev ?? new ButtonBuilder().setCustomId("prev").setEmoji(emojis.LEFT_ARROW).setStyle(ButtonStyle.Primary);
+        this.prev.setCustomId("prev").setDisabled(true);
 
-        this.next = options.next ?? new ButtonBuilder()
-            .setCustomId("next")
-            .setEmoji(emojis.RIGHT_ARROW)
-            .setStyle(ButtonStyle.Primary);
+        this.next = options.next ?? new ButtonBuilder().setCustomId("next").setEmoji(emojis.RIGHT_ARROW).setStyle(ButtonStyle.Primary);
         this.next.setCustomId("next");
         if (this.pageNum + 1 === this.pages.length) {
             this.next.setDisabled(true);
         }
 
-        this.otherButtons = options.otherButtons?.filter((b): b is ButtonBuilder => {
-            return b?.setStyle !== undefined;
-        }) ?? [];
+        this.otherButtons =
+            options.otherButtons?.filter((b): b is ButtonBuilder => {
+                return b?.setStyle !== undefined;
+            }) ?? [];
 
         this.onCollect = options.onCollect;
     }
 
     async send() {
-
-        const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-            this.prev,
-            this.next,
-            ...this.otherButtons
-        );
+        const row = new ActionRowBuilder<ButtonBuilder>().addComponents(this.prev, this.next, ...this.otherButtons);
 
         const msg = await this.inter.reply({
             embeds: [this.pages[this.pageNum]],
             components: [row],
-            fetchReply: true,
+            fetchReply: true
         });
 
         const filter = (i: ButtonInteraction) => {
             const otherCustomIds = this.otherButtons.map((b) => (b.data as APIButtonComponentWithCustomId).custom_id);
 
-            return (
-                i.customId === this.PREV_BUTTON_ID ||
-                i.customId === this.NEXT_BUTTON_ID ||
-                otherCustomIds.includes(i.customId)
-            );
+            return i.customId === this.PREV_BUTTON_ID || i.customId === this.NEXT_BUTTON_ID || otherCustomIds.includes(i.customId);
         };
 
         const collector = msg.createMessageComponentCollector({
             filter,
             componentType: ComponentType.Button,
-            time: this.timeout,
+            time: this.timeout
         });
 
         collector.on("collect", async (collectedInter: ButtonInteraction<"cached" | "raw">) => {
             await collectedInter.deferUpdate();
-            if (
-                collectedInter.customId === this.NEXT_BUTTON_ID ||
-                collectedInter.customId === this.PREV_BUTTON_ID
-            ) {
+            if (collectedInter.customId === this.NEXT_BUTTON_ID || collectedInter.customId === this.PREV_BUTTON_ID) {
                 if (collectedInter.customId === this.NEXT_BUTTON_ID) {
                     this.pageNum++;
                     this.next.setDisabled(this.pageNum + 1 === this.pages.length);
@@ -125,15 +98,11 @@ export class PaginatedEmbed {
                     }
                 }
 
-                const updatedRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
-                    this.prev,
-                    this.next,
-                    ...this.otherButtons
-                );
+                const updatedRow = new ActionRowBuilder<ButtonBuilder>().addComponents(this.prev, this.next, ...this.otherButtons);
 
                 await collectedInter.editReply({
                     embeds: [this.pages[this.pageNum]],
-                    components: [updatedRow],
+                    components: [updatedRow]
                 });
 
                 collector.resetTimer();
@@ -143,29 +112,24 @@ export class PaginatedEmbed {
         });
 
         collector.on("end", () => {
-            if (!msg) {return;}
+            if (!msg) {
+                return;
+            }
 
             this.prev.setDisabled(true);
             this.next.setDisabled(true);
             this.otherButtons.forEach((b) => b.setDisabled(true));
 
-            const disabledRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
-                this.prev,
-                this.next,
-                ...this.otherButtons
-            );
+            const disabledRow = new ActionRowBuilder<ButtonBuilder>().addComponents(this.prev, this.next, ...this.otherButtons);
 
             msg.edit({
-                components: [disabledRow],
+                components: [disabledRow]
             });
         });
     }
 
-    public static createEmbedPages<T>(
-        options: PaginatedTemplateOptions<T>
-    ) {
-        const { items, perPage, pageRender, itemRender, base } =
-            options;
+    public static createEmbedPages<T>(options: PaginatedTemplateOptions<T>) {
+        const { items, perPage, pageRender, itemRender, base } = options;
 
         const totalPages = Math.ceil(items.length / perPage);
         const pages: EmbedBuilder[] = new Array(totalPages);

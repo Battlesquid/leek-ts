@@ -9,7 +9,7 @@ export class LoggerSubcommand extends Subcommand {
         const child = logger.child({
             guild: interaction.guildId,
             interaction: interaction.commandName,
-            hash: randomUUID(),
+            hash: randomUUID()
         });
         return {
             info: (infoText: string, extras?: object) => this.logInfo(child, interaction, infoText, extras),

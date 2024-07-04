@@ -11,8 +11,8 @@ export default tseslint.config(eslint.configs.recommended, ...tseslint.configs.r
             {
                 argsIgnorePattern: "^_",
                 varsIgnorePattern: "^_",
-                caughtErrorsIgnorePattern: "^_",
+                caughtErrorsIgnorePattern: "^_"
             }
         ]
-    },
+    }
 });

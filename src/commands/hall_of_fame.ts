@@ -11,26 +11,24 @@ type HallChannel<> = {
     id: Snowflake;
     exists: boolean;
     name: string | undefined;
-}
+};
 
 @ApplyOptions<Subcommand.Options>({
     name: hall_of_fame.commands.chat.base.name,
     subcommands: [
         chatInputCommand(hall_of_fame.commands.chat.subcommands.enable.name),
         chatInputCommand(hall_of_fame.commands.chat.subcommands.disable.name),
-        messageCommand(hall_of_fame.commands.message.promote.name),
+        messageCommand(hall_of_fame.commands.message.promote.name)
     ],
     preconditions: ["GuildTextOnly"],
     requiredUserPermissions: ["ManageChannels"],
     requiredClientPermissions: ["ManageMessages", "SendMessages"]
 })
 export class HallOfFameCommand extends LoggerSubcommand {
-
     private static readonly CHAT_INPUT_DEVELOPMENT_HINT: string = "";
     private static readonly CHAT_INPUT_PRODUCTION_HINT: string = "";
 
     public override registerApplicationCommands(registry: Subcommand.Registry) {
-
         registry.registerChatInputCommand(hall_of_fame.commands.chat.base, {
             idHints: ["1126901836243275806"]
         });
@@ -69,7 +67,7 @@ export class HallOfFameCommand extends LoggerSubcommand {
             return;
         }
 
-        const newHalls = settings.halls.filter(h => h !== ch.id);
+        const newHalls = settings.halls.filter((h) => h !== ch.id);
         await container.prisma.hallOfFame.update({
             where: { gid: inter.guildId },
             data: { halls: { set: newHalls } }
@@ -94,7 +92,7 @@ export class HallOfFameCommand extends LoggerSubcommand {
         }
 
         const channelData = await Promise.all(
-            settings.halls.map(async hall => {
+            settings.halls.map(async (hall) => {
                 const ch = await guild.channels.fetch(hall);
                 return {
                     exists: ch !== null,
@@ -106,31 +104,24 @@ export class HallOfFameCommand extends LoggerSubcommand {
 
         const existing: HallChannel[] = [];
         const missing: HallChannel[] = [];
-        channelData.forEach(ch => ch.exists ? existing.push(ch) : missing.push(ch));
+        channelData.forEach((ch) => (ch.exists ? existing.push(ch) : missing.push(ch)));
 
         // let warning = "";
         if (missing.length > 0) {
             // warning = "Warning, missing halls detected. "
         }
 
-        const options = existing.map(ch => {
-            return new StringSelectMenuOptionBuilder()
-                .setLabel(ch.name!)
-                .setValue(ch.id);
+        const options = existing.map((ch) => {
+            return new StringSelectMenuOptionBuilder().setLabel(ch.name!).setValue(ch.id);
         });
 
         const selectId = "@leekbot/promote";
-        const select = new StringSelectMenuBuilder()
-            .setCustomId(selectId)
-            .setPlaceholder("Select a hall of fame")
-            .setOptions(options);
+        const select = new StringSelectMenuBuilder().setCustomId(selectId).setPlaceholder("Select a hall of fame").setOptions(options);
 
         await inter.reply({
             content: "Select a hall of fame to send this message to.",
             ephemeral: true,
-            components: [
-                new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(select)
-            ],
+            components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(select)]
         });
 
         const collector = channel.createMessageComponentCollector({
@@ -139,11 +130,11 @@ export class HallOfFameCommand extends LoggerSubcommand {
             idle: 10_000
         });
 
-        collector.on("collect", async collectedInter => {
+        collector.on("collect", async (collectedInter) => {
             collector.stop();
 
             const hallChannelId = collectedInter.values[0];
-            const hall = await guild.channels.fetch(hallChannelId) as TextChannel | null;
+            const hall = (await guild.channels.fetch(hallChannelId)) as TextChannel | null;
             const msg = await channel.messages.fetch(inter.targetId);
 
             if (hall === null) {
@@ -162,26 +153,17 @@ export class HallOfFameCommand extends LoggerSubcommand {
             const files: string[] = [];
             // TODO check if attachment is an image
             if (msg.attachments.size === 1) {
-
                 embed.setImage(msg.attachments.first()!.url);
             } else {
-                files.push(...msg.attachments.map(a => a.url));
+                files.push(...msg.attachments.map((a) => a.url));
             }
 
-
-
-            const original = new ButtonBuilder()
-                .setStyle(ButtonStyle.Link)
-                .setLabel("Original")
-                .setURL(msg.url);
+            const original = new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel("Original").setURL(msg.url);
 
             const row = new ActionRowBuilder<ButtonBuilder>().addComponents(original);
 
             if (msg.hasThread && msg.thread !== null) {
-                const thread = new ButtonBuilder()
-                    .setStyle(ButtonStyle.Link)
-                    .setLabel("Thread")
-                    .setURL(msg.thread.url);
+                const thread = new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel("Thread").setURL(msg.thread.url);
                 row.addComponents(thread);
             }
 

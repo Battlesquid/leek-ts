@@ -15,7 +15,6 @@ import ms from "ms";
     requiredClientPermissions: ["ModerateMembers", "SendMessages"]
 })
 export class TimeoutCommand extends Command {
-
     public override registerApplicationCommands(registry: Command.Registry) {
         registry.registerChatInputCommand(timeout.commands.chat.base, {
             idHints: ["950533839120367626"]
@@ -60,8 +59,7 @@ export class TimeoutCommand extends Command {
         }
 
         try {
-            await member
-                .disableCommunicationUntil(Date.now() + millis, reason);
+            await member.disableCommunicationUntil(Date.now() + millis, reason);
             logger.info(`Timed out ${member} for ${durationStr} (${reason}).`);
         } catch (error) {
             logger.error("An error occurred", error);
@@ -95,9 +93,10 @@ export class TimeoutCommand extends Command {
             .setColor("#edbc37")
             .setTimestamp(Date.now());
 
-        channel.send({
-            embeds: [embed]
-        })
-            .catch(e => this.container.logger.error(`An error occurred while recording the timeout log: ${e}`));
+        channel
+            .send({
+                embeds: [embed]
+            })
+            .catch((e) => this.container.logger.error(`An error occurred while recording the timeout log: ${e}`));
     }
 }

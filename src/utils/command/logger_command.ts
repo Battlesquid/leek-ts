@@ -17,29 +17,23 @@ export class CommandLogger {
         this.logger = (logger as PinoLoggerAdapter).child({
             guild: interaction.guildId,
             interaction: interaction.commandName,
-            hash: randomUUID(),
+            hash: randomUUID()
         });
         this.interaction = interaction;
     }
 
     public info(content: string, extras?: object, options?: ExtendedInteractionReplyOptions) {
         this.logger.info({ ...extras }, content);
-        options?.followUp
-            ? this.interaction.followUp({ content, ...options })
-            : this.interaction.reply({ content, ...options });
+        options?.followUp ? this.interaction.followUp({ content, ...options }) : this.interaction.reply({ content, ...options });
     }
 
     public warn(content: string, extras?: object, options?: ExtendedInteractionReplyOptions) {
         this.logger.warn({ ...extras }, content);
-        options?.followUp
-            ? this.interaction.followUp({ content, ...options })
-            : this.interaction.reply({ content, ...options });
+        options?.followUp ? this.interaction.followUp({ content, ...options }) : this.interaction.reply({ content, ...options });
     }
 
     public error(content: string, error: unknown, options?: ExtendedInteractionReplyOptions) {
         this.logger.error({ error }, content);
-        options?.followUp
-            ? this.interaction.followUp({ content, ...options })
-            : this.interaction.reply({ content, ...options });
+        options?.followUp ? this.interaction.followUp({ content, ...options }) : this.interaction.reply({ content, ...options });
     }
 }
