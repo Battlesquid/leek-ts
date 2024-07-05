@@ -26,4 +26,4 @@ export const messageCommand = (command: string): SubcommandMapping => {
 
 export * from "./command_logger";
 export * from "./logger_subcommand";
-export * from "./augmented_subcommand";
+export * from "./augments";

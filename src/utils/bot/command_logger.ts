@@ -7,6 +7,7 @@ import { Logger } from "pino";
 
 export interface ExtendedInteractionReplyOptions extends InteractionReplyOptions {
     followUp?: boolean;
+    skip?: boolean;
 }
 
 export interface SplitCommandLoggerContent {
@@ -17,6 +18,7 @@ export interface SplitCommandLoggerContent {
 export class CommandLogger {
     private logger: Logger<string>;
     private interaction: Subcommand.ChatInputCommandInteraction | Command.ChatInputCommandInteraction;
+    private replied: boolean;
 
     constructor(logger: ILogger, interaction: Subcommand.ChatInputCommandInteraction | Command.ChatInputCommandInteraction) {
         this.logger = (logger as PinoLoggerAdapter).child({
@@ -25,12 +27,13 @@ export class CommandLogger {
             hash: randomUUID()
         });
         this.interaction = interaction;
+        this.replied = false;
     }
 
     public info(content: string | SplitCommandLoggerContent, extras?: object, options?: ExtendedInteractionReplyOptions) {
         const { logger: loggerContent, interaction: interactionContent } = this.parseContent(content);
         this.logger.info({ ...extras }, loggerContent);
-        options?.followUp ? this.interaction.followUp({ content: interactionContent, ...options }) : this.interaction.reply({ content: interactionContent, ...options });
+        this.respond(interactionContent, options);
     }
 
     public warn(content: string | SplitCommandLoggerContent, extras?: object, options?: ExtendedInteractionReplyOptions) {
@@ -56,6 +59,11 @@ export class CommandLogger {
     }
 
     private respond(content: string, options?: ExtendedInteractionReplyOptions) {
-        options?.followUp ? this.interaction.followUp({ content, ...options }) : this.interaction.reply({ content, ...options });
+        if (this.replied) {
+            this.interaction.followUp({ content, ...options });
+            return;
+        }
+        this.interaction.reply({ content, ...options });
+        this.replied = true;
     }
 }

@@ -11,3 +11,13 @@ export class AugmentedSubcommand extends Subcommand {
         return new CommandLogger(this.container.logger, interaction);
     }
 }
+
+export class AugmentedCommand extends Command {
+    get db() {
+        return this.container.drizzle;
+    }
+
+    public getCommandLogger(interaction: Subcommand.ChatInputCommandInteraction | Command.ChatInputCommandInteraction) {
+        return new CommandLogger(this.container.logger, interaction);
+    }
+}
