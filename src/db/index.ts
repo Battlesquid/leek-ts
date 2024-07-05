@@ -1,7 +1,9 @@
-import { config } from "../config";
-import { Client } from "pg";
-import * as schema from "./schema";
+import { sql } from "drizzle-orm";
 import { NodePgDatabase, drizzle } from "drizzle-orm/node-postgres";
+import { PgColumn } from "drizzle-orm/pg-core";
+import { Client } from "pg";
+import { config } from "../config";
+import * as schema from "./schema";
 
 let DATABASE: NodePgDatabase<typeof schema> | null = null;
 let connection: Client | null = null;
@@ -26,4 +28,12 @@ export const getDatabase = async (): Promise<NodePgDatabase<typeof schema>> => {
         DATABASE = drizzle(client, { schema });
     }
     return DATABASE;
+};
+
+export const arrayAppend = (column: PgColumn, value: unknown) => {
+    return sql`array_append(${column}, ${value})`;
+};
+
+export const arrayRemove = (column: PgColumn, value: unknown) => {
+    return sql`array_remove(${column}, ${value})`;
 };

@@ -1,8 +1,9 @@
 import { SubcommandMapping } from "@sapphire/plugin-subcommands";
 import { capitalize } from "../../utils/strings";
+import { snakeToCamelCase } from "@sapphire/utilities";
 
 export const chatInputMethod = (command: string) => {
-    return `chatInput${capitalize(command)}`;
+    return `chatInput${capitalize(snakeToCamelCase(command))}`;
 };
 
 export const chatInputCommand = (command: string): SubcommandMapping => {
@@ -12,10 +13,14 @@ export const chatInputCommand = (command: string): SubcommandMapping => {
     };
 };
 
+export const messageMethod = (command: string) => {
+    return `message${capitalize(snakeToCamelCase(command))}`;
+};
+
 export const messageCommand = (command: string): SubcommandMapping => {
     return {
         name: command,
-        messageRun: `message${capitalize(command)}`
+        messageRun: messageMethod(command)
     };
 };
 

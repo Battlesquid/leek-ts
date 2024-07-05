@@ -1,8 +1,11 @@
-import { imageboard } from "../interactions";
 import { ApplyOptions } from "@sapphire/decorators";
-import { container } from "@sapphire/framework";
 import { Subcommand } from "@sapphire/plugin-subcommands";
-import { CommandLogger, chatInputCommand, LoggerSubcommand } from "../utils/bot";
+import { ChannelType } from "discord.js";
+import { eq } from "drizzle-orm";
+import { arrayAppend, arrayRemove } from "../db";
+import { imageboard as imageboardTable } from "../db/schema";
+import { imageboard } from "../interactions";
+import { AugmentedSubcommand, chatInputCommand } from "../utils/bot";
 
 @ApplyOptions<Subcommand.Options>({
     name: imageboard.commands.chat.base.name,
@@ -17,120 +20,125 @@ import { CommandLogger, chatInputCommand, LoggerSubcommand } from "../utils/bot"
     requiredUserPermissions: ["ManageChannels"],
     requiredClientPermissions: ["ManageMessages"]
 })
-export class ImageBoardCommand extends LoggerSubcommand {
+export class ImageBoardCommand extends AugmentedSubcommand {
     public override registerApplicationCommands(registry: Subcommand.Registry) {
         registry.registerChatInputCommand(imageboard.commands.chat.base, {
             idHints: ["1119674243404279909"]
         });
     }
 
-    public async chatInputEnable(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
-        const logger = new CommandLogger(this.container.logger, inter);
-        const channel = inter.options.getChannel("channel", true);
+    public async chatInputEnable(inter: Subcommand.ChatInputCommandInteraction<"cached">) {
+        const logger = this.getCommandLogger(inter);
+        const channel = inter.options.getChannel<ChannelType.GuildText>("channel", true);
         const { settings, error } = await this.getSettings(inter.guildId);
         if (error) {
-            logger.error("An error occurred", error);
+            logger.error("An error occurred while retrieving your settings.", error);
             return;
         }
+
         if (settings?.boards.includes(channel.id)) {
-            logger.info(`${channel} is already an imageboard.`);
+            logger.info({
+                interaction: `Imageboard already enabled on ${channel}.`,
+                logger: `Imageboard already enabled on ${channel.name}.`
+            });
             return;
         }
 
         try {
-            if (settings !== null) {
-                await container.prisma.imageboard.update({
-                    where: { gid: inter.guildId },
-                    data: { boards: { push: channel.id } }
-                });
-            } else {
-                await container.prisma.imageboard.create({
-                    data: {
+            await this.db
+                .insert(imageboardTable)
+                .values([
+                    {
                         gid: inter.guildId,
                         boards: [channel.id]
                     }
+                ])
+                .onConflictDoUpdate({
+                    target: imageboardTable.gid,
+                    set: { boards: arrayAppend(imageboardTable.boards, channel.id) }
                 });
-            }
-            logger.info(`Imageboards enabled on ${channel}`);
+            logger.info({
+                interaction: `Enabled imageboard on ${channel}.`,
+                logger: `Enabled imageboard on ${channel.name}.`
+            });
         } catch (error) {
-            logger.error("An unexpected error occurred.", error);
+            logger.error("An error occurred", error);
         }
     }
 
-    public async chatInputDisable(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
-        const logger = this.logger(inter);
-        const channel = inter.options.getChannel("channel", true);
+    public async chatInputDisable(inter: Subcommand.ChatInputCommandInteraction<"cached">) {
+        const logger = this.getCommandLogger(inter);
+        const channel = inter.options.getChannel<ChannelType.GuildText>("channel", true);
 
         const { settings, error } = await this.getSettings(inter.guildId);
         if (error) {
-            logger.error("An error occurred", error);
+            logger.error("An error occurred while retrieving your settings.", error);
             return;
         }
-        if (settings === null || !settings.boards.includes(channel.id)) {
-            logger.info(`You must enable imageboards on ${channel} first.`);
+        if (!settings?.boards.includes(channel.id)) {
+            logger.info({
+                interaction: `You must enable imageboards on ${channel} first.`,
+                logger: `You must enable imageboards on ${channel.name} first.`
+            });
             return;
         }
 
-        const newBoards = settings.boards.filter((b) => b !== channel.id);
         try {
-            if (newBoards.length === 0) {
-                await container.prisma.imageboard.delete({
-                    where: { gid: inter.guildId }
-                });
-            } else {
-                await container.prisma.imageboard.update({
-                    where: { gid: inter.guildId },
-                    data: { boards: { set: newBoards } }
-                });
-            }
-            logger.info(`Imageboards disabled on ${channel}`);
+            await this.db
+                .update(imageboardTable)
+                .set({ boards: arrayRemove(imageboardTable.boards, channel.id) })
+                .where(eq(imageboardTable.gid, inter.guildId));
+            logger.info({
+                interaction: `Disabled imageboard on ${channel}.`,
+                logger: `Disabled imageboard on ${channel.name}.`
+            });
         } catch (error) {
-            logger.error("An unexpected error occurred.", error);
+            logger.error("An error occurred", error);
         }
     }
 
-    public async chatInputWhitelistAdd(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
-        const logger = this.logger(inter);
-        const role = inter.options.getRole("role", true);
+    public async chatInputWhitelistAdd(inter: Subcommand.ChatInputCommandInteraction<"cached">) {
+        const logger = this.getCommandLogger(inter);
 
+        const role = inter.options.getRole("role", true);
         const { settings, error } = await this.getSettings(inter.guildId);
         if (error) {
-            logger.error("An error occurred", error);
+            logger.error("An error occurred while retrieving your settings.", error);
             return;
         }
-        if (settings === null) {
+        if (settings === undefined) {
             logger.info("You must set up an imageboard first.");
             return;
         }
-
         if (settings.whitelist.includes(role.id)) {
             logger.info("Role is already whitelisted.");
             return;
         }
 
         try {
-            await container.prisma.imageboard.update({
-                where: { gid: inter.guildId },
-                data: {
-                    whitelist: { push: role.id }
-                }
+            await this.db
+                .update(imageboardTable)
+                .set({ whitelist: arrayAppend(imageboardTable.whitelist, role.id) })
+                .where(eq(imageboardTable.gid, inter.guildId));
+            logger.info({
+                interaction: `Added ${role} to imageboard whitelist.`,
+                logger: `Added ${role.name} to imageboard whitelist.`
             });
-            logger.info(`${role} whitelisted from imageboard channels.`);
         } catch (error) {
             logger.error("An unexpected error occurred.", error);
         }
     }
 
     public async chatInputWhitelistRemove(inter: Subcommand.ChatInputCommandInteraction<"cached" | "raw">) {
-        const logger = this.logger(inter);
+        const logger = this.getCommandLogger(inter);
         const role = inter.options.getRole("role", true);
 
         const { settings, error } = await this.getSettings(inter.guildId);
         if (error) {
-            logger.error("An error occurred", error);
+            logger.error("An error occurred while retrieving settings.", error);
             return;
         }
-        if (settings === null) {
+        if (settings === undefined) {
             logger.info("You must set up an imageboard first.");
             return;
         }
@@ -140,11 +148,14 @@ export class ImageBoardCommand extends LoggerSubcommand {
         }
 
         try {
-            await container.prisma.imageboard.update({
-                where: { gid: inter.guildId },
-                data: { boards: { set: settings.whitelist.filter((id) => id !== role.id) } }
+            await this.db
+                .update(imageboardTable)
+                .set({ whitelist: arrayRemove(imageboardTable.whitelist, role.id) })
+                .where(eq(imageboardTable.gid, inter.guildId));
+            logger.info({
+                interaction: `Removed ${role} from imageboard whitelist.`,
+                logger: `Removed ${role.name} from imageboard whitelist.`
             });
-            logger.info(`${role} removed from imageboard whitelist.`);
         } catch (error) {
             logger.error("An unexpected error occurred.", error);
         }
@@ -152,12 +163,12 @@ export class ImageBoardCommand extends LoggerSubcommand {
 
     private async getSettings(guildId: string) {
         try {
-            const settings = await container.prisma.imageboard.findFirst({
-                where: { gid: guildId }
+            const settings = await this.db.query.imageboard.findFirst({
+                where: eq(imageboardTable.gid, guildId)
             });
             return { error: null, settings };
         } catch (error) {
-            return { error, settings: null };
+            return { error, settings: undefined };
         }
     }
 }

@@ -1,10 +1,10 @@
 import { sql } from "drizzle-orm";
 import { boolean, pgTable, serial, text, varchar } from "drizzle-orm/pg-core";
 
-export const channelSettings = pgTable("channel_settings", {
+export const imageboard = pgTable("imageboard", {
     gid: varchar("gid").primaryKey(),
-    media_only: text("media_only").array().notNull(),
-    exempted_roles: text("exempted_roles")
+    boards: text("boards").array().notNull(),
+    whitelist: text("whitelist")
         .array()
         .default(sql`'{}'::text[]`)
         .notNull()
