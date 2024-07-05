@@ -45,14 +45,14 @@ const add_role = new SlashCommandSubcommandBuilder()
     .addChannelOption((opt) =>
         opt
             .setName("channel")
-            .setDescription("The channel where the react-role is")
+            .setDescription("The channel containing the react-role")
             .addChannelTypes(ChannelType.GuildText)
             .setRequired(true)
     )
     .addStringOption((opt) =>
         opt
             .setName("title")
-            .setDescription("The title of the react-role to modify")
+            .setDescription("The title of the react-role group to modify")
             .setRequired(true)
     )
     .addRoleOption((opt) =>
@@ -64,7 +64,7 @@ const add_role = new SlashCommandSubcommandBuilder()
     .addStringOption((opt) =>
         opt
             .setName("emoji")
-            .setDescription("The emoji to represent this role")
+            .setDescription("The emoji to react to")
             .setRequired(true)
     );
 
@@ -74,14 +74,14 @@ const remove_role = new SlashCommandSubcommandBuilder()
     .addChannelOption((opt) =>
         opt
             .setName("channel")
-            .setDescription("The channel the react-roles are in")
+            .setDescription("The channel the react-role group is in")
             .addChannelTypes(ChannelType.GuildText)
             .setRequired(true)
     )
     .addStringOption((opt) =>
         opt
             .setName("title")
-            .setDescription("The react-role to modify")
+            .setDescription("The title of the react-role group to modify")
             .setRequired(true)
     )
     .addRoleOption((opt) =>
@@ -97,20 +97,20 @@ const edit = new SlashCommandSubcommandBuilder()
     .addChannelOption((opt) =>
         opt
             .setName("channel")
-            .setDescription("The channel where the react-role is")
+            .setDescription("The channel containing the react-role group")
             .addChannelTypes(ChannelType.GuildText)
             .setRequired(true)
     )
     .addStringOption((opt) =>
         opt
             .setName("title")
-            .setDescription("The react-role to modify")
+            .setDescription("The title of the react-role group to modify")
             .setRequired(true)
     )
     .addStringOption((opt) =>
         opt
             .setName("new_title")
-            .setDescription("The new title of the react-role")
+            .setDescription("The new title of the react-role group")
     )
     .addStringOption((opt) =>
         opt
@@ -132,7 +132,7 @@ const edit = new SlashCommandSubcommandBuilder()
 
 const reactroles = new SlashCommandBuilder()
     .setName("reactroles")
-    .setDescription("Reaction-role commands")
+    .setDescription("Create and manage react roles, messages that allow users to assign themselves roles.")
     .addSubcommand(create)
     .addSubcommand(add_role)
     .addSubcommand(remove_role)

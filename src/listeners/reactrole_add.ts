@@ -1,6 +1,8 @@
 import { ApplyOptions } from "@sapphire/decorators";
+import { RoleMentionRegex } from "@sapphire/discord.js-utilities";
 import { Events, Listener } from "@sapphire/framework";
-import { MessageReaction, User } from "discord.js";
+import { ReactRolesCommand } from "../commands/reactroles";
+import { GuildMember, MessageReaction, User } from "discord.js";
 
 @ApplyOptions<Listener.Options>({
     event: Events.MessageReactionAdd
@@ -21,7 +23,7 @@ export class ReactRoleAddListener extends Listener {
         }
 
         const [embed] = message.embeds;
-        if (embed.footer?.text.match("reactroles") === null) {
+        if (ReactRolesCommand.isReactRole(embed)) {
             return;
         }
 
@@ -30,7 +32,7 @@ export class ReactRoleAddListener extends Listener {
             return;
         }
 
-        const match = field.value.match(/^<@&(\d+)>$/);
+        const match = field.value.match(RoleMentionRegex);
         if (!match) {
             return;
         }
@@ -41,10 +43,21 @@ export class ReactRoleAddListener extends Listener {
             return;
         }
 
-        const member = await message.guild.members.fetch(user.id);
-        member.roles.add(role).catch((e) => {
-            this.container.logger.error(e);
-            member.send(`I could not give you the role "${role.name}". Contact the server administration to make sure that my role (leekbeta) is above the requested role.`);
-        });
+        let member: GuildMember | null = null;
+        try {
+            member = await message.guild.members.fetch(user.id);
+        } catch (error) {
+            return;
+        }
+
+        if (member.roles.cache.has(roleID)) {
+            return;
+        }
+
+        try {
+            await member.roles.add(role);
+        } catch (error) {
+            console.error(error);
+        }
     }
 }

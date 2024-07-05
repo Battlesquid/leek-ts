@@ -1,6 +1,8 @@
 import { ApplyOptions } from "@sapphire/decorators";
+import { RoleMentionRegex } from "@sapphire/discord.js-utilities";
 import { Events, Listener } from "@sapphire/framework";
-import { MessageReaction, User } from "discord.js";
+import { ReactRolesCommand } from "../commands/reactroles";
+import { GuildMember, MessageReaction, Role, User } from "discord.js";
 
 @ApplyOptions<Listener.Options>({
     event: Events.MessageReactionRemove
@@ -21,7 +23,7 @@ export class ReactRoleRemoveListener extends Listener {
         }
 
         const [embed] = message.embeds;
-        if (embed.footer?.text.match("reactroles") === null) {
+        if (!ReactRolesCommand.isReactRole(embed)) {
             return;
         }
 
@@ -30,20 +32,37 @@ export class ReactRoleRemoveListener extends Listener {
             return;
         }
 
-        const match = field.value.match(/^<@&(?<id>\d+)>$/);
+        const match = field.value.match(RoleMentionRegex);
         if (!match) {
             return;
         }
 
         const roleID = match.groups!.id;
-        const role = await message.guild.roles.fetch(roleID);
-        if (!role) {
+        let role: Role | null = null;
+        try {
+            role = await message.guild.roles.fetch(roleID);
+            if (!role) {
+                return;
+            }
+        } catch (error) {
             return;
         }
 
-        const member = await message.guild.members.fetch(user.id);
-        member.roles
-            .remove(role)
-            .catch(() => member.send(`I could not give you the role "${role.name}". Contact the server administration to make sure that my role (leekbeta) is above the requested role.`));
+        let member: GuildMember | null = null;
+        try {
+            member = await message.guild.members.fetch(user.id);
+        } catch (error) {
+            return;
+        }
+
+        if (member.roles.cache.has(roleID)) {
+            return;
+        }
+
+        try {
+            await member.roles.remove(role);
+        } catch (error) {
+            console.error(error);
+        }
     }
 }

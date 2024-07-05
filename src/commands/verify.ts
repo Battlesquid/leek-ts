@@ -203,8 +203,8 @@ export class VerifyCommand extends LoggerSubcommand {
                 gid: inter.guildId,
                 autogreet,
                 roles: [role.id],
-                join_ch: join_ch.id
-                // type: ""
+                join_ch: join_ch.id,
+                type: ""
             }
         });
         inter.reply("Verification enabled.");
