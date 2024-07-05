@@ -2,10 +2,10 @@ import { ApplyOptions } from "@sapphire/decorators";
 import { container } from "@sapphire/framework";
 import { Subcommand } from "@sapphire/plugin-subcommands";
 import { isNullOrUndefined } from "@sapphire/utilities";
-import { CommandLogger, EMOJI_REGEX, LoggerSubcommand } from "@utils";
+import { CommandLogger, EMOJI_REGEX, LoggerSubcommand } from "../utils";
 import { ChannelType, ColorResolvable, Embed, EmbedBuilder, Message, TextChannel, roleMention } from "discord.js";
 import emojiRegex from "emoji-regex";
-import { reactroles } from "interactions";
+import { reactroles } from "../interactions";
 
 @ApplyOptions<Subcommand.Options>({
     name: reactroles.commands.chat.base.name,

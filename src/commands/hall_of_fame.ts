@@ -1,11 +1,10 @@
-import { hall_of_fame } from "@interactions";
+import { hall_of_fame } from "../interactions";
 import { ApplyOptions } from "@sapphire/decorators";
 import { container } from "@sapphire/framework";
 import { Subcommand } from "@sapphire/plugin-subcommands";
-import { timestring } from "@utils";
+import { timestring } from "../utils";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, EmbedBuilder, Snowflake, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextChannel, TimestampStyles } from "discord.js";
-import { chatInputCommand, messageCommand } from "utils/command";
-import { LoggerSubcommand } from "utils/command/logger_subcommand";
+import { chatInputCommand, messageCommand, LoggerSubcommand } from "../utils/bot";
 
 type HallChannel<> = {
     id: Snowflake;

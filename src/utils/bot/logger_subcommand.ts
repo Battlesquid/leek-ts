@@ -1,6 +1,6 @@
 import { Subcommand } from "@sapphire/plugin-subcommands";
 import { randomUUID } from "crypto";
-import { PinoLoggerAdapter } from "logger/pino_logger_adapter";
+import { PinoLoggerAdapter } from "../../logger/pino_logger_adapter";
 import { Logger } from "pino";
 
 export class LoggerSubcommand extends Subcommand {

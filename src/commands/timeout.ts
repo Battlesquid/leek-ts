@@ -2,9 +2,9 @@ import { ApplyOptions } from "@sapphire/decorators";
 import { isGuildMember, isTextBasedChannel } from "@sapphire/discord.js-utilities";
 import { Command, container } from "@sapphire/framework";
 import { Subcommand } from "@sapphire/plugin-subcommands";
-import { CommandLogger, ModerationLogBuilder } from "@utils";
+import { CommandLogger, ModerationLogBuilder } from "../utils";
 import { userMention } from "discord.js";
-import { timeout } from "interactions";
+import { timeout } from "../interactions";
 import ms from "ms";
 
 @ApplyOptions<Subcommand.Options>({

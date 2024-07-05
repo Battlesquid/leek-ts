@@ -1,9 +1,9 @@
-import { VerifyRequestModal } from "@modals";
+import { VerifyRequestModal } from "../modals";
 import { Prisma, VerifySettings } from "@prisma/client";
 import { ApplyOptions } from "@sapphire/decorators";
 import { container } from "@sapphire/framework";
 import { Subcommand } from "@sapphire/plugin-subcommands";
-import { PaginatedEmbed } from "@utils";
+import { PaginatedEmbed } from "../utils";
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -18,9 +18,9 @@ import {
     inlineCode,
     userMention
 } from "discord.js";
-import { verify } from "interactions";
-import emojis from "utils/emojis";
-import { LoggerSubcommand } from "utils/command/logger_subcommand";
+import { verify } from "../interactions";
+import emojis from "../utils/emojis";
+import { LoggerSubcommand } from "../utils/bot/logger_subcommand";
 
 @ApplyOptions<Subcommand.Options>({
     name: "verify",

@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, SlashCommandSubcommandBuilder } from "@discordjs/builders";
 import { ChannelType } from "discord.js";
-import { CommandBundle } from "interactions";
+import { CommandBundle } from ".";
 
 const enable = new SlashCommandSubcommandBuilder()
     .setName("enable")

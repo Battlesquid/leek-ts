@@ -1,4 +1,4 @@
-import { VerifyRequestModal } from "@modals";
+import { VerifyRequestModal } from "../modals";
 import { InteractionHandler, InteractionHandlerTypes } from "@sapphire/framework";
 import type { ModalSubmitInteraction } from "discord.js";
 

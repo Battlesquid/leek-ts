@@ -1,6 +1,6 @@
 import { ApplyOptions } from "@sapphire/decorators";
 import { Events, Listener } from "@sapphire/framework";
-import { URL_REGEX } from "@utils";
+import { URL_REGEX } from "../utils";
 import { Message } from "discord.js";
 
 @ApplyOptions<Listener.Options>({

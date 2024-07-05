@@ -3,7 +3,7 @@ import {
     SlashCommandSubcommandBuilder,
 } from "@discordjs/builders";
 import { ChannelType } from "discord.js";
-import { CommandBundle } from "interactions";
+import { CommandBundle } from ".";
 
 const enable = new SlashCommandSubcommandBuilder()
     .setName("enable")
@@ -13,7 +13,7 @@ const enable = new SlashCommandSubcommandBuilder()
             .setName("type")
             .setDescription("The type of log to enable")
             .addChoices(
-                { name: "text", value: "text" },
+                { name: "message", value: "text" },
                 { name: "image", value: "image" },
                 { name: "moderation", value: "moderation" },
             )
@@ -35,8 +35,9 @@ const disable = new SlashCommandSubcommandBuilder()
             .setName("type")
             .setDescription("The type of log to disable")
             .addChoices(
-                { name: "text", value: "text" },
-                { name: "image", value: "image" }
+                { name: "message", value: "text" },
+                { name: "image", value: "image" },
+                { name: "moderation", value: "moderation" },
             )
             .setRequired(true)
     );

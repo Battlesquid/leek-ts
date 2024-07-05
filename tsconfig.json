@@ -1,19 +1,10 @@
 {
-    "ts-node": {
-        "require": ["tsconfig-paths/register"]
-    },
     "compilerOptions": {
         "target": "es2017",
         "lib": ["es5", "es6"],
         "module": "commonjs",
         "baseUrl": "./src",
         "outDir": "./dist",
-        "paths": {
-            "@utils": ["utils/"],
-            "@db": ["db/"],
-            "@interactions": ["interactions/"],
-            "@modals": ["modals/"]
-        },
         "resolveJsonModule": true,
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,

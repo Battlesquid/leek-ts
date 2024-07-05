@@ -1,0 +1,1 @@
+ALTER TABLE "log_settings" RENAME COLUMN "text" TO "message";

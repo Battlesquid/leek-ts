@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandBundle } from "interactions";
+import { CommandBundle } from ".";
 
 const timeout = new SlashCommandBuilder()
     .setName("timeout")

@@ -1,12 +1,12 @@
 import { config as configenv } from "dotenv";
 import * as path from "path";
 
-const ENV_VARIABLES = ["DISCORD_TOKEN", "NODE_ENV", "PARSEABLE_ENDPOINT", "PARSEABLE_USERNAME", "PARSEABLE_PASSWORD"] as const;
+const ENV_VARIABLES = ["DISCORD_TOKEN", "NODE_ENV", "PARSEABLE_ENDPOINT", "PARSEABLE_USERNAME", "PARSEABLE_PASSWORD", "DB_HOST", "DB_PORT", "DB_USER", "DB_PASSWORD", "DB_NAME"] as const;
 
 type ConfigVariable = (typeof ENV_VARIABLES)[number];
 
 const loadConfig = () => {
-    const { error } = configenv({ path: path.resolve(__dirname, "../../../.env") });
+    const { error } = configenv({ path: path.resolve(__dirname, "../.env") });
     if (error) {
         console.error(error);
         throw Error("Environment variables could not be loaded, exiting");

@@ -3,7 +3,7 @@ import {
     SlashCommandSubcommandBuilder,
 } from "@discordjs/builders";
 import { ApplicationCommandType, ChannelType, ContextMenuCommandBuilder } from "discord.js";
-import { CommandBundle } from "interactions";
+import { CommandBundle } from ".";
 
 const enable = new SlashCommandSubcommandBuilder()
     .setName("enable")

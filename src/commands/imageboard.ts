@@ -1,9 +1,8 @@
-import { imageboard } from "@interactions";
+import { imageboard } from "../interactions";
 import { ApplyOptions } from "@sapphire/decorators";
 import { container } from "@sapphire/framework";
 import { Subcommand } from "@sapphire/plugin-subcommands";
-import { CommandLogger, chatInputCommand } from "utils/command";
-import { LoggerSubcommand } from "utils/command/logger_subcommand";
+import { CommandLogger, chatInputCommand, LoggerSubcommand } from "../utils/bot";
 
 @ApplyOptions<Subcommand.Options>({
     name: imageboard.commands.chat.base.name,
