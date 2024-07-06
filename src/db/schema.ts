@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { boolean, pgTable, serial, text, varchar } from "drizzle-orm/pg-core";
+import { boolean, pgTable, primaryKey, text, varchar } from "drizzle-orm/pg-core";
 
 export const imageboard = pgTable("imageboard", {
     gid: varchar("gid").primaryKey(),
@@ -17,12 +17,21 @@ export const logSettings = pgTable("log_settings", {
     moderation: varchar("moderation")
 });
 
-export const verifyEntry = pgTable("verify_entry", {
-    id: serial("id").primaryKey(),
-    gid: varchar("gid").notNull(),
-    uid: varchar("uid").notNull(),
-    nick: varchar("nick", { length: 32 }).notNull()
-});
+export const verifyEntry = pgTable(
+    "verify_entry",
+    {
+        gid: varchar("gid").notNull(),
+        uid: varchar("uid").notNull(),
+        nick: varchar("nick", { length: 32 }).notNull()
+    },
+    (table) => {
+        return {
+            pk: primaryKey({ columns: [table.gid, table.uid] })
+        };
+    }
+);
+
+export type VerifyUser = typeof verifyEntry.$inferSelect;
 
 export const verifySettings = pgTable("verify_settings", {
     gid: varchar("gid").notNull(),
@@ -30,3 +39,5 @@ export const verifySettings = pgTable("verify_settings", {
     roles: text("roles").array().notNull(),
     autogreet: boolean("autogreet").default(false).notNull()
 });
+
+export type VerifySettings = typeof verifySettings.$inferSelect;

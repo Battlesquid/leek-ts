@@ -4,6 +4,7 @@ import { randomUUID } from "crypto";
 import { InteractionReplyOptions } from "discord.js";
 import { PinoLoggerAdapter } from "../../logger/pino_logger_adapter";
 import { Logger } from "pino";
+import { ttry } from "../../utils/try";
 
 export interface ExtendedInteractionReplyOptions extends InteractionReplyOptions {
     followUp?: boolean;
@@ -30,22 +31,22 @@ export class CommandLogger {
         this.replied = false;
     }
 
-    public info(content: string | SplitCommandLoggerContent, extras?: object, options?: ExtendedInteractionReplyOptions) {
+    public async info(content: string | SplitCommandLoggerContent, extras?: object, options?: ExtendedInteractionReplyOptions) {
         const { logger: loggerContent, interaction: interactionContent } = this.parseContent(content);
         this.logger.info({ ...extras }, loggerContent);
-        this.respond(interactionContent, options);
+        await this.respond(interactionContent, options);
     }
 
-    public warn(content: string | SplitCommandLoggerContent, extras?: object, options?: ExtendedInteractionReplyOptions) {
+    public async warn(content: string | SplitCommandLoggerContent, extras?: object, options?: ExtendedInteractionReplyOptions) {
         const { logger: loggerContent, interaction: interactionContent } = this.parseContent(content);
         this.logger.warn({ ...extras }, loggerContent);
-        this.respond(interactionContent, options);
+        await this.respond(interactionContent, options);
     }
 
-    public error(content: string | SplitCommandLoggerContent, error: unknown, options?: ExtendedInteractionReplyOptions) {
+    public async error(content: string | SplitCommandLoggerContent, error: unknown, options?: ExtendedInteractionReplyOptions) {
         const { logger: loggerContent, interaction: interactionContent } = this.parseContent(content);
         this.logger.error({ error }, loggerContent);
-        this.respond(interactionContent, options);
+        await this.respond(interactionContent, options);
     }
 
     private parseContent(content: string | SplitCommandLoggerContent) {
@@ -58,12 +59,14 @@ export class CommandLogger {
         return content;
     }
 
-    private respond(content: string, options?: ExtendedInteractionReplyOptions) {
-        if (this.replied) {
-            this.interaction.followUp({ content, ...options });
-            return;
-        }
-        this.interaction.reply({ content, ...options });
-        this.replied = true;
+    private async respond(content: string, options?: ExtendedInteractionReplyOptions) {
+        return ttry(async () => {
+            if (this.replied) {
+                await this.interaction.followUp({ content, ...options });
+                return;
+            }
+            await this.interaction.reply({ content, ...options });
+            this.replied = true;
+        });
     }
 }
