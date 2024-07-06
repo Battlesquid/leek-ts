@@ -1,9 +1,15 @@
-import { Listener } from "@sapphire/framework";
+import { ApplyOptions } from "@sapphire/decorators";
+import { Events, Listener } from "@sapphire/framework";
+import { isNullish, isNullishOrEmpty } from "@sapphire/utilities";
 import axios from "axios";
-import { Colors, EmbedBuilder, Message, TextChannel } from "discord.js";
+import { Attachment, Colors, EmbedBuilder, Message, MessageCreateOptions, TextChannel } from "discord.js";
+import { eq } from "drizzle-orm";
 import { Stream } from "stream";
+import { logSettings } from "../db/schema";
+import { AugmentedListener } from "../utils";
+import { ttry } from "../utils/try";
 
-function fetchImage(url: string) {
+const fetchImage = (url: string) => {
     return new Promise<Buffer>((resolve, reject) => {
         const bytes: Uint8Array[] = [];
         axios
@@ -20,108 +26,121 @@ function fetchImage(url: string) {
             })
             .catch((e) => reject(e));
     });
-}
+};
 
-async function processImageLog(msg: Message<true>, img_ch: string) {
-    const ch = (await msg.guild.channels.fetch(img_ch)) as TextChannel | null;
-    if (ch === null) {
+const createPayload = async (attachment: Attachment, message: Message<true>): Promise<MessageCreateOptions | null> => {
+    const match = attachment.contentType?.match(/png|jpg|jpeg|gif|webp/);
+    if (!match) {
+        return null;
+    }
+    const [ext] = match;
+    let buffer: Buffer;
+    try {
+        buffer = await fetchImage(attachment.proxyURL);
+    } catch (error) {
+        return null;
+    }
+    const embed = new EmbedBuilder()
+        .setTitle("Image Deleted")
+        .setDescription(`Sent by ${message.member} in ${message.channel}`)
+        .setColor(Colors.DarkRed)
+        .setImage(`attachment://deleted.${ext}`)
+        .setTimestamp(Date.now());
+    return {
+        embeds: [embed],
+        files: [
+            {
+                attachment: buffer,
+                name: `deleted.${ext}`,
+                description: `deleted by ${message.member} in ${message.channel}`
+            }
+        ]
+    };
+};
+
+// TODO add support for plain urls
+const handleImageLog = async (message: Message<true>, imageChannel: string) => {
+    const channel = (await message.guild.channels.fetch(imageChannel)) as TextChannel | null;
+    if (channel === null) {
         return;
     }
 
-    // TODO add support for plain urls
-
-    msg.attachments
-        .map((attach) => {
-            const ext = attach.contentType?.match("png|jpg|jpeg|gif|webp") ?? null;
-            if (ext === null) {
-                return undefined;
-            }
-            return {
-                url: attach.proxyURL,
-                ext
-            };
-        })
-        .forEach(async (attach) => {
-            if (attach === undefined) {
+    try {
+        const results = (await Promise.all(message.attachments.map((a) => createPayload(a, message)))).filter((r): r is MessageCreateOptions => r !== null);
+        results.forEach(async (payload) => {
+            try {
+                await channel.send(payload);
+            } catch (error) {
                 return;
             }
-
-            const buffer = await fetchImage(attach.url);
-
-            const embed = new EmbedBuilder()
-                .setTitle("Image Deleted")
-                .setDescription(`Sent by ${msg.member} in ${msg.channel}`)
-                .setColor(Colors.DarkRed)
-                .setImage(`attachment://deleted.${attach.ext}`)
-                .setTimestamp(Date.now());
-
-            ch.send({
-                embeds: [embed],
-                files: [
-                    {
-                        attachment: buffer,
-                        name: `deleted.${attach.ext}`,
-                        description: `deleted by ${msg.member} in ${msg.channel}`
-                    }
-                ]
-            });
         });
-}
+    } catch (error) {
+        return;
+    }
+};
 
-async function processTextLog(msg: Message<true>, txt_ch: string) {
-    const ch = (await msg.guild.channels.fetch(txt_ch)) as TextChannel | null;
-    if (ch === null) {
+const handleMessageLog = async (message: Message<true>, textChannel: string) => {
+    if (isNullishOrEmpty(message.content)) {
         return;
     }
 
-    const msgs = await msg.channel.messages.fetch({
-        before: msg.id,
+    const channel = (await message.guild.channels.fetch(textChannel)) as TextChannel | null;
+    if (channel === null) {
+        return;
+    }
+
+    const msgs = await message.channel.messages.fetch({
+        before: message.id,
         limit: 1
     });
-
     const first = msgs.first();
-    const context = first ? `[Jump to context](${first.url})` : "`No context available`";
+    const context = first ? `[Context](${first.url})` : "`No context available`";
 
     const embed = new EmbedBuilder()
         .setTitle("Message Deleted")
-        .setDescription(
-            `
-            Sent by ${msg.author} in ${msg.channel}
-            
-            ${msg.content}
-            
-            ${context}
-            `
-        )
+        .setDescription(`Sent by ${message.author} in ${message.channel}\n${context}`)
+        .addFields({ name: "Content", value: message.content, inline: false })
         .setColor(Colors.DarkRed)
         .setTimestamp(Date.now());
-    ch.send({ embeds: [embed] });
-}
-
-export class LogListener extends Listener {
-    public constructor(context: Listener.LoaderContext, options: Listener.Options) {
-        super(context, {
-            ...options,
-            event: "messageDelete"
-        });
+    try {
+        await channel.send({ embeds: [embed] });
+    } catch (error) {
+        return;
     }
+};
+
+@ApplyOptions<Listener.Options>({
+    event: Events.MessageDelete
+})
+export class LogListener extends AugmentedListener {
     async run(msg: Message) {
         if (!msg.inGuild()) {
             return;
         }
 
-        const settings = await this.container.prisma.logSettings.findFirst({
-            where: { gid: msg.guildId }
-        });
-        if (settings === null) {
+        const {
+            result: settings,
+            ok,
+            error: err
+        } = await ttry(() =>
+            this.db.query.logSettings.findFirst({
+                where: eq(logSettings.gid, msg.guildId)
+            })
+        );
+        if (isNullish(settings) || !ok) {
+            console.log(err);
             return;
         }
 
-        if (settings.image) {
-            processImageLog(msg, settings.image);
-        }
-        if (settings.text) {
-            processTextLog(msg, settings.text);
+        try {
+            if (settings.image) {
+                handleImageLog(msg, settings.image);
+            }
+            if (settings.message) {
+                handleMessageLog(msg, settings.message);
+            }
+        } catch (error) {
+            return;
         }
     }
 }

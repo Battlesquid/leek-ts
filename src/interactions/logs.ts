@@ -13,7 +13,7 @@ const enable = new SlashCommandSubcommandBuilder()
             .setName("type")
             .setDescription("The type of log to enable")
             .addChoices(
-                { name: "message", value: "text" },
+                { name: "message", value: "message" },
                 { name: "image", value: "image" },
                 { name: "moderation", value: "moderation" },
             )
@@ -35,7 +35,7 @@ const disable = new SlashCommandSubcommandBuilder()
             .setName("type")
             .setDescription("The type of log to disable")
             .addChoices(
-                { name: "message", value: "text" },
+                { name: "message", value: "message" },
                 { name: "image", value: "image" },
                 { name: "moderation", value: "moderation" },
             )
