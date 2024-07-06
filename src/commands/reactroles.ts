@@ -126,7 +126,7 @@ export class ReactRolesCommand extends AugmentedSubcommand {
         const emoji = inter.options.getString("emoji", true);
 
         if (!(emojiRegex().test(emoji) || EMOJI_REGEX.test(emoji))) {
-            logger.info("Malformed emoji, exiting");
+            logger.info("Malformed emoji, exiting.");
             return;
         }
         const [msg, reactrole] = await this.findReactRole(channel, title);
