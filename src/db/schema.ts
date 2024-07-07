@@ -35,9 +35,10 @@ export type VerifyUser = typeof verifyEntry.$inferSelect;
 
 export const verifySettings = pgTable("verify_settings", {
     gid: varchar("gid").notNull(),
-    join_ch: varchar("join_ch").notNull(),
+    type: varchar("type").default("message").notNull(),
+    new_user_channel: varchar("new_user_channel"),
     roles: text("roles").array().notNull(),
-    autogreet: boolean("autogreet").default(false).notNull()
+    create_greeting: boolean("create_greeting").default(false).notNull()
 });
 
 export type VerifySettings = typeof verifySettings.$inferSelect;

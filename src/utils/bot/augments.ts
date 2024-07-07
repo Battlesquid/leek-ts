@@ -1,8 +1,9 @@
 import { Command, Listener } from "@sapphire/framework";
 import { Subcommand } from "@sapphire/plugin-subcommands";
 import { CommandLogger } from "./command_logger";
+import { ClientEvents } from "discord.js";
 
-export class AugmentedSubcommand extends Subcommand {
+export abstract class AugmentedSubcommand extends Subcommand {
     get db() {
         return this.container.drizzle;
     }
@@ -22,12 +23,10 @@ export class AugmentedCommand extends Command {
     }
 }
 
-export class AugmentedListener extends Listener {
+export abstract class AugmentedListener<T extends keyof ClientEvents> extends Listener<T> {
     get db() {
         return this.container.drizzle;
     }
 
-    run(..._args: unknown[]): unknown {
-        throw new Error("Method not implemented.");
-    }
+    abstract run(...args: T extends keyof ClientEvents ? ClientEvents[T] : unknown[]): unknown;
 }

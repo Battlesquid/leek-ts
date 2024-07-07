@@ -2,9 +2,8 @@ import { Command, ILogger } from "@sapphire/framework";
 import { Subcommand } from "@sapphire/plugin-subcommands";
 import { randomUUID } from "crypto";
 import { InteractionReplyOptions } from "discord.js";
-import { PinoLoggerAdapter } from "../../logger/pino_logger_adapter";
 import { Logger } from "pino";
-import { ttry } from "../../utils/try";
+import { PinoLoggerAdapter } from "../../logger/pino_logger_adapter";
 
 export interface ExtendedInteractionReplyOptions extends InteractionReplyOptions {
     followUp?: boolean;
@@ -34,19 +33,19 @@ export class CommandLogger {
     public async info(content: string | SplitCommandLoggerContent, extras?: object, options?: ExtendedInteractionReplyOptions) {
         const { logger: loggerContent, interaction: interactionContent } = this.parseContent(content);
         this.logger.info({ ...extras }, loggerContent);
-        await this.respond(interactionContent, options);
+        return this.respond(interactionContent, options);
     }
 
     public async warn(content: string | SplitCommandLoggerContent, extras?: object, options?: ExtendedInteractionReplyOptions) {
         const { logger: loggerContent, interaction: interactionContent } = this.parseContent(content);
         this.logger.warn({ ...extras }, loggerContent);
-        await this.respond(interactionContent, options);
+        return this.respond(interactionContent, options);
     }
 
     public async error(content: string | SplitCommandLoggerContent, error: unknown, options?: ExtendedInteractionReplyOptions) {
         const { logger: loggerContent, interaction: interactionContent } = this.parseContent(content);
         this.logger.error({ error }, loggerContent);
-        await this.respond(interactionContent, options);
+        return this.respond(interactionContent, options);
     }
 
     private parseContent(content: string | SplitCommandLoggerContent) {
@@ -60,13 +59,15 @@ export class CommandLogger {
     }
 
     private async respond(content: string, options?: ExtendedInteractionReplyOptions) {
-        return ttry(async () => {
+        try {
             if (this.replied) {
                 await this.interaction.followUp({ content, ...options });
                 return;
             }
             await this.interaction.reply({ content, ...options });
             this.replied = true;
-        });
+        } catch (error) {
+            console.error(error);
+        }
     }
 }

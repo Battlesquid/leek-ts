@@ -1,0 +1,1 @@
+ALTER TABLE "verify_settings" RENAME COLUMN "welcome_channel" TO "new_user_channel";

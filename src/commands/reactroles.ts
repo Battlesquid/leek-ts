@@ -1,9 +1,10 @@
 import { ApplyOptions } from "@sapphire/decorators";
+import { EmojiRegex } from "@sapphire/discord.js-utilities";
 import { Subcommand } from "@sapphire/plugin-subcommands";
 import { ChannelType, ColorResolvable, Embed, EmbedBuilder, Message, TextChannel, roleMention } from "discord.js";
 import emojiRegex from "emoji-regex";
 import { reactroles } from "../interactions";
-import { AugmentedSubcommand, EMOJI_REGEX, chatInputCommand } from "../utils";
+import { AugmentedSubcommand, chatInputCommand } from "../utils";
 
 @ApplyOptions<Subcommand.Options>({
     name: reactroles.commands.chat.base.name,
@@ -125,7 +126,7 @@ export class ReactRolesCommand extends AugmentedSubcommand {
         const role = inter.options.getRole("role", true);
         const emoji = inter.options.getString("emoji", true);
 
-        if (!(emojiRegex().test(emoji) || EMOJI_REGEX.test(emoji))) {
+        if (!(emojiRegex().test(emoji) || EmojiRegex.test(emoji))) {
             logger.info("Malformed emoji, exiting.");
             return;
         }
@@ -197,7 +198,7 @@ export class ReactRolesCommand extends AugmentedSubcommand {
             return;
         }
 
-        const match = roleField.name.match(EMOJI_REGEX);
+        const match = roleField.name.match(EmojiRegex);
         const emoji = match ? match.groups!.id : roleField.name;
         try {
             await msg.reactions.cache.get(emoji)?.remove();

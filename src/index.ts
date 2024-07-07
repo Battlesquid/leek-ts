@@ -27,11 +27,13 @@ const client = new SapphireClient({
 
 async function main() {
     container.drizzle = await getDatabase();
-    // container.prisma = new PrismaClient();
-    // await container.prisma.$connect();
     await client.login(config.getenv("DISCORD_TOKEN"));
 }
 
-main().finally(async () => {
-    // await container.prisma.$disconnect();
-});
+main()
+    .catch((error) => {
+        container.logger.error(error);
+    })
+    .finally(async () => {
+        // await container.prisma.$disconnect();
+    });

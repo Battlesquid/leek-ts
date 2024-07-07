@@ -37,3 +37,7 @@ export const arrayAppend = (column: PgColumn, value: unknown) => {
 export const arrayRemove = (column: PgColumn, value: unknown) => {
     return sql`array_remove(${column}, ${value})`;
 };
+
+export const arrayReplace = (column: PgColumn, target: unknown, replacement: unknown) => {
+    return sql`array_replace(${column}, ${target}, ${replacement})`;
+};

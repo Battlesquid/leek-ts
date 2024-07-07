@@ -36,6 +36,27 @@
             "when": 1720233651378,
             "tag": "0004_hot_mephisto",
             "breakpoints": true
+        },
+        {
+            "idx": 5,
+            "version": "7",
+            "when": 1720244393103,
+            "tag": "0005_bitter_lilandra",
+            "breakpoints": true
+        },
+        {
+            "idx": 6,
+            "version": "7",
+            "when": 1720244681741,
+            "tag": "0006_abnormal_red_hulk",
+            "breakpoints": true
+        },
+        {
+            "idx": 7,
+            "version": "7",
+            "when": 1720277330337,
+            "tag": "0007_lame_tusk",
+            "breakpoints": true
         }
     ]
 }

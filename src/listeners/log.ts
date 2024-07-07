@@ -112,35 +112,26 @@ const handleMessageLog = async (message: Message<true>, textChannel: string) => 
 @ApplyOptions<Listener.Options>({
     event: Events.MessageDelete
 })
-export class LogListener extends AugmentedListener {
+export class LogListener extends AugmentedListener<"messageDelete"> {
     async run(msg: Message) {
         if (!msg.inGuild()) {
             return;
         }
 
-        const {
-            result: settings,
-            ok,
-            error: err
-        } = await ttry(() =>
+        const { result: settings, ok } = await ttry(() =>
             this.db.query.logSettings.findFirst({
                 where: eq(logSettings.gid, msg.guildId)
             })
         );
         if (isNullish(settings) || !ok) {
-            console.log(err);
             return;
         }
 
-        try {
-            if (settings.image) {
-                handleImageLog(msg, settings.image);
-            }
-            if (settings.message) {
-                handleMessageLog(msg, settings.message);
-            }
-        } catch (error) {
-            return;
+        if (settings.image) {
+            ttry(() => handleImageLog(msg, settings.image!));
+        }
+        if (settings.message) {
+            ttry(() => handleMessageLog(msg, settings.message!));
         }
     }
 }
