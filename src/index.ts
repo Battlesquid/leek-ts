@@ -25,16 +25,30 @@ const client = new SapphireClient({
     }
 });
 
-async function main() {
+const main = async () => {
     container.drizzle = await getDatabase();
+    container.pg = await getPgConnection();
     await client.login(config.getenv("DISCORD_TOKEN"));
-}
+};
 
-main()
-    .catch((error) => {
-        container.logger.error(error);
-    })
-    .finally(async () => {
-        const connection = await getPgConnection();
-        await connection.end();
-    });
+const cleanup = () => {
+    container.pg.end();
+};
+
+main().catch((error) => {
+    container.logger.error(error);
+});
+
+process.on("uncaughtException", () => {
+    cleanup();
+});
+
+process.on("SIGTERM", () => {
+    cleanup();
+    process.exit(0);
+});
+
+process.on("SIGINT", () => {
+    cleanup();
+    process.exit(0);
+});

@@ -1,9 +1,11 @@
+import { ttry } from "./../utils/try";
 import { ApplyOptions } from "@sapphire/decorators";
 import { Events, Listener } from "@sapphire/framework";
 import { imageboard } from "../db/schema";
 import { Message } from "discord.js";
 import { eq } from "drizzle-orm";
 import { URL_REGEX } from "../utils";
+import { isNullish } from "@sapphire/utilities";
 
 @ApplyOptions<Listener.Options>({
     event: Events.MessageCreate
@@ -13,10 +15,16 @@ export class ImageboardCheckListener extends Listener {
         if (!msg.inGuild()) {
             return;
         }
-        const settings = await this.container.drizzle.query.imageboard.findFirst({
-            where: eq(imageboard.gid, msg.guildId)
-        });
-        if (settings === undefined) {
+        const { result: settings, error } = await ttry(() =>
+            this.container.drizzle.query.imageboard.findFirst({
+                where: eq(imageboard.gid, msg.guildId)
+            })
+        );
+        if (error) {
+            this.container.logger.error(error);
+            return;
+        }
+        if (isNullish(settings)) {
             return;
         }
 

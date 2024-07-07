@@ -5,7 +5,7 @@ import { ChannelType, ColorResolvable, Embed, EmbedBuilder, Message, TextChannel
 import emojiRegex from "emoji-regex";
 import { reactroles } from "../interactions";
 import { AugmentedSubcommand, chatInputCommand } from "../utils";
-import { ttry } from "utils/try";
+import { ttry } from "../utils/try";
 
 @ApplyOptions<Subcommand.Options>({
     name: reactroles.commands.chat.base.name,

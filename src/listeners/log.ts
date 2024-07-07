@@ -1,29 +1,18 @@
 import { ApplyOptions } from "@sapphire/decorators";
 import { Events, Listener } from "@sapphire/framework";
 import { isNullish, isNullishOrEmpty } from "@sapphire/utilities";
-import axios from "axios";
 import { Attachment, Colors, EmbedBuilder, Message, MessageCreateOptions, TextChannel } from "discord.js";
 import { eq } from "drizzle-orm";
+import fetch from "node-fetch";
 import { logSettings } from "../db/schema";
 import { AugmentedListener } from "../utils";
 import { ttry } from "../utils/try";
 
 const fetchImage = (url: string) => {
     return new Promise<Buffer>((resolve, reject) => {
-        const bytes: Uint8Array[] = [];
-        axios
-            .request({
-                method: "get",
-                url,
-                responseType: "stream"
-            })
-            .then((response) => {
-                // TODO make sure this works
-                response.data.on("data", (d: Uint8Array) => bytes.push(d));
-                response.data.on("end", () => {
-                    resolve(Buffer.concat(bytes));
-                });
-            })
+        fetch(url)
+            .then((response) => response.buffer())
+            .then((buffer) => (buffer.length > 0 ? resolve(buffer) : reject()))
             .catch((e) => reject(e));
     });
 };
@@ -59,24 +48,15 @@ const createPayload = async (attachment: Attachment, message: Message<true>): Pr
 };
 
 // TODO add support for plain urls
-const handleImageLog = async (message: Message<true>, imageChannel: string) => {
+const handleImageLog = async (message: Message<true>, imageChannel: string, payloads: MessageCreateOptions[]) => {
     const channel = (await message.guild.channels.fetch(imageChannel)) as TextChannel | null;
     if (channel === null) {
         return;
     }
 
-    try {
-        const results = (await Promise.all(message.attachments.map((a) => createPayload(a, message)))).filter((r): r is MessageCreateOptions => r !== null);
-        results.forEach(async (payload) => {
-            try {
-                await channel.send(payload);
-            } catch (error) {
-                return;
-            }
-        });
-    } catch (error) {
-        return;
-    }
+    payloads.forEach(async (payload) => {
+        ttry(() => channel.send(payload));
+    });
 };
 
 const handleMessageLog = async (message: Message<true>, textChannel: string) => {
@@ -113,14 +93,15 @@ const handleMessageLog = async (message: Message<true>, textChannel: string) => 
     event: Events.MessageDelete
 })
 export class LogListener extends AugmentedListener<"messageDelete"> {
-    async run(msg: Message) {
-        if (!msg.inGuild()) {
+    async run(message: Message) {
+        if (!message.inGuild()) {
             return;
         }
 
+        const pendingPayloads = message.attachments.map((a) => createPayload(a, message));
         const { result: settings, ok } = await ttry(() =>
             this.db.query.logSettings.findFirst({
-                where: eq(logSettings.gid, msg.guildId)
+                where: eq(logSettings.gid, message.guildId)
             })
         );
         if (isNullish(settings) || !ok) {
@@ -128,11 +109,12 @@ export class LogListener extends AugmentedListener<"messageDelete"> {
         }
 
         if (settings.image) {
-            // TODO: fetch the image immediately, then only send in this conditional
-            ttry(() => handleImageLog(msg, settings.image!));
+            const resolvedPayloads = await Promise.all(pendingPayloads);
+            const validPayloads = resolvedPayloads.filter((r): r is MessageCreateOptions => r !== null);
+            ttry(() => handleImageLog(message, settings.image!, validPayloads));
         }
         if (settings.message) {
-            ttry(() => handleMessageLog(msg, settings.message!));
+            ttry(() => handleMessageLog(message, settings.message!));
         }
     }
 }
