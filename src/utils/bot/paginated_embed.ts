@@ -18,7 +18,9 @@ export type OnCollectCallback = (collector: InteractionCollector<ButtonInteracti
 
 export type OnEndCallback = (collection: ReadonlyCollection<string, ButtonInteraction>) => Promise<void> | void;
 
-export type PaginatedEmbedFormatter<T> = (item: T, index: number) => string;
+export type PaginatedEmbedItemFormatter<T> = (item: T, index: number) => string;
+
+export type PaginatedEmbedFooterFormatter = (page: number) => string;
 
 export type PaginatedEmbedOptions<T> = {
     inter: CommandInteraction;
@@ -27,7 +29,8 @@ export type PaginatedEmbedOptions<T> = {
     template?: EmbedBuilder;
     items: T[];
     itemsPerPage?: number;
-    formatter: PaginatedEmbedFormatter<T>;
+    itemFormatter: PaginatedEmbedItemFormatter<T>;
+    footerFormatter?: PaginatedEmbedFooterFormatter;
     prev?: ButtonBuilder;
     next?: ButtonBuilder;
     actions?: ButtonBuilder[];
@@ -36,21 +39,14 @@ export type PaginatedEmbedOptions<T> = {
     onEnd?: OnEndCallback;
 };
 
-export type PaginatedTemplateOptions<T> = {
-    items: T[];
-    perPage: number;
-    pageFormatter: (page: EmbedBuilder, currPage: number) => void;
-    itemFormatter: (page: EmbedBuilder, data: T, currPage: number) => void;
-    base?: EmbedBuilder;
-};
-
 export default class PaginatedEmbed<T> {
     private inter: CommandInteraction;
     private title: string;
     private useLargeTitle: boolean;
     private template: EmbedBuilder;
     private items: T[];
-    private formatter: PaginatedEmbedFormatter<T>;
+    private itemFormatter: PaginatedEmbedItemFormatter<T>;
+    private footerFormatter?: PaginatedEmbedFooterFormatter;
     private itemsPerPage: number;
     private pages: EmbedBuilder[];
     private timeout: number;
@@ -78,7 +74,8 @@ export default class PaginatedEmbed<T> {
         this.pages = [];
         this.timeout = options.timeout;
         this.template = options.template ?? new EmbedBuilder();
-        this.formatter = options.formatter;
+        this.itemFormatter = options.itemFormatter;
+        this.footerFormatter = options.footerFormatter;
 
         this.prev = options.prev ?? this.defaultPrev;
         this.prev.setCustomId(this.PREV_BUTTON_ID);
@@ -95,12 +92,13 @@ export default class PaginatedEmbed<T> {
     }
 
     private build() {
-        const formattedItems = this.items.map(this.formatter);
+        const formattedItems = this.items.map(this.itemFormatter);
         const pages = chunk(formattedItems, this.itemsPerPage);
         const embeds = pages.map((items, index) => {
             const smallTitle = this.useLargeTitle ? "" : `${bold(this.title)}\n`;
+            const extraFooter = this.footerFormatter !== undefined ? `\n\n${this.footerFormatter(index)}` : "";
             const embed = EmbedBuilder.from(this.template)
-                .setDescription(`${smallTitle}${items.join("\n")}`)
+                .setDescription(`${smallTitle}${items.join("\n")}${extraFooter}`)
                 .setFooter({ text: `Page ${index + 1} / ${pages.length}` });
             if (this.useLargeTitle) {
                 embed.setTitle(this.title);

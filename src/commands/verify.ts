@@ -186,6 +186,7 @@ export class VerifyCommand extends AugmentedSubcommand {
             return;
         }
 
+        const rescanMention = slashCommandMention(verify.commands.chat.base.name, verify.commands.chat.subcommands.rescan.name, VerifyCommand.CHAT_INPUT_HINT_DEV);
         const template = new EmbedBuilder().setColor("Greyple");
         const SUBMIT_ID = "@leekbot/submit";
         new PaginatedEmbed({
@@ -199,7 +200,8 @@ export class VerifyCommand extends AugmentedSubcommand {
             prev: new ButtonBuilder().setEmoji(emojis.LeftArrow).setStyle(ButtonStyle.Primary),
             next: new ButtonBuilder().setEmoji(emojis.RightArrow).setStyle(ButtonStyle.Primary),
             actions: [new ButtonBuilder().setCustomId(SUBMIT_ID).setEmoji(emojis.Checkmark).setStyle(ButtonStyle.Success)],
-            formatter: (user, i) => `${inlineCode(`${i + 1}. `)}  ${bold(user.nick)} •︎ ${userMention(user.uid)}`,
+            itemFormatter: (user, i) => `${inlineCode(`${i + 1}. `)}  ${bold(user.nick)} •︎ ${userMention(user.uid)}`,
+            footerFormatter: () => `Users missing? Run ${rescanMention} to detect missed users.`,
             onCollect: async (collector, inter) => {
                 if (inter.customId !== SUBMIT_ID) {
                     return;
