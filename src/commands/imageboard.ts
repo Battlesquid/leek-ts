@@ -6,6 +6,8 @@ import { arrayAppend, arrayRemove } from "../db";
 import { imageboard as imageboardTable } from "../db/schema";
 import { imageboard } from "../interactions";
 import { AugmentedSubcommand, chatInputCommand } from "../utils/bot";
+import { ttry } from "../utils/try";
+import { isNullish } from "@sapphire/utilities";
 
 @ApplyOptions<Subcommand.Options>({
     name: imageboard.commands.chat.base.name,
@@ -37,10 +39,7 @@ export class ImageBoardCommand extends AugmentedSubcommand {
         }
 
         if (settings?.boards.includes(channel.id)) {
-            logger.info({
-                interaction: `Imageboard already enabled on ${channel}.`,
-                logger: `Imageboard already enabled on ${channel.name}.`
-            });
+            logger.info(`Imageboard already enabled on ${channel}.`);
             return;
         }
 
@@ -57,10 +56,7 @@ export class ImageBoardCommand extends AugmentedSubcommand {
                     target: imageboardTable.gid,
                     set: { boards: arrayAppend(imageboardTable.boards, channel.id) }
                 });
-            logger.info({
-                interaction: `Enabled imageboard on ${channel}.`,
-                logger: `Enabled imageboard on ${channel.name}.`
-            });
+            inter.reply(`Enabled imageboard on ${channel}.`);
         } catch (error) {
             logger.error("An error occurred", error);
         }
@@ -76,10 +72,7 @@ export class ImageBoardCommand extends AugmentedSubcommand {
             return;
         }
         if (!settings?.boards.includes(channel.id)) {
-            logger.info({
-                interaction: `You must enable imageboards on ${channel} first.`,
-                logger: `You must enable imageboards on ${channel.name} first.`
-            });
+            inter.reply(`You must enable imageboards on ${channel} first.`);
             return;
         }
 
@@ -88,10 +81,7 @@ export class ImageBoardCommand extends AugmentedSubcommand {
                 .update(imageboardTable)
                 .set({ boards: arrayRemove(imageboardTable.boards, channel.id) })
                 .where(eq(imageboardTable.gid, inter.guildId));
-            logger.info({
-                interaction: `Disabled imageboard on ${channel}.`,
-                logger: `Disabled imageboard on ${channel.name}.`
-            });
+            inter.reply(`Disabled imageboard on ${channel}.`);
         } catch (error) {
             logger.error("An error occurred", error);
         }
@@ -106,12 +96,12 @@ export class ImageBoardCommand extends AugmentedSubcommand {
             logger.error("An error occurred while retrieving your settings.", error);
             return;
         }
-        if (settings === undefined) {
-            logger.info("You must set up an imageboard first.");
+        if (isNullish(settings)) {
+            inter.reply("You must set up an imageboard first.");
             return;
         }
         if (settings.whitelist.includes(role.id)) {
-            logger.info("Role is already whitelisted.");
+            inter.reply("Role is already whitelisted.");
             return;
         }
 
@@ -120,10 +110,7 @@ export class ImageBoardCommand extends AugmentedSubcommand {
                 .update(imageboardTable)
                 .set({ whitelist: arrayAppend(imageboardTable.whitelist, role.id) })
                 .where(eq(imageboardTable.gid, inter.guildId));
-            logger.info({
-                interaction: `Added ${role} to imageboard whitelist.`,
-                logger: `Added ${role.name} to imageboard whitelist.`
-            });
+            inter.reply(`Added ${role} to imageboard whitelist.`);
         } catch (error) {
             logger.error("An unexpected error occurred.", error);
         }
@@ -138,12 +125,12 @@ export class ImageBoardCommand extends AugmentedSubcommand {
             logger.error("An error occurred while retrieving settings.", error);
             return;
         }
-        if (settings === undefined) {
-            logger.info("You must set up an imageboard first.");
+        if (isNullish(settings)) {
+            inter.reply("You must set up an imageboard first.");
             return;
         }
         if (!settings.whitelist.includes(role.id)) {
-            logger.info("Role is not whitelisted.");
+            inter.reply("Role is not whitelisted.");
             return;
         }
 
@@ -152,23 +139,18 @@ export class ImageBoardCommand extends AugmentedSubcommand {
                 .update(imageboardTable)
                 .set({ whitelist: arrayRemove(imageboardTable.whitelist, role.id) })
                 .where(eq(imageboardTable.gid, inter.guildId));
-            logger.info({
-                interaction: `Removed ${role} from imageboard whitelist.`,
-                logger: `Removed ${role.name} from imageboard whitelist.`
-            });
+            inter.reply(`Removed ${role} from imageboard whitelist.`);
         } catch (error) {
             logger.error("An unexpected error occurred.", error);
         }
     }
 
     private async getSettings(guildId: string) {
-        try {
-            const settings = await this.db.query.imageboard.findFirst({
+        const { result: settings, error } = await ttry(() =>
+            this.db.query.imageboard.findFirst({
                 where: eq(imageboardTable.gid, guildId)
-            });
-            return { error: null, settings };
-        } catch (error) {
-            return { error, settings: undefined };
-        }
+            })
+        );
+        return { settings, error };
     }
 }

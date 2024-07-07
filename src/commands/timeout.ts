@@ -62,10 +62,7 @@ export class TimeoutCommand extends AugmentedCommand {
 
         try {
             await member.disableCommunicationUntil(Date.now() + millis, reason);
-            logger.info({
-                interaction: `Timed out ${member} for ${durationStr} (${reason}).`,
-                logger: `Timed out ${member.displayName} for ${durationStr} (${reason}).`
-            });
+            inter.reply(`Timed out ${member} for ${durationStr} (${reason}).`);
         } catch (error) {
             logger.error("An error occurred", error);
             return;

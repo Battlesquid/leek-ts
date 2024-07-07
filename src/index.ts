@@ -1,7 +1,7 @@
 import { LogLevel, SapphireClient, container } from "@sapphire/framework";
 import { ActivityType, GatewayIntentBits, Partials } from "discord.js";
 import { config } from "./config";
-import { getDatabase } from "./db";
+import { getDatabase, getPgConnection } from "./db";
 import { getLoggerInstance } from "./logger/logger";
 import { PinoLoggerAdapter } from "./logger/pino_logger_adapter";
 
@@ -35,5 +35,6 @@ main()
         container.logger.error(error);
     })
     .finally(async () => {
-        // await container.prisma.$disconnect();
+        const connection = await getPgConnection();
+        await connection.end();
     });

@@ -5,6 +5,7 @@ import { ChannelType, ColorResolvable, Embed, EmbedBuilder, Message, TextChannel
 import emojiRegex from "emoji-regex";
 import { reactroles } from "../interactions";
 import { AugmentedSubcommand, chatInputCommand } from "../utils";
+import { ttry } from "utils/try";
 
 @ApplyOptions<Subcommand.Options>({
     name: reactroles.commands.chat.base.name,
@@ -26,7 +27,10 @@ export class ReactRolesCommand extends AugmentedSubcommand {
     }
 
     private async findReactRole(channel: TextChannel, name: string): Promise<[Message | undefined, Embed | undefined]> {
-        const messages = await channel.messages.fetch({ limit: 50 });
+        const { result: messages, ok } = await ttry(() => channel.messages.fetch({ limit: 50 }));
+        if (!ok) {
+            return [undefined, undefined];
+        }
         const msg = messages.find((m) => {
             if (!m.embeds.length) {
                 return false;
@@ -63,7 +67,7 @@ export class ReactRolesCommand extends AugmentedSubcommand {
         const msg = inter.options.getString("msg", false) ?? undefined;
 
         if (!/^#[A-Fa-f0-9]{6}$/.test(color.toString())) {
-            logger.warn(`Invalid color '${color}' provided, exiting`);
+            inter.reply(`Invalid color '${color}' provided, exiting`);
             return;
         }
 
@@ -72,10 +76,7 @@ export class ReactRolesCommand extends AugmentedSubcommand {
                 content: msg,
                 embeds: [new EmbedBuilder().setTitle(title).setDescription(desc).setColor(color).setFooter({ text: "reactroles" })]
             });
-            logger.info({
-                interaction: `New react roles created in ${channel}.`,
-                logger: `New react roles created in ${channel.name}.`
-            });
+            inter.reply(`New react roles created in ${channel}.`);
         } catch (error) {
             logger.error("An error occurred while sending ", error);
         }
@@ -89,11 +90,11 @@ export class ReactRolesCommand extends AugmentedSubcommand {
         const newTitle = inter.options.getString("new_title", false);
         const desc = inter.options.getString("desc", false);
         const color: ColorResolvable = `#${inter.options.getString("color", false) ?? ""}`;
-        const msg = inter.options.getString("msg", false) ?? undefined;
+        const message = inter.options.getString("msg", false) ?? undefined;
 
         const [reactroleMsg, reactrole] = await this.findReactRole(channel, title);
         if (reactrole === undefined || reactroleMsg === undefined) {
-            logger.info("The requested react-roles are either too far back or does not exist.", { title });
+            inter.reply("The requested react-roles are either too far back or does not exist.");
             return;
         }
 
@@ -110,10 +111,10 @@ export class ReactRolesCommand extends AugmentedSubcommand {
 
         try {
             await reactroleMsg.edit({
-                content: msg,
+                content: message,
                 embeds: [editedReactrole]
             });
-            logger.info(`'${title}' updated successfully.`);
+            inter.reply(`'${title}' updated successfully.`);
         } catch (error) {
             logger.error(`An error occurred while trying to edit '${title}'.`, error);
         }
@@ -127,22 +128,22 @@ export class ReactRolesCommand extends AugmentedSubcommand {
         const emoji = inter.options.getString("emoji", true);
 
         if (!(emojiRegex().test(emoji) || EmojiRegex.test(emoji))) {
-            logger.info("Malformed emoji, exiting.");
+            inter.reply("Malformed emoji, exiting.");
             return;
         }
         const [msg, reactrole] = await this.findReactRole(channel, title);
         if (reactrole === undefined || msg === undefined) {
-            logger.info("The requested react-roles are either too far back or does not exist.", { title });
+            inter.reply("The requested react-roles are either too far back or does not exist.");
             return;
         }
 
         if (reactrole.fields.find((f) => f.name === emoji)) {
-            logger.info("Emoji already in use, exiting.");
+            inter.reply("Emoji already in use, exiting.");
             return;
         }
 
         if (reactrole.fields.find((f) => f.value === roleMention(role.id))) {
-            logger.info("Role already included, exiting.");
+            inter.reply("Role already included, exiting.");
             return;
         }
 
@@ -152,10 +153,7 @@ export class ReactRolesCommand extends AugmentedSubcommand {
         try {
             await msg.edit({ embeds: [builder] });
             await msg.react(emoji);
-            logger.info({
-                interaction: `Users can now react to '${title}' with ${emoji} to get the ${role} role`,
-                logger: `Users can now react to '${title}' with ${emoji} to get the ${role.name} role`
-            });
+            inter.reply(`Users can now react to '${title}' with ${emoji} to get the ${role} role`);
         } catch (error) {
             logger.error(`An error occurred while editing '${title}'.`, error);
         }
@@ -169,16 +167,13 @@ export class ReactRolesCommand extends AugmentedSubcommand {
 
         const [msg, reactrole] = await this.findReactRole(channel, title);
         if (reactrole === undefined || msg === undefined) {
-            logger.info("The requested react-roles are either too far back or does not exist.", { title });
+            inter.reply("The requested react-roles are either too far back or does not exist.");
             return;
         }
 
         const roleField = reactrole.fields.find((f) => f.value === roleMention(role.id));
         if (!roleField) {
-            logger.info({
-                interaction: `${role} does not exist on '${title}'.`,
-                logger: `${role.name} does not exist on '${title}'.`
-            });
+            inter.reply(`${role} does not exist on '${title}'.`);
             return;
         }
 
@@ -202,10 +197,7 @@ export class ReactRolesCommand extends AugmentedSubcommand {
         const emoji = match ? match.groups!.id : roleField.name;
         try {
             await msg.reactions.cache.get(emoji)?.remove();
-            logger.info({
-                interaction: `Removed ${role} from '${title}'.`,
-                logger: `Removed ${role.name} from '${title}'.`
-            });
+            inter.reply(`Removed ${role} from '${title}'.`);
         } catch (error) {
             logger.error(
                 {

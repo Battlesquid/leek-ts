@@ -40,10 +40,7 @@ export class LogsCommand extends AugmentedSubcommand {
                     target: logSettings.gid,
                     set: { [type]: channel.id }
                 });
-            logger.info({
-                interaction: `Enabled ${type} logging on ${channel}.`,
-                logger: `Enabled ${type} logging on ${channel.name}.`
-            });
+            inter.reply(`Enabled ${type} logging on ${channel}.`);
         } catch (error) {
             logger.error("An error occurred, please try again later", error);
         }
@@ -57,7 +54,7 @@ export class LogsCommand extends AugmentedSubcommand {
                 .update(logSettings)
                 .set({ [type]: null })
                 .where(eq(logSettings.gid, inter.guildId));
-            logger.info(`${capitalize(type)} logging disabled.`);
+            inter.reply(`${capitalize(type)} logging disabled.`);
         } catch (error) {
             logger.error("An error occurred.", error);
         }
