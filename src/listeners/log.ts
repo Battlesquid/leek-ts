@@ -128,6 +128,7 @@ export class LogListener extends AugmentedListener<"messageDelete"> {
         }
 
         if (settings.image) {
+            // TODO: fetch the image immediately, then only send in this conditional
             ttry(() => handleImageLog(msg, settings.image!));
         }
         if (settings.message) {
