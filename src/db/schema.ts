@@ -42,3 +42,11 @@ export const verifySettings = pgTable("verify_settings", {
 });
 
 export type VerifySettings = typeof verifySettings.$inferSelect;
+
+export const hallOfFameSettings = pgTable("hall_of_fame", {
+    gid: varchar("gid").primaryKey(),
+    halls: text("halls")
+        .array()
+        .default(sql`'{}'::text[]`)
+        .notNull()
+});

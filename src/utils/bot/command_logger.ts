@@ -1,7 +1,7 @@
 import { Command, ILogger } from "@sapphire/framework";
 import { Subcommand } from "@sapphire/plugin-subcommands";
 import { randomUUID } from "crypto";
-import { InteractionReplyOptions } from "discord.js";
+import { ContextMenuCommandInteraction, InteractionReplyOptions } from "discord.js";
 import { Logger } from "pino";
 import { PinoLoggerAdapter } from "../../logger/pino_logger_adapter";
 
@@ -17,10 +17,10 @@ export interface SplitCommandLoggerContent {
 
 export class CommandLogger {
     private logger: Logger<string>;
-    private interaction: Subcommand.ChatInputCommandInteraction | Command.ChatInputCommandInteraction;
+    private interaction: Subcommand.ChatInputCommandInteraction | Command.ChatInputCommandInteraction | ContextMenuCommandInteraction;
     private replied: boolean;
 
-    constructor(logger: ILogger, interaction: Subcommand.ChatInputCommandInteraction | Command.ChatInputCommandInteraction) {
+    constructor(logger: ILogger, interaction: Subcommand.ChatInputCommandInteraction | Command.ChatInputCommandInteraction | ContextMenuCommandInteraction) {
         this.logger = (logger as PinoLoggerAdapter).child({
             guild: interaction.guildId,
             interaction: interaction.commandName,

@@ -1,14 +1,14 @@
 import { Command, Listener } from "@sapphire/framework";
 import { Subcommand } from "@sapphire/plugin-subcommands";
+import { ClientEvents, ContextMenuCommandInteraction } from "discord.js";
 import { CommandLogger } from "./command_logger";
-import { ClientEvents } from "discord.js";
 
 export abstract class AugmentedSubcommand extends Subcommand {
     get db() {
         return this.container.drizzle;
     }
 
-    public getCommandLogger(interaction: Subcommand.ChatInputCommandInteraction | Command.ChatInputCommandInteraction) {
+    public getCommandLogger(interaction: Subcommand.ChatInputCommandInteraction | Command.ChatInputCommandInteraction | ContextMenuCommandInteraction) {
         return new CommandLogger(this.container.logger, interaction);
     }
 }
