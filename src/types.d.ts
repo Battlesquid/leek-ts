@@ -1,11 +1,9 @@
-import { PrismaClient } from "@prisma/client";
 import "@sapphire/framework";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import * as schema from "./db/schema";
 
 declare module "@sapphire/pieces" {
     interface Container {
-        prisma: PrismaClient;
         drizzle: NodePgDatabase<typeof schema>;
     }
 }

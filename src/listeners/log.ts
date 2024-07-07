@@ -4,7 +4,6 @@ import { isNullish, isNullishOrEmpty } from "@sapphire/utilities";
 import axios from "axios";
 import { Attachment, Colors, EmbedBuilder, Message, MessageCreateOptions, TextChannel } from "discord.js";
 import { eq } from "drizzle-orm";
-import { Stream } from "stream";
 import { logSettings } from "../db/schema";
 import { AugmentedListener } from "../utils";
 import { ttry } from "../utils/try";
@@ -13,13 +12,14 @@ const fetchImage = (url: string) => {
     return new Promise<Buffer>((resolve, reject) => {
         const bytes: Uint8Array[] = [];
         axios
-            .request<Stream>({
+            .request({
                 method: "get",
                 url,
                 responseType: "stream"
             })
             .then((response) => {
-                response.data.on("data", (d) => bytes.push(d));
+                // TODO make sure this works
+                response.data.on("data", (d: Uint8Array) => bytes.push(d));
                 response.data.on("end", () => {
                     resolve(Buffer.concat(bytes));
                 });
