@@ -31,7 +31,7 @@ export class TimeoutCommand extends AugmentedCommand {
         const reason = inter.options.getString("reason", false) ?? "no reason provided";
 
         if (member === null || !isGuildMember(member)) {
-            logger.warn("Unable to find member, please try again later.");
+            inter.reply("Unable to find member, please try again later.");
             return;
         }
 
@@ -46,17 +46,17 @@ export class TimeoutCommand extends AugmentedCommand {
         }
 
         if (millis < 0) {
-            logger.warn("Duration must be a positive value");
+            inter.reply("Duration must be a positive value");
             return;
         }
 
         if (millis > ms("28 days")) {
-            logger.warn("Duration must be shorter than 28 days");
+            inter.reply("Duration must be shorter than 28 days");
             return;
         }
 
         if (Number.isNaN(millis)) {
-            logger.warn(`Invalid duration ${duration}`);
+            inter.reply(`Invalid duration ${duration}`);
             return;
         }
 
@@ -84,11 +84,18 @@ export class TimeoutCommand extends AugmentedCommand {
             return;
         }
         if (!isTextBasedChannel(channel)) {
-            logger.warn("The saved moderation logging channel is not a text channel, removing from settings.", { channel: settings.moderation }, { ephemeral: true });
+            inter.reply({
+                content: "The saved moderation logging channel is not a text channel, removing from settings.",
+                ephemeral: true
+            });
             try {
                 await this.db.update(logSettings).set({ moderation: null });
             } catch (error) {
-                logger.error("An error occurred while deleting the old moderation log channel", error, { ephemeral: true });
+                this.container.logger.error(error);
+                inter.followUp({
+                    content: "An error occurred while deleting the old moderation log channel",
+                    ephemeral: true
+                });
             }
             return;
         }
