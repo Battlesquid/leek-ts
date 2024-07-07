@@ -57,6 +57,13 @@
             "when": 1720277330337,
             "tag": "0007_lame_tusk",
             "breakpoints": true
+        },
+        {
+            "idx": 8,
+            "version": "7",
+            "when": 1720342279054,
+            "tag": "0008_clumsy_loki",
+            "breakpoints": true
         }
     ]
 }

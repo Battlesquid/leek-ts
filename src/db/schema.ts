@@ -34,7 +34,7 @@ export const verifyEntry = pgTable(
 export type VerifyUser = typeof verifyEntry.$inferSelect;
 
 export const verifySettings = pgTable("verify_settings", {
-    gid: varchar("gid").notNull(),
+    gid: varchar("gid").primaryKey(),
     type: varchar("type").default("message").notNull(),
     new_user_channel: varchar("new_user_channel"),
     roles: text("roles").array().notNull(),
