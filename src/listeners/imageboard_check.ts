@@ -1,10 +1,10 @@
-import { ttry } from "./../utils/try";
+import { ttry } from "../utils/general/try";
 import { ApplyOptions } from "@sapphire/decorators";
 import { Events, Listener } from "@sapphire/framework";
 import { imageboard } from "../db/schema";
 import { Message } from "discord.js";
 import { eq } from "drizzle-orm";
-import { URL_REGEX } from "../utils";
+import { URL_REGEX } from "../utils/bot";
 import { isNullish } from "@sapphire/utilities";
 
 @ApplyOptions<Listener.Options>({

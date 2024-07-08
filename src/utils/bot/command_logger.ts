@@ -3,7 +3,7 @@ import { Subcommand } from "@sapphire/plugin-subcommands";
 import { randomUUID } from "crypto";
 import { ContextMenuCommandInteraction, InteractionReplyOptions } from "discord.js";
 import { Logger } from "pino";
-import { PinoLoggerAdapter } from "../../logger/pino_logger_adapter";
+import { PinoLoggerAdapter } from "./pino_logger_adapter";
 
 export interface ExtendedInteractionReplyOptions extends InteractionReplyOptions {
     followUp?: boolean;

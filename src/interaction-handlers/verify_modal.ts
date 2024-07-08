@@ -3,7 +3,7 @@ import { InteractionHandler, InteractionHandlerTypes } from "@sapphire/framework
 import { type ModalSubmitInteraction } from "discord.js";
 import { verifyEntry } from "../db/schema";
 import { VerifyRequestListener } from "../listeners/verify_request";
-import { ttry } from "../utils/try";
+import { ttry } from "../utils/general";
 
 @ApplyOptions<InteractionHandler.Options>({
     interactionHandlerType: InteractionHandlerTypes.ModalSubmit

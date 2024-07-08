@@ -5,7 +5,7 @@ import { logSettings } from "../db/schema";
 import { ChannelType } from "discord.js";
 import { eq } from "drizzle-orm";
 import { chatInputCommand, AugmentedSubcommand } from "../utils/bot";
-import { capitalize } from "../utils/strings";
+import { capitalize } from "../utils/general";
 
 @ApplyOptions<Subcommand.Options>({
     name: logs.commands.chat.base.name,

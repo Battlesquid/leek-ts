@@ -4,8 +4,8 @@ import { Subcommand } from "@sapphire/plugin-subcommands";
 import { ChannelType, ColorResolvable, Embed, EmbedBuilder, Message, TextChannel, roleMention } from "discord.js";
 import emojiRegex from "emoji-regex";
 import { reactroles } from "../interactions";
-import { AugmentedSubcommand, chatInputCommand } from "../utils";
-import { ttry } from "../utils/try";
+import { AugmentedSubcommand, chatInputCommand } from "../utils/bot";
+import { ttry } from "../utils/general";
 
 @ApplyOptions<Subcommand.Options>({
     name: reactroles.commands.chat.base.name,

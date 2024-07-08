@@ -5,8 +5,8 @@ import { Attachment, Colors, EmbedBuilder, Message, MessageCreateOptions, TextCh
 import { eq } from "drizzle-orm";
 import fetch from "node-fetch";
 import { logSettings } from "../db/schema";
-import { AugmentedListener } from "../utils";
-import { ttry } from "../utils/try";
+import { AugmentedListener } from "../utils/bot";
+import { ttry } from "../utils/general";
 
 const fetchImage = (url: string) => {
     return new Promise<Buffer>((resolve, reject) => {

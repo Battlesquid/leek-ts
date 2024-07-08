@@ -26,11 +26,8 @@ import { VerifySettings, VerifyUser, verifyEntry, verifySettings } from "../db/s
 import { VerifyModalHandler } from "../interaction-handlers/verify_modal";
 import { verify } from "../interactions";
 import { VerifyRequestListener } from "../listeners/verify_request";
-import { AugmentedSubcommand, VERIFY_REGEX, chatInputCommand, slashCommandMention } from "../utils";
-import PaginatedEmbed from "../utils/bot/paginated_embed";
-import emojis from "../utils/emojis";
-import { pluralize } from "../utils/strings";
-import { ttry } from "../utils/try";
+import { AugmentedSubcommand, PaginatedEmbed, VERIFY_REGEX, chatInputCommand, emojis, slashCommandMention } from "../utils/bot";
+import { pluralize, ttry } from "../utils/general";
 
 @ApplyOptions<Subcommand.Options>({
     name: verify.commands.chat.base.name,

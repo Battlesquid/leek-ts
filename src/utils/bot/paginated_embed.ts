@@ -39,7 +39,7 @@ export type PaginatedEmbedOptions<T> = {
     onEnd?: OnEndCallback;
 };
 
-export default class PaginatedEmbed<T> {
+export class PaginatedEmbed<T> {
     private inter: CommandInteraction;
     private title: string;
     private useLargeTitle: boolean;

@@ -1,6 +1,6 @@
 import pino, { LoggerOptions } from "pino";
 import os from "os";
-import { config } from "../config";
+import { config } from "./config";
 
 export const getLoggerInstance = (stream: string, options?: LoggerOptions) => {
     return pino({

@@ -6,7 +6,7 @@ import { arrayAppend, arrayRemove } from "../db";
 import { imageboard as imageboardTable } from "../db/schema";
 import { imageboard } from "../interactions";
 import { AugmentedSubcommand, chatInputCommand } from "../utils/bot";
-import { ttry } from "../utils/try";
+import { ttry } from "../utils/general/try";
 import { isNullish } from "@sapphire/utilities";
 
 @ApplyOptions<Subcommand.Options>({

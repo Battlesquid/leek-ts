@@ -20,9 +20,8 @@ import { eq } from "drizzle-orm";
 import { arrayAppend, arrayRemove } from "../db";
 import { hallOfFameSettings } from "../db/schema";
 import { hall_of_fame } from "../interactions";
-import { timestring } from "../utils";
-import { AugmentedSubcommand, chatInputCommand, messageCommand, slashCommandMention } from "../utils/bot";
-import { ttry } from "../utils/try";
+import { AugmentedSubcommand, chatInputCommand, messageCommand, slashCommandMention, timestring } from "../utils/bot";
+import { ttry } from "../utils/general";
 
 @ApplyOptions<Subcommand.Options>({
     name: hall_of_fame.commands.chat.base.name,

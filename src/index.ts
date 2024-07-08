@@ -2,8 +2,8 @@ import { LogLevel, SapphireClient, container } from "@sapphire/framework";
 import { ActivityType, GatewayIntentBits, Partials } from "discord.js";
 import { config } from "./config";
 import { getDatabase, getPgConnection } from "./db";
-import { getLoggerInstance } from "./logger/logger";
-import { PinoLoggerAdapter } from "./logger/pino_logger_adapter";
+import { getLoggerInstance } from "./logger";
+import { PinoLoggerAdapter } from "./utils/bot";
 
 const logger = getLoggerInstance("leekbot");
 

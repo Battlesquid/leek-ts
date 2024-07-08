@@ -7,7 +7,7 @@ import { eq } from "drizzle-orm";
 import ms from "ms";
 import { logSettings } from "../db/schema";
 import { timeout } from "../interactions";
-import { AugmentedCommand, ModerationLogBuilder } from "../utils";
+import { AugmentedCommand, ModerationLogBuilder } from "../utils/bot";
 
 @ApplyOptions<Subcommand.Options>({
     name: timeout.commands.chat.base.name,

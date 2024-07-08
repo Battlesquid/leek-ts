@@ -3,8 +3,8 @@ import { Events, Listener } from "@sapphire/framework";
 import { Message, MessageMentions, Snowflake, inlineCode } from "discord.js";
 import { eq } from "drizzle-orm";
 import { verifyEntry, verifySettings } from "../db/schema";
-import { AugmentedListener, VERIFY_REGEX } from "../utils";
-import { ttry } from "../utils/try";
+import { AugmentedListener, VERIFY_REGEX } from "../utils/bot";
+import { ttry } from "../utils/general";
 
 @ApplyOptions<Listener.Options>({
     event: Events.MessageCreate
