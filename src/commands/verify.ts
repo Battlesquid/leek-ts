@@ -313,6 +313,14 @@ export class VerifyCommand extends AugmentedSubcommand {
     }
 
     public async chatInputEdit(inter: Subcommand.ChatInputCommandInteraction<"cached">) {
+        const type = inter.options.getString("type", false);
+        const channel = inter.options.getChannel("new_user_channel", false);
+        const createGreeting = inter.options.getBoolean("create_greeting", false);
+        if (isNullish(type) && isNullish(channel) && isNullish(createGreeting)) {
+            inter.reply("No options specified, exiting.");
+            return;
+        }
+
         const logger = this.getCommandLogger(inter);
         const { settings, error } = await this.getSettings(inter.guildId);
         if (error) {
@@ -325,11 +333,8 @@ export class VerifyCommand extends AugmentedSubcommand {
             return;
         }
 
-        const type = inter.options.getString("type", false) ?? settings.type;
-        const channel = inter.options.getChannel("new_user_channel", false);
-        const createGreeting = inter.options.getBoolean("create_greeting", false);
-
-        if (type === "message" && isNullish(channel) && settings.new_user_channel === null) {
+        const resolvedType = type ?? settings.type;
+        if (resolvedType === "message" && isNullish(channel) && settings.new_user_channel === null) {
             inter.reply("You must specify a new users channel for message verification");
             return;
         }
@@ -339,7 +344,7 @@ export class VerifyCommand extends AugmentedSubcommand {
             await this.db
                 .update(verifySettings)
                 .set({
-                    type,
+                    type: resolvedType,
                     new_user_channel: newUserChannel,
                     create_greeting: createGreeting ?? settings.create_greeting
                 })
