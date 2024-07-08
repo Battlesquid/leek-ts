@@ -3,6 +3,7 @@ import { Subcommand } from "@sapphire/plugin-subcommands";
 import { ClientEvents, ContextMenuCommandInteraction, Snowflake } from "discord.js";
 import { CommandLogger } from "./command_logger";
 import { config } from "../../config";
+import { slashCommandMention } from "./formatters";
 
 export interface CommandHint {
     development: Snowflake;
@@ -49,6 +50,26 @@ export abstract class AugmentedSubcommand extends Subcommand {
     }
 
     public abstract hints(): CommandHints;
+
+    public getCommandMention(subcommand: string, type: keyof CommandHintsOptions) {
+        const hints = this.hints();
+        let id = "";
+        switch (type) {
+            case "chat":
+                id = hints.getChatId();
+                break;
+            case "message":
+                id = hints.getMessageId();
+                break;
+            case "user":
+                id = hints.getUserId();
+                break;
+            default:
+                ((_: never) => {})(type);
+                break;
+        }
+        return slashCommandMention(this.name, subcommand, id);
+    }
 }
 
 export abstract class AugmentedCommand extends Command {

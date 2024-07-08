@@ -66,8 +66,13 @@ export class VerifyCommand extends AugmentedSubcommand {
         const logger = this.getCommandLogger(inter);
         const role = inter.options.getRole("role", true);
         const type = inter.options.getString("type", true);
-        const channel = inter.options.getChannel("new_user_channel", true);
+        const channel = inter.options.getChannel("new_user_channel", false);
         const createGreeting = inter.options.getBoolean("create_greeting", false) ?? false;
+
+        if (type === "message" && isNullish(channel)) {
+            inter.reply("You must specify a new users channel for message verification");
+            return;
+        }
 
         if (role.managed) {
             inter.reply(`${role} is managed by an external service and cannot be used.`);
@@ -85,13 +90,12 @@ export class VerifyCommand extends AugmentedSubcommand {
             return;
         }
 
-        if (type === "message" && isNullish(channel)) {
-            inter.reply("You must specify a new users channel for message verification");
-            return;
-        }
-
-        const newUserChannel = type === "message" ? channel.id : null;
-
+        const newUserChannel = type === "message" ? channel?.id : null;
+        const command = this.getCommandMention(verify.commands.chat.subcommands.request.name, "chat");
+        const successText =
+            type === "message"
+                ? ` Users can send their name in the format ${inlineCode("Name | Team")} in the channel ${channel} to submit a verification request.`
+                : ` Users can use the command ${command} to submit a verification request.`;
         try {
             await this.db.insert(verifySettings).values([
                 {
@@ -102,7 +106,7 @@ export class VerifyCommand extends AugmentedSubcommand {
                     create_greeting: createGreeting
                 }
             ]);
-            inter.reply("Verification enabled.");
+            inter.reply(`Verification enabled.${successText}`);
         } catch (error) {
             logger.error("An error occurred while enabling verification.", error);
         }
@@ -191,7 +195,7 @@ export class VerifyCommand extends AugmentedSubcommand {
             return;
         }
 
-        const rescanMention = slashCommandMention(verify.commands.chat.base.name, verify.commands.chat.subcommands.rescan.name, this.hints().getChatId());
+        const rescanMention = slashCommandMention(this.name, verify.commands.chat.subcommands.rescan.name, this.hints().getChatId());
         const template = new EmbedBuilder().setColor("Greyple");
         const SUBMIT_ID = "@leekbot/submit";
         new PaginatedEmbed({
@@ -259,10 +263,15 @@ export class VerifyCommand extends AugmentedSubcommand {
     }
     public async chatInputRemoveRole(inter: Subcommand.ChatInputCommandInteraction<"cached">) {
         const logger = this.getCommandLogger(inter);
-        const { settings, error } = await this.getSettings(inter.guildId);
         const role = inter.options.getRole("role", true);
         const replacementRole = inter.options.getRole("replacement_role", false);
 
+        if (replacementRole?.managed) {
+            inter.reply(`${replacementRole} is managed by an external service and cannot be used.`);
+            return;
+        }
+
+        const { settings, error } = await this.getSettings(inter.guildId);
         if (error) {
             logger.error("An error occurred while retrieving settings.", error);
             return;
@@ -279,17 +288,20 @@ export class VerifyCommand extends AugmentedSubcommand {
             return;
         }
 
+        const doReplace = !isNullish(replacementRole);
+        if (settings.roles.length === 1 && !doReplace) {
+            const mention = slashCommandMention(this.name, verify.commands.chat.subcommands.add_role.name, this.hints().getChatId());
+            inter.reply(`A minimum of one role is required. To remove this role, add another in its place using ${mention}, or use the this command's 'replacement_role' option.`);
+            return;
+        }
+
+        if (doReplace && settings.roles.includes(replacementRole.id)) {
+            inter.reply(`${replacementRole} cannot be used as a replacement role because it is already included in the list of verification roles.`);
+            return;
+        }
+
         let replaceText = "";
-        if (settings.roles.length === 1) {
-            if (isNullish(replacementRole)) {
-                const mention = slashCommandMention(verify.commands.chat.base.name, verify.commands.chat.subcommands.add_role.name, this.hints().getChatId());
-                inter.reply(`A minimum of one role is required. To remove this role, add another in its place using ${mention}, or use the this command's 'replacement_role' option.`);
-                return;
-            }
-            if (replacementRole.managed) {
-                inter.reply(`${replacementRole} is managed by an external service and cannot be used.`);
-                return;
-            }
+        if (doReplace) {
             replaceText = ` (replaced with ${replacementRole})`;
         }
 
@@ -297,7 +309,7 @@ export class VerifyCommand extends AugmentedSubcommand {
             await this.db
                 .update(verifySettings)
                 .set({
-                    roles: settings.roles.length === 1 ? arrayReplace(verifySettings.roles, role.id, replacementRole!.id) : arrayRemove(verifySettings.roles, role.id)
+                    roles: doReplace ? arrayReplace(verifySettings.roles, role.id, replacementRole!.id) : arrayRemove(verifySettings.roles, role.id)
                 })
                 .where(eq(verifySettings.gid, inter.guildId));
             inter.reply(`Removed ${role} from verification roles${replaceText}.`);

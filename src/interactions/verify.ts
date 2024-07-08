@@ -12,18 +12,18 @@ const enable = new SlashCommandSubcommandBuilder()
             .addChoices({ name: "message", value: "message" }, { name: "command", value: "command" })
             .setRequired(true)
     )
-    .addChannelOption((option) =>
-        option
-            .setName("new_user_channel")
-            .setDescription("The channel where new users first arrive")
-            .addChannelTypes(ChannelType.GuildText)
-            .setRequired(true)
-    )
     .addRoleOption((option) =>
         option
             .setName("role")
             .setDescription("Role to give on approval")
             .setRequired(true)
+    )
+    .addChannelOption((option) =>
+        option
+            .setName("new_user_channel")
+            .setDescription("The channel where new users first arrive. Only used for message verification.")
+            .addChannelTypes(ChannelType.GuildText)
+            .setRequired(false)
     )
     .addBooleanOption((option) =>
         option
