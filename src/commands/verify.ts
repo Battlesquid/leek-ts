@@ -26,7 +26,7 @@ import { VerifySettings, VerifyUser, verifyEntry, verifySettings } from "../db/s
 import { VerifyModalHandler } from "../interaction-handlers/verify_modal";
 import { verify } from "../interactions";
 import { VerifyRequestListener } from "../listeners/verify_request";
-import { AugmentedSubcommand, PaginatedEmbed, VERIFY_REGEX, chatInputCommand, emojis, slashCommandMention } from "../utils/bot";
+import { AugmentedSubcommand, CommandHints, PaginatedEmbed, VERIFY_REGEX, chatInputCommand, emojis, slashCommandMention } from "../utils/bot";
 import { pluralize, ttry } from "../utils/general";
 
 @ApplyOptions<Subcommand.Options>({
@@ -46,11 +46,19 @@ import { pluralize, ttry } from "../utils/general";
     requiredClientPermissions: ["ManageRoles", "SendMessages", "ChangeNickname", "UseExternalEmojis"]
 })
 export class VerifyCommand extends AugmentedSubcommand {
-    static CHAT_INPUT_HINT_DEV: string = "919820845126385737";
+    hints() {
+        return new CommandHints({
+            chat: {
+                development: "919820845126385737",
+                production: "957187610416144389"
+            }
+        });
+    }
 
     public override registerApplicationCommands(registry: Subcommand.Registry) {
+        const hints = this.hints();
         registry.registerChatInputCommand(verify.commands.chat.base, {
-            idHints: [VerifyCommand.CHAT_INPUT_HINT_DEV]
+            idHints: [hints.chat.development, hints.chat.production]
         });
     }
 
@@ -72,7 +80,7 @@ export class VerifyCommand extends AugmentedSubcommand {
             return;
         }
         if (settings) {
-            const mention = slashCommandMention(this.name, verify.commands.chat.subcommands.edit.name, VerifyCommand.CHAT_INPUT_HINT_DEV);
+            const mention = slashCommandMention(this.name, verify.commands.chat.subcommands.edit.name, this.hints().getChatId());
             inter.reply(`Verification is already enabled. Edit your settings with ${mention}.`);
             return;
         }
@@ -169,7 +177,7 @@ export class VerifyCommand extends AugmentedSubcommand {
             return;
         }
         if (isNullish(settings)) {
-            const mention = slashCommandMention(this.name, verify.commands.chat.subcommands.enable.name, VerifyCommand.CHAT_INPUT_HINT_DEV);
+            const mention = slashCommandMention(this.name, verify.commands.chat.subcommands.enable.name, this.hints().getChatId());
             inter.reply(`Verification is not enabled. Enable it with ${mention}.`);
             return;
         }
@@ -183,7 +191,7 @@ export class VerifyCommand extends AugmentedSubcommand {
             return;
         }
 
-        const rescanMention = slashCommandMention(verify.commands.chat.base.name, verify.commands.chat.subcommands.rescan.name, VerifyCommand.CHAT_INPUT_HINT_DEV);
+        const rescanMention = slashCommandMention(verify.commands.chat.base.name, verify.commands.chat.subcommands.rescan.name, this.hints().getChatId());
         const template = new EmbedBuilder().setColor("Greyple");
         const SUBMIT_ID = "@leekbot/submit";
         new PaginatedEmbed({
@@ -222,7 +230,7 @@ export class VerifyCommand extends AugmentedSubcommand {
             return;
         }
         if (isNullish(settings)) {
-            const mention = slashCommandMention(this.name, verify.commands.chat.subcommands.enable.name, VerifyCommand.CHAT_INPUT_HINT_DEV);
+            const mention = slashCommandMention(this.name, verify.commands.chat.subcommands.enable.name, this.hints().getChatId());
             inter.reply(`Verification is not enabled. Enable it with ${mention}.`);
             return;
         }
@@ -260,7 +268,7 @@ export class VerifyCommand extends AugmentedSubcommand {
             return;
         }
         if (isNullish(settings)) {
-            const mention = slashCommandMention(this.name, verify.commands.chat.subcommands.enable.name, VerifyCommand.CHAT_INPUT_HINT_DEV);
+            const mention = slashCommandMention(this.name, verify.commands.chat.subcommands.enable.name, this.hints().getChatId());
             inter.reply(`Verification is not enabled. Enable it with ${mention}.`);
             return;
         }
@@ -274,7 +282,7 @@ export class VerifyCommand extends AugmentedSubcommand {
         let replaceText = "";
         if (settings.roles.length === 1) {
             if (isNullish(replacementRole)) {
-                const mention = slashCommandMention(verify.commands.chat.base.name, verify.commands.chat.subcommands.add_role.name, VerifyCommand.CHAT_INPUT_HINT_DEV);
+                const mention = slashCommandMention(verify.commands.chat.base.name, verify.commands.chat.subcommands.add_role.name, this.hints().getChatId());
                 inter.reply(`A minimum of one role is required. To remove this role, add another in its place using ${mention}, or use the this command's 'replacement_role' option.`);
                 return;
             }
@@ -312,7 +320,7 @@ export class VerifyCommand extends AugmentedSubcommand {
             return;
         }
         if (isNullish(settings)) {
-            const mention = slashCommandMention(this.name, verify.commands.chat.subcommands.enable.name, VerifyCommand.CHAT_INPUT_HINT_DEV);
+            const mention = slashCommandMention(this.name, verify.commands.chat.subcommands.enable.name, this.hints().getChatId());
             inter.reply(`Verification is not enabled. Enable it with ${mention}.`);
             return;
         }
@@ -351,7 +359,7 @@ export class VerifyCommand extends AugmentedSubcommand {
             return;
         }
         if (isNullish(settings)) {
-            const mention = slashCommandMention(this.name, verify.commands.chat.subcommands.enable.name, VerifyCommand.CHAT_INPUT_HINT_DEV);
+            const mention = slashCommandMention(this.name, verify.commands.chat.subcommands.enable.name, this.hints().getChatId());
             inter.editReply(`Verification is not enabled. Enable it with ${mention}.`);
             return;
         }
@@ -366,7 +374,7 @@ export class VerifyCommand extends AugmentedSubcommand {
             return;
         }
         if (channel.type !== ChannelType.GuildText) {
-            const mention = slashCommandMention(this.name, verify.commands.chat.subcommands.edit.name, VerifyCommand.CHAT_INPUT_HINT_DEV);
+            const mention = slashCommandMention(this.name, verify.commands.chat.subcommands.edit.name, this.hints().getChatId());
             inter.editReply(`Rescanning is only supported on text channels. Change your channel settings or update your new user channel with ${mention}, then try again`);
             return;
         }

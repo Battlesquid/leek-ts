@@ -7,7 +7,7 @@ import { eq } from "drizzle-orm";
 import ms from "ms";
 import { logSettings } from "../db/schema";
 import { timeout } from "../interactions";
-import { AugmentedCommand, ModerationLogBuilder } from "../utils/bot";
+import { AugmentedCommand, CommandHints, ModerationLogBuilder } from "../utils/bot";
 
 @ApplyOptions<Subcommand.Options>({
     name: timeout.commands.chat.base.name,
@@ -17,9 +17,19 @@ import { AugmentedCommand, ModerationLogBuilder } from "../utils/bot";
     requiredClientPermissions: ["ModerateMembers", "SendMessages"]
 })
 export class TimeoutCommand extends AugmentedCommand {
+    hints() {
+        return new CommandHints({
+            chat: {
+                development: "950533839120367626",
+                production: "957187610416144388"
+            }
+        });
+    }
+
     public override registerApplicationCommands(registry: Command.Registry) {
+        const hints = this.hints();
         registry.registerChatInputCommand(timeout.commands.chat.base, {
-            idHints: ["950533839120367626"]
+            idHints: [hints.chat.development, hints.chat.production]
         });
     }
 

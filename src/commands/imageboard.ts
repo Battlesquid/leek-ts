@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 import { arrayAppend, arrayRemove } from "../db";
 import { imageboard as imageboardTable } from "../db/schema";
 import { imageboard } from "../interactions";
-import { AugmentedSubcommand, chatInputCommand } from "../utils/bot";
+import { AugmentedSubcommand, CommandHints, chatInputCommand } from "../utils/bot";
 import { ttry } from "../utils/general/try";
 import { isNullish } from "@sapphire/utilities";
 
@@ -23,9 +23,19 @@ import { isNullish } from "@sapphire/utilities";
     requiredClientPermissions: ["ManageMessages"]
 })
 export class ImageBoardCommand extends AugmentedSubcommand {
+    hints() {
+        return new CommandHints({
+            chat: {
+                development: "1119674243404279909",
+                production: "957187610416144385"
+            }
+        });
+    }
+
     public override registerApplicationCommands(registry: Subcommand.Registry) {
+        const hints = this.hints();
         registry.registerChatInputCommand(imageboard.commands.chat.base, {
-            idHints: ["1119674243404279909"]
+            idHints: [hints.chat.development, hints.chat.production]
         });
     }
 

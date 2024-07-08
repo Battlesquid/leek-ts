@@ -4,7 +4,7 @@ import { Subcommand } from "@sapphire/plugin-subcommands";
 import { logSettings } from "../db/schema";
 import { ChannelType } from "discord.js";
 import { eq } from "drizzle-orm";
-import { chatInputCommand, AugmentedSubcommand } from "../utils/bot";
+import { chatInputCommand, AugmentedSubcommand, CommandHints } from "../utils/bot";
 import { capitalize } from "../utils/general";
 
 @ApplyOptions<Subcommand.Options>({
@@ -15,9 +15,19 @@ import { capitalize } from "../utils/general";
     requiredClientPermissions: ["ManageMessages"]
 })
 export class LogsCommand extends AugmentedSubcommand {
+    hints() {
+        return new CommandHints({
+            chat: {
+                development: "926913960391893072",
+                production: "957187610416144384"
+            }
+        });
+    }
+
     public override registerApplicationCommands(registry: Subcommand.Registry) {
+        const hints = this.hints();
         registry.registerChatInputCommand(logs.commands.chat.base, {
-            idHints: ["926913960391893072"]
+            idHints: [hints.chat.development, hints.chat.production]
         });
     }
 

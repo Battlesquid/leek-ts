@@ -20,7 +20,7 @@ import { eq } from "drizzle-orm";
 import { arrayAppend, arrayRemove } from "../db";
 import { hallOfFameSettings } from "../db/schema";
 import { hall_of_fame } from "../interactions";
-import { AugmentedSubcommand, chatInputCommand, messageCommand, slashCommandMention, timestring } from "../utils/bot";
+import { AugmentedSubcommand, CommandHints, chatInputCommand, messageCommand, slashCommandMention, timestring } from "../utils/bot";
 import { ttry } from "../utils/general";
 
 @ApplyOptions<Subcommand.Options>({
@@ -35,15 +35,26 @@ import { ttry } from "../utils/general";
     requiredClientPermissions: ["ManageMessages", "SendMessages"]
 })
 export class HallOfFameCommand extends AugmentedSubcommand {
-    private static readonly CHAT_INPUT_DEVELOPMENT_HINT: string = "";
-    private static readonly CHAT_INPUT_PRODUCTION_HINT: string = "";
+    hints() {
+        return new CommandHints({
+            chat: {
+                development: "1126901836243275806",
+                production: ""
+            },
+            message: {
+                development: "1126901837249904672",
+                production: ""
+            }
+        });
+    }
 
     public override registerApplicationCommands(registry: Subcommand.Registry) {
+        const hints = this.hints();
         registry.registerChatInputCommand(hall_of_fame.commands.chat.base, {
-            idHints: ["1126901836243275806"]
+            idHints: [hints.chat.development, hints.chat.production]
         });
         registry.registerContextMenuCommand(hall_of_fame.commands.message.promote, {
-            idHints: ["1126901837249904672"]
+            idHints: [hints.message.development, hints.message.production]
         });
     }
 

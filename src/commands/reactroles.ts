@@ -4,7 +4,7 @@ import { Subcommand } from "@sapphire/plugin-subcommands";
 import { ChannelType, ColorResolvable, Embed, EmbedBuilder, Message, TextChannel, roleMention } from "discord.js";
 import emojiRegex from "emoji-regex";
 import { reactroles } from "../interactions";
-import { AugmentedSubcommand, chatInputCommand } from "../utils/bot";
+import { AugmentedSubcommand, CommandHints, chatInputCommand } from "../utils/bot";
 import { ttry } from "../utils/general";
 
 @ApplyOptions<Subcommand.Options>({
@@ -20,9 +20,19 @@ import { ttry } from "../utils/general";
     requiredClientPermissions: ["SendMessages", "AttachFiles", "AddReactions"]
 })
 export class ReactRolesCommand extends AugmentedSubcommand {
+    hints() {
+        return new CommandHints({
+            chat: {
+                development: "922949939909259264",
+                production: "957187610416144386"
+            }
+        });
+    }
+
     public override registerApplicationCommands(registry: Subcommand.Registry) {
+        const hints = this.hints();
         registry.registerChatInputCommand(reactroles.commands.chat.base, {
-            idHints: ["922949939909259264"]
+            idHints: [hints.chat.development, hints.chat.production]
         });
     }
 
