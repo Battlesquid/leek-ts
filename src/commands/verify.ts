@@ -333,20 +333,27 @@ export class VerifyCommand extends AugmentedSubcommand {
             return;
         }
 
+        if (isNullish(type) && !isNullish(channel)) {
+            inter.reply("You must specify the verification type as 'message' in order to set a new users channel");
+            return;
+        }
+
         const resolvedType = type ?? settings.type;
-        if (resolvedType === "message" && isNullish(channel) && settings.new_user_channel === null) {
+        const resolvedChannel = isNullish(channel) ? settings.new_user_channel : channel.id;
+        const resolvedGreeting = createGreeting ?? settings.create_greeting;
+
+        if (resolvedType === "message" && isNullish(resolvedChannel)) {
             inter.reply("You must specify a new users channel for message verification");
             return;
         }
 
-        const newUserChannel = type === "message" ? channel!.id : null;
         try {
             await this.db
                 .update(verifySettings)
                 .set({
                     type: resolvedType,
-                    new_user_channel: newUserChannel,
-                    create_greeting: createGreeting ?? settings.create_greeting
+                    new_user_channel: resolvedType === "message" ? resolvedChannel : null,
+                    create_greeting: resolvedGreeting
                 })
                 .where(eq(verifySettings.gid, inter.guildId));
             inter.reply("Successfully updated verification settings.");
@@ -360,33 +367,39 @@ export class VerifyCommand extends AugmentedSubcommand {
 
         const { settings, error: settingsError } = await this.getSettings(inter.guildId);
         if (settingsError) {
-            inter.editReply("An error occurred while retrieving settings.");
+            await inter.editReply("An error occurred while retrieving settings.");
             return;
         }
         if (isNullish(settings)) {
             const mention = slashCommandMention(this.name, verify.commands.chat.subcommands.enable.name, this.hints().getChatId());
-            inter.editReply(`Verification is not enabled. Enable it with ${mention}.`);
+            await inter.editReply(`Verification is not enabled. Enable it with ${mention}.`);
             return;
         }
         if (settings.type !== "message") {
-            inter.editReply("Rescanning is only supported for message verification.");
+            await inter.editReply("Rescanning is only supported for message verification.");
             return;
         }
 
-        const channel = await this.container.client.channels.fetch(settings.new_user_channel!);
-        if (!channel) {
-            inter.editReply(`${channelMention(settings.new_user_channel!)} was not found, check that the channel exists, then try again`);
+        if (isNullish(settings.new_user_channel)) {
+            inter.reply("Encountered inconsistent state...how did you get here...exiting.");
             return;
         }
+
+        const { result: channel, ok: fetchOk } = await ttry(() => this.container.client.channels.fetch(settings.new_user_channel!));
+        if (!channel || !fetchOk) {
+            await inter.editReply(`${channelMention(settings.new_user_channel)} was not found, check that the channel exists, then try again`);
+            return;
+        }
+
         if (channel.type !== ChannelType.GuildText) {
             const mention = slashCommandMention(this.name, verify.commands.chat.subcommands.edit.name, this.hints().getChatId());
-            inter.editReply(`Rescanning is only supported on text channels. Change your channel settings or update your new user channel with ${mention}, then try again`);
+            await inter.editReply(`Rescanning is only supported on text channels. Change your channel settings or update your new user channel with ${mention}, then try again`);
             return;
         }
 
         const { ok, result: users } = await ttry(() => this.db.query.verifyEntry.findMany({ where: eq(verifyEntry.gid, inter.guildId) }));
         if (!ok) {
-            inter.editReply("An error occurred while retreiving existing users, please try again later.");
+            await inter.editReply("An error occurred while retreiving existing users, please try again later.");
             return;
         }
 
@@ -429,19 +442,17 @@ export class VerifyCommand extends AugmentedSubcommand {
             });
 
         if (scannedUsers.length === 0) {
-            inter.editReply("Verification list is already up to date.");
+            await inter.editReply("Verification list is already up to date.");
             return;
         }
 
         const { error } = await ttry(() => this.db.insert(verifyEntry).values(scannedUsers).onConflictDoNothing());
-
         if (error) {
-            console.error(error);
-            inter.editReply(`An error occurred while rescanning ${channelMention(settings.new_user_channel!)}, please try again later.`);
+            await inter.editReply(`An error occurred while rescanning ${channelMention(settings.new_user_channel!)}, please try again later.`);
             return;
         }
 
-        inter.editReply("Rescan complete, verification list updated.");
+        await inter.editReply("Rescan complete, verification list updated.");
     }
 
     private async onVerifySubmit(settings: VerifySettings, users: VerifyUser[], inter: ButtonInteraction<"cached">) {
