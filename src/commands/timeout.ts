@@ -74,7 +74,11 @@ export class TimeoutCommand extends AugmentedCommand {
             await member.disableCommunicationUntil(Date.now() + millis, reason);
             inter.reply(`Timed out ${member} for ${durationStr} (${reason}).`);
         } catch (error) {
-            logger.error("An error occurred", error);
+            this.container.logger.error(error);
+            inter.reply({
+                content: "An error occurred while timing out user, please try again later.",
+                ephemeral: true
+            });
             return;
         }
 
@@ -89,7 +93,11 @@ export class TimeoutCommand extends AugmentedCommand {
         try {
             channel = await inter.guild.channels.fetch(settings.moderation);
         } catch (error) {
-            logger.error("Unable to retreive moderation logging channel.", error, { ephemeral: true });
+            this.container.logger.error(error);
+            inter.followUp({
+                content: "Unable to retreive moderation logging channel.",
+                ephemeral: true
+            });
             // TODO figure out how to detect the channel is truly missing, and not just a fetch error, so that it can be deleted from the db
             return;
         }
@@ -121,7 +129,11 @@ export class TimeoutCommand extends AugmentedCommand {
         try {
             await channel.send({ embeds: [embed] });
         } catch (error) {
-            logger.error("An error occurred while recording the timeout log", error, { ephemeral: true });
+            this.container.logger.error(error);
+            inter.followUp({
+                content: "An error occurred while recording the timeout log.",
+                ephemeral: true
+            });
         }
     }
 }

@@ -17,7 +17,7 @@ import { ttry } from "../utils/general";
     ],
     preconditions: ["GuildOnly"],
     requiredUserPermissions: ["ManageRoles"],
-    requiredClientPermissions: ["SendMessages", "AttachFiles", "AddReactions"]
+    requiredClientPermissions: ["SendMessages", "ReadMessageHistory", "AddReactions"]
 })
 export class ReactRolesCommand extends AugmentedSubcommand {
     hints() {

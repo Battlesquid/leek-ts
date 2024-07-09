@@ -32,7 +32,7 @@ import { ttry } from "../utils/general";
     ],
     preconditions: ["GuildTextOnly"],
     requiredUserPermissions: ["ManageChannels"],
-    requiredClientPermissions: ["ManageMessages", "SendMessages"]
+    requiredClientPermissions: ["ManageMessages", "SendMessages", "AttachFiles", "EmbedLinks"]
 })
 export class HallOfFameCommand extends AugmentedSubcommand {
     hints() {

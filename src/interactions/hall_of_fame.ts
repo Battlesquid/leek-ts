@@ -53,8 +53,3 @@ export default {
         }
     }
 } satisfies CommandBundle<"Subcommand">;
-
-
-export enum HallOfFameIds {
-    SELECT = "hall-of-fame-select"
-}
