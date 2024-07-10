@@ -18,8 +18,8 @@ const client = new SapphireClient({
         status: "online",
         activities: [
             {
-                type: ActivityType.Playing,
-                name: "/help"
+                type: ActivityType.Watching,
+                name: "out for leeks"
             }
         ]
     }
