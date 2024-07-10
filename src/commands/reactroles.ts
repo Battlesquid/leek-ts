@@ -36,10 +36,10 @@ export class ReactRolesCommand extends AugmentedSubcommand {
         });
     }
 
-    private async findReactRole(channel: TextChannel, name: string): Promise<[Message | undefined, Embed | undefined]> {
-        const { result: messages, ok } = await ttry(() => channel.messages.fetch({ limit: 50 }));
+    private async findReactRole(channel: TextChannel, name: string): Promise<[Message | undefined, Embed | undefined, size: number]> {
+        const { result: messages, ok } = await ttry(() => channel.messages.fetch({ limit: 100 }));
         if (!ok) {
-            return [undefined, undefined];
+            return [undefined, undefined, 0];
         }
         const msg = messages.find((m) => {
             if (!m.embeds.length) {
@@ -60,7 +60,7 @@ export class ReactRolesCommand extends AugmentedSubcommand {
             }
             return true;
         });
-        return [msg, msg?.embeds[0]];
+        return [msg, msg?.embeds[0], messages.size];
     }
 
     public static isReactRole(embed: Embed) {
@@ -102,7 +102,11 @@ export class ReactRolesCommand extends AugmentedSubcommand {
         const color: ColorResolvable = `#${inter.options.getString("color", false) ?? ""}`;
         const message = inter.options.getString("msg", false) ?? undefined;
 
-        const [reactroleMsg, reactrole] = await this.findReactRole(channel, title);
+        const [reactroleMsg, reactrole, size] = await this.findReactRole(channel, title);
+        if (size === 0) {
+            inter.reply(`Unable to read message history for ${channel}.`);
+            return;
+        }
         if (reactrole === undefined || reactroleMsg === undefined) {
             inter.reply("The requested react-roles are either too far back or does not exist.");
             return;
@@ -141,7 +145,11 @@ export class ReactRolesCommand extends AugmentedSubcommand {
             inter.reply("Malformed emoji, exiting.");
             return;
         }
-        const [msg, reactrole] = await this.findReactRole(channel, title);
+        const [msg, reactrole, size] = await this.findReactRole(channel, title);
+        if (size === 0) {
+            inter.reply(`Unable to read message history for ${channel}.`);
+            return;
+        }
         if (reactrole === undefined || msg === undefined) {
             inter.reply("The requested react-roles are either too far back or does not exist.");
             return;
@@ -175,7 +183,11 @@ export class ReactRolesCommand extends AugmentedSubcommand {
         const title = inter.options.getString("title", true);
         const role = inter.options.getRole("role", true);
 
-        const [msg, reactrole] = await this.findReactRole(channel, title);
+        const [msg, reactrole, size] = await this.findReactRole(channel, title);
+        if (size === 0) {
+            inter.reply(`Unable to read message history for ${channel}.`);
+            return;
+        }
         if (reactrole === undefined || msg === undefined) {
             inter.reply("The requested react-roles are either too far back or does not exist.");
             return;

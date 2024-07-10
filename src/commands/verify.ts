@@ -464,7 +464,7 @@ export class VerifyCommand extends AugmentedSubcommand {
             return;
         }
 
-        await inter.editReply("Rescan complete, verification list updated.");
+        await inter.editReply(`Rescan complete, verification list updated (${scannedUsers.length} ${pluralize("user", scannedUsers.length)}).`);
     }
 
     private async onVerifySubmit(settings: VerifySettings, users: VerifyUser[], inter: ButtonInteraction<"cached">) {

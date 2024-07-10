@@ -10,7 +10,7 @@ const logger = getLoggerInstance("leekbot");
 const client = new SapphireClient({
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessageReactions],
     logger: {
-        level: config.getenv("NODE_ENV") === "development" ? LogLevel.Debug : LogLevel.Info,
+        level: config.getenv("NODE_ENV") === "development" ? LogLevel.Trace : LogLevel.Info,
         instance: new PinoLoggerAdapter(logger)
     },
     partials: [Partials.Message, Partials.Channel, Partials.Reaction],

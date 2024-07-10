@@ -21,7 +21,7 @@ import { arrayAppend, arrayRemove } from "../db";
 import { hallOfFameSettings } from "../db/schema";
 import { hall_of_fame } from "../interactions";
 import { AugmentedSubcommand, CommandHints, chatInputCommand, messageCommand, slashCommandMention, timestring } from "../utils/bot";
-import { ttry } from "../utils/general";
+import { pluralize, ttry } from "../utils/general";
 
 @ApplyOptions<Subcommand.Options>({
     name: hall_of_fame.commands.chat.base.name,
@@ -148,7 +148,7 @@ export class HallOfFameCommand extends AugmentedSubcommand {
         );
 
         const [existing, missing] = partition(channelData, (channel) => channel.exists);
-        const warning = missing.length > 0 ? `Unable to retreive ${missing.length} halls.\n` : "";
+        const warning = missing.length > 0 ? `Unable to retreive ${missing.length} ${pluralize("hall", missing.length)}.\n` : "";
 
         const options = existing.map(({ channel }) => {
             return new StringSelectMenuOptionBuilder().setLabel(channel!.name).setValue(channel!.id);
@@ -249,13 +249,14 @@ export class HallOfFameCommand extends AugmentedSubcommand {
         });
 
         inter.editReply({
-            content: `Message sent to ${hall.name}.`,
+            content: `Message sent to ${hall}.`,
             components: []
         });
     }
 
     private canEmbedAttachment(attachment: Attachment) {
-        return /jpg|jpeg|png/.test(attachment.contentType ?? "");
+        console.log(attachment.contentType);
+        return /jpg|jpeg|png|gif/.test(attachment.contentType ?? "");
     }
 
     private async getSettings(guildId: string) {
