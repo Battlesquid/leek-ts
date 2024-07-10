@@ -2,8 +2,9 @@ import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
 } from "@discordjs/builders";
-import { ChannelType } from "discord.js";
+import { ChannelType, PermissionFlagsBits } from "discord.js";
 import { CommandBundle } from ".";
+import { combinePermissions } from "../utils/bot/bitwise";
 
 const enable = new SlashCommandSubcommandBuilder()
     .setName("enable")
@@ -42,14 +43,18 @@ const disable = new SlashCommandSubcommandBuilder()
             .setRequired(true)
     );
 
+const permissions = [PermissionFlagsBits.ManageChannels, PermissionFlagsBits.ModerateMembers];
+
 const logs = new SlashCommandBuilder()
     .setName("logs")
     .setDescription("Manage server wide message logging.")
+    .setDefaultMemberPermissions(combinePermissions(permissions))
     .addSubcommand(enable)
     .addSubcommand(disable);
 
 
 export default {
+    permissions,
     commands: {
         chat: {
             base: logs,

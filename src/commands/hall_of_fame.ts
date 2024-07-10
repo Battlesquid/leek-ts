@@ -31,7 +31,7 @@ import { pluralize, ttry } from "../utils/general";
         messageCommand(hall_of_fame.commands.message.promote.name)
     ],
     preconditions: ["GuildTextOnly"],
-    requiredUserPermissions: ["ManageChannels"],
+    requiredUserPermissions: hall_of_fame.permissions,
     requiredClientPermissions: ["ManageMessages", "SendMessages", "AttachFiles", "EmbedLinks"]
 })
 export class HallOfFameCommand extends AugmentedSubcommand {

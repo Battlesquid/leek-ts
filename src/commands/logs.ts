@@ -11,7 +11,7 @@ import { capitalize } from "../utils/general";
     name: logs.commands.chat.base.name,
     subcommands: [chatInputCommand(logs.commands.chat.subcommands.enable.name), chatInputCommand(logs.commands.chat.subcommands.disable.name)],
     preconditions: ["GuildTextOnly"],
-    requiredUserPermissions: ["ManageChannels"],
+    requiredUserPermissions: logs.permissions,
     requiredClientPermissions: ["ManageMessages"]
 })
 export class LogsCommand extends AugmentedSubcommand {

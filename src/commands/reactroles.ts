@@ -15,8 +15,8 @@ import { ttry } from "../utils/general";
         chatInputCommand(reactroles.commands.chat.subcommands.add_role.name),
         chatInputCommand(reactroles.commands.chat.subcommands.remove_role.name)
     ],
-    preconditions: ["GuildOnly"],
-    requiredUserPermissions: ["ManageRoles"],
+    preconditions: ["GuildTextOnly"],
+    requiredUserPermissions: reactroles.permissions,
     requiredClientPermissions: ["SendMessages", "ReadMessageHistory", "AddReactions"]
 })
 export class ReactRolesCommand extends AugmentedSubcommand {

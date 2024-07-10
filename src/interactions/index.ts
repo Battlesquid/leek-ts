@@ -1,6 +1,7 @@
 import { ContextMenuCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandsOnlyBuilder } from "discord.js";
 
 export interface CommandBundle<Type extends "Subcommand" | "Command" = "Command"> {
+    permissions: bigint[];
     commands: {
         chat: {
             base: Type extends "Subcommand" ? SlashCommandSubcommandsOnlyBuilder : SlashCommandOptionsOnlyBuilder;

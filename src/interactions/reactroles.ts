@@ -2,12 +2,13 @@ import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
 } from "@discordjs/builders";
-import { ChannelType } from "discord.js";
+import { ChannelType, PermissionFlagsBits } from "discord.js";
 import { CommandBundle } from ".";
+import { combinePermissions } from "../utils/bot/bitwise";
 
 const create = new SlashCommandSubcommandBuilder()
     .setName("create")
-    .setDescription("Create a reactrole group")
+    .setDescription("Create a reactrole group. Maximum of 100 groups per channel.")
     .addChannelOption((opt) =>
         opt
             .setName("channel")
@@ -130,15 +131,19 @@ const edit = new SlashCommandSubcommandBuilder()
             .setDescription("The message to prepend to the reactrole group")
     );
 
+const permissions = [PermissionFlagsBits.ManageRoles];
+
 const reactroles = new SlashCommandBuilder()
     .setName("reactroles")
     .setDescription("Create and manage reactroles, messages that allow users to assign themselves roles.")
+    .setDefaultMemberPermissions(combinePermissions(permissions))
     .addSubcommand(create)
     .addSubcommand(add_role)
     .addSubcommand(remove_role)
     .addSubcommand(edit);
 
 export default {
+    permissions,
     commands: {
         chat: {
             base: reactroles,

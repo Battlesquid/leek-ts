@@ -13,7 +13,7 @@ import { AugmentedCommand, CommandHints, ModerationLogBuilder } from "../utils/b
     name: timeout.commands.chat.base.name,
     description: timeout.commands.chat.base.description,
     preconditions: ["GuildTextOnly"],
-    requiredUserPermissions: ["ModerateMembers"],
+    requiredUserPermissions: timeout.permissions,
     requiredClientPermissions: ["ModerateMembers", "SendMessages"]
 })
 export class TimeoutCommand extends AugmentedCommand {

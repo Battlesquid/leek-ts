@@ -42,7 +42,7 @@ import { pluralize, ttry } from "../utils/general";
         chatInputCommand(verify.commands.chat.subcommands.rescan.name)
     ],
     preconditions: ["GuildTextOnly"],
-    requiredUserPermissions: ["ManageGuild"],
+    requiredUserPermissions: verify.permissions,
     requiredClientPermissions: ["ManageRoles", "SendMessages", "ChangeNickname", "UseExternalEmojis"]
 })
 export class VerifyCommand extends AugmentedSubcommand {
@@ -135,6 +135,7 @@ export class VerifyCommand extends AugmentedSubcommand {
     public async chatInputRequest(inter: Subcommand.ChatInputCommandInteraction<"cached">) {
         const { settings, error } = await this.getSettings(inter.guildId);
         if (error) {
+            console.error(error);
             inter.reply({
                 content: "An error occurred while processing your request, please try again later.",
                 ephemeral: true

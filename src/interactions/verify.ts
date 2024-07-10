@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, SlashCommandSubcommandBuilder } from "@discordjs/builders";
-import { ChannelType } from "discord.js";
+import { ChannelType, PermissionFlagsBits } from "discord.js";
 import { CommandBundle } from ".";
+import { combinePermissions } from "../utils/bot/bitwise";
 
 const enable = new SlashCommandSubcommandBuilder()
     .setName("enable")
@@ -76,9 +77,13 @@ const request = new SlashCommandSubcommandBuilder()
     .setName("request")
     .setDescription("Request verification. Only applicable if command verification is enabled.");
 
+
+const permissions = [PermissionFlagsBits.ManageGuild];
+
 const verify = new SlashCommandBuilder()
     .setName("verify")
     .setDescription("Allows server staff to approve users into the server")
+    .setDefaultMemberPermissions(combinePermissions(permissions))
     .addSubcommand(enable)
     .addSubcommand(disable)
     .addSubcommand(list)
@@ -89,6 +94,7 @@ const verify = new SlashCommandBuilder()
     .addSubcommand(request);
 
 export default {
+    permissions,
     commands: {
         chat: {
             base: verify,

@@ -2,8 +2,9 @@ import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
 } from "@discordjs/builders";
-import { ChannelType } from "discord.js";
+import { ChannelType, PermissionFlagsBits } from "discord.js";
 import { CommandBundle } from ".";
+import { combinePermissions } from "../utils/bot/bitwise";
 
 const enable = new SlashCommandSubcommandBuilder()
     .setName("enable")
@@ -45,17 +46,19 @@ const whitelist_remove = new SlashCommandSubcommandBuilder()
             .setDescription("The role to remove from the whitelist")
             .setRequired(true));
 
+const permissions = [PermissionFlagsBits.ManageChannels];
+
 const imageboard = new SlashCommandBuilder()
     .setName("imageboard")
-    .setDescription(
-        "Marks a channel as an imageboard, where only links, videos, and other media can be sent."
-    )
+    .setDescription("Marks a channel as an imageboard, where only links, videos, and other media can be sent.")
+    .setDefaultMemberPermissions(combinePermissions(permissions))
     .addSubcommand(enable)
     .addSubcommand(disable)
     .addSubcommand(whitelist_add)
     .addSubcommand(whitelist_remove);
 
 export default {
+    permissions,
     commands: {
         chat: {
             base: imageboard,

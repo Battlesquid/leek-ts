@@ -19,7 +19,7 @@ import { isNullish } from "@sapphire/utilities";
         chatInputCommand(imageboard.commands.chat.subcommands.enable.name)
     ],
     preconditions: ["GuildTextOnly"],
-    requiredUserPermissions: ["ManageChannels"],
+    requiredUserPermissions: imageboard.permissions,
     requiredClientPermissions: ["ManageMessages"]
 })
 export class ImageBoardCommand extends AugmentedSubcommand {
