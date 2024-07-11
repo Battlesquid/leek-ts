@@ -255,8 +255,7 @@ export class HallOfFameCommand extends AugmentedSubcommand {
     }
 
     private canEmbedAttachment(attachment: Attachment) {
-        console.log(attachment.contentType);
-        return /jpg|jpeg|png|gif/.test(attachment.contentType ?? "");
+        return /jpg|jpeg|png/.test(attachment.contentType ?? "");
     }
 
     private async getSettings(guildId: string) {

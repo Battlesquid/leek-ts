@@ -126,6 +126,7 @@ export class VerifyCommand extends AugmentedSubcommand {
         }
         try {
             await this.db.delete(verifySettings).where(eq(verifySettings.gid, inter.guildId));
+            await this.db.delete(verifyEntry).where(eq(verifyEntry.gid, inter.guildId));
             inter.reply("Verification disabled.");
         } catch (error) {
             logger.error("An error occurred while disabling verification.", error);
@@ -490,7 +491,7 @@ export class VerifyCommand extends AugmentedSubcommand {
 
         let response = `Verified ${verified.length} ${pluralize("user", verified.length)}.`;
         if (failedCount !== 0) {
-            response += ` Failed to verify ${failedCount} ${pluralize("user", verified.length)}.`;
+            response += ` Failed to verify ${failedCount} ${pluralize("user", failedCount)}.`;
         }
 
         ttry(() => {

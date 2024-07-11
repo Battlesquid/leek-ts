@@ -72,9 +72,9 @@ export class ReactRolesCommand extends AugmentedSubcommand {
 
         const channel = inter.options.getChannel<ChannelType.GuildText>("channel", true);
         const title = inter.options.getString("title", true);
-        const desc = inter.options.getString("desc", false);
+        const desc = inter.options.getString("description", false);
         const color = `#${inter.options.getString("color", false) ?? "444444"}` as ColorResolvable;
-        const msg = inter.options.getString("msg", false) ?? undefined;
+        const msg = inter.options.getString("message", false) ?? undefined;
 
         if (!/^#[A-Fa-f0-9]{6}$/.test(color.toString())) {
             inter.reply(`Invalid color '${color}' provided, exiting`);
@@ -98,9 +98,9 @@ export class ReactRolesCommand extends AugmentedSubcommand {
         const channel = inter.options.getChannel<ChannelType.GuildText>("channel", true);
         const title = inter.options.getString("title", true);
         const newTitle = inter.options.getString("new_title", false);
-        const desc = inter.options.getString("desc", false);
+        const desc = inter.options.getString("description", false);
         const color: ColorResolvable = `#${inter.options.getString("color", false) ?? ""}`;
-        const message = inter.options.getString("msg", false) ?? undefined;
+        const message = inter.options.getString("message", false) ?? undefined;
 
         const [reactroleMsg, reactrole, size] = await this.findReactRole(channel, title);
         if (size === 0) {

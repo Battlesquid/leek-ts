@@ -24,8 +24,8 @@ const create = new SlashCommandSubcommandBuilder()
     )
     .addStringOption((opt) =>
         opt
-            .setName("desc")
-            .setDescription("The description for the reactrole group")
+            .setName("description")
+            .setDescription("The description for the reactrole group. Discord markdown supported.")
     )
     .addStringOption((opt) =>
         opt
@@ -36,13 +36,13 @@ const create = new SlashCommandSubcommandBuilder()
     )
     .addStringOption((opt) =>
         opt
-            .setName("msg")
+            .setName("message")
             .setDescription("The message to prepend to the reactrole group")
     );
 
 const add_role = new SlashCommandSubcommandBuilder()
     .setName("add_role")
-    .setDescription("Add a role to a group")
+    .setDescription("Add a role to a reactrole group")
     .addChannelOption((opt) =>
         opt
             .setName("channel")
@@ -94,7 +94,7 @@ const remove_role = new SlashCommandSubcommandBuilder()
 
 const edit = new SlashCommandSubcommandBuilder()
     .setName("edit")
-    .setDescription("Edit reactroles")
+    .setDescription("Edit a reactrole group.")
     .addChannelOption((opt) =>
         opt
             .setName("channel")
@@ -115,8 +115,8 @@ const edit = new SlashCommandSubcommandBuilder()
     )
     .addStringOption((opt) =>
         opt
-            .setName("desc")
-            .setDescription("The description for the reactrole group")
+            .setName("description")
+            .setDescription("The description for the reactrole group. Discord markdown supported.")
     )
     .addStringOption((opt) =>
         opt
@@ -127,7 +127,7 @@ const edit = new SlashCommandSubcommandBuilder()
     )
     .addStringOption((opt) =>
         opt
-            .setName("msg")
+            .setName("message")
             .setDescription("The message to prepend to the reactrole group")
     );
 

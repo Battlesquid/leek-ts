@@ -18,7 +18,7 @@ const timeout = new SlashCommandBuilder()
     .addStringOption((option) =>
         option
             .setName("duration")
-            .setDescription("How long this user should be timed out for.")
+            .setDescription("How long this user should be timed out for")
             .setRequired(true)
     )
     .addStringOption((option) =>

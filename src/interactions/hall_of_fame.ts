@@ -8,11 +8,11 @@ import { combinePermissions } from "../utils/bot/bitwise";
 
 const enable = new SlashCommandSubcommandBuilder()
     .setName("enable")
-    .setDescription("Enable hall of fame on a given channel.")
+    .setDescription("Enable hall of fame on a given channel")
     .addChannelOption((option) =>
         option
             .setName("channel")
-            .setDescription("The channel to enable.")
+            .setDescription("The channel to enable")
             .addChannelTypes(ChannelType.GuildText)
             .setRequired(true)
     );
@@ -32,7 +32,7 @@ const permissions = [PermissionFlagsBits.ManageChannels, PermissionFlagsBits.Man
 
 const hallOfFame = new SlashCommandBuilder()
     .setName("hall_of_fame")
-    .setDescription("For recording noteworthy server content.")
+    .setDescription("For recording noteworthy server content")
     .setDefaultMemberPermissions(combinePermissions(permissions))
     .addSubcommand(enable)
     .addSubcommand(disable);

@@ -107,7 +107,7 @@ export class TimeoutCommand extends AugmentedCommand {
                 ephemeral: true
             });
             try {
-                await this.db.update(logSettings).set({ moderation: null });
+                await this.db.update(logSettings).set({ moderation: null }).where(eq(logSettings.gid, inter.guildId));
             } catch (error) {
                 this.container.logger.error(error);
                 inter.followUp({

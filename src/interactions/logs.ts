@@ -30,7 +30,7 @@ const enable = new SlashCommandSubcommandBuilder()
 
 const disable = new SlashCommandSubcommandBuilder()
     .setName("disable")
-    .setDescription("Disable image logging")
+    .setDescription("Disable a type of log")
     .addStringOption((opt) =>
         opt
             .setName("type")
@@ -47,7 +47,7 @@ const permissions = [PermissionFlagsBits.ManageChannels, PermissionFlagsBits.Mod
 
 const logs = new SlashCommandBuilder()
     .setName("logs")
-    .setDescription("Manage server wide message logging.")
+    .setDescription("Manage server wide logging")
     .setDefaultMemberPermissions(combinePermissions(permissions))
     .addSubcommand(enable)
     .addSubcommand(disable);

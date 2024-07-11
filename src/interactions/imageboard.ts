@@ -39,7 +39,7 @@ const whitelist_add = new SlashCommandSubcommandBuilder()
 
 const whitelist_remove = new SlashCommandSubcommandBuilder()
     .setName("whitelist_remove")
-    .setDescription("Removes a role from the whitelist for imageboards.")
+    .setDescription("Removes a role from the whitelist for imageboards")
     .addRoleOption((option) =>
         option
             .setName("role")
@@ -50,7 +50,7 @@ const permissions = [PermissionFlagsBits.ManageChannels];
 
 const imageboard = new SlashCommandBuilder()
     .setName("imageboard")
-    .setDescription("Marks a channel as an imageboard, where only links, videos, and other media can be sent.")
+    .setDescription("Manage imageboards, channels where only links, videos, and other media can be sent.")
     .setDefaultMemberPermissions(combinePermissions(permissions))
     .addSubcommand(enable)
     .addSubcommand(disable)

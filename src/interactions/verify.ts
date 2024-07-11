@@ -16,7 +16,7 @@ const enable = new SlashCommandSubcommandBuilder()
     .addRoleOption((option) =>
         option
             .setName("role")
-            .setDescription("Role to give on approval")
+            .setDescription("Default role to give users on approval")
             .setRequired(true)
     )
     .addChannelOption((option) =>
@@ -36,26 +36,26 @@ const disable = new SlashCommandSubcommandBuilder().setName("disable").setDescri
 
 const list = new SlashCommandSubcommandBuilder().setName("list").setDescription("Display pending verifications");
 
-const rescan = new SlashCommandSubcommandBuilder().setName("rescan").setDescription("Rescans the user join channel");
+const rescan = new SlashCommandSubcommandBuilder().setName("rescan").setDescription("Rescans the user join channel. Requires message verification to be enabled.");
 
 const add_role = new SlashCommandSubcommandBuilder()
     .setName("add_role")
-    .setDescription("Add a role to the list of roles")
-    .addRoleOption((option) => option.setName("role").setDescription("A role to give to verified users").setRequired(true));
+    .setDescription("Add a role to apply to newly verified users")
+    .addRoleOption((option) => option.setName("role").setDescription("The role to give to verified users").setRequired(true));
 
 const remove_role = new SlashCommandSubcommandBuilder()
     .setName("remove_role")
-    .setDescription("Remove a role from the list of roles")
+    .setDescription("Remove a role from the list of roles to apply to newly verified users")
     .addRoleOption((option) => option.setName("role").setDescription("The role to remove").setRequired(true))
     .addRoleOption((option) => option.setName("replacement_role").setDescription("Role to use as replacement if there is only one verification role.").setRequired(false));
 
 const edit = new SlashCommandSubcommandBuilder()
     .setName("edit")
-    .setDescription("Edit verification settings.")
+    .setDescription("Edit verification settings")
     .addChannelOption((option) =>
         option
             .setName("new_user_channel")
-            .setDescription("The channel where new users first arrive.")
+            .setDescription("The channel where new users first arrive. Only used for message verification.")
             .addChannelTypes(ChannelType.GuildText)
             .setRequired(false)
     )
@@ -75,7 +75,7 @@ const edit = new SlashCommandSubcommandBuilder()
 
 const request = new SlashCommandSubcommandBuilder()
     .setName("request")
-    .setDescription("Request verification. Only applicable if command verification is enabled.");
+    .setDescription("Request verification. Requires command verification to be enabled.");
 
 
 const permissions = [PermissionFlagsBits.ManageGuild];
