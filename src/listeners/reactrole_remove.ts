@@ -55,7 +55,7 @@ export class ReactRoleRemoveListener extends Listener {
             return;
         }
 
-        if (member.roles.cache.has(roleID)) {
+        if (!member.roles.cache.has(roleID)) {
             return;
         }
 
