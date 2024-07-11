@@ -1,7 +1,7 @@
 import { LogLevel, SapphireClient, container } from "@sapphire/framework";
 import { ActivityType, GatewayIntentBits, Partials } from "discord.js";
 import { config } from "./config";
-import { getDatabase, getPgConnection } from "./db";
+import { getDatabase, getPgPool } from "./db";
 import { getLoggerInstance } from "./logger";
 import { PinoLoggerAdapter } from "./utils/bot";
 
@@ -27,19 +27,20 @@ const client = new SapphireClient({
 
 const main = async () => {
     container.drizzle = await getDatabase();
-    container.pg = await getPgConnection();
+    container.pool = await getPgPool();
     await client.login(config.getenv("DISCORD_TOKEN"));
 };
 
 const cleanup = () => {
-    container.pg.end();
+    container.pool.end();
 };
 
 main().catch((error) => {
     container.logger.error(error);
 });
 
-process.on("uncaughtException", () => {
+process.on("uncaughtException", (error) => {
+    console.error(error);
     cleanup();
 });
 
