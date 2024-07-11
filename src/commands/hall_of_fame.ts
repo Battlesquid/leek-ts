@@ -20,7 +20,7 @@ import { eq } from "drizzle-orm";
 import { arrayAppend, arrayRemove } from "../db";
 import { hallOfFameSettings } from "../db/schema";
 import { hall_of_fame } from "../interactions";
-import { AugmentedSubcommand, CommandHints, chatInputCommand, messageCommand, slashCommandMention, timestring } from "../utils/bot";
+import { AugmentedSubcommand, CommandHints, YOUTUBE_REGEX, chatInputCommand, messageCommand, slashCommandMention, timestring } from "../utils/bot";
 import { pluralize, ttry } from "../utils/general";
 
 @ApplyOptions<Subcommand.Options>({
@@ -247,10 +247,14 @@ export class HallOfFameCommand extends AugmentedSubcommand {
 
         const files: string[] = [];
         const validAttachments = message.attachments.filter(this.canEmbedAttachment);
+        const matchesYoutube = message.content.match(YOUTUBE_REGEX);
         if (validAttachments.size > 1) {
             files.push(...message.attachments.map((a) => a.url));
         } else if (validAttachments.size === 1) {
             embed.setImage(validAttachments.first()!.url);
+        } else if (matchesYoutube) {
+            const [, id] = matchesYoutube;
+            embed.setImage(`https://img.youtube.com/vi/${id}/maxresdefault.jpg`);
         }
 
         const original = new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel("Original").setURL(message.url);
