@@ -12,7 +12,7 @@ export const getPgConnection = async () => {
     if (connection === null) {
         connection = new Client({
             host: config.getenv("DB_HOST"),
-            port: parseInt(config.getenv("DB_HOST")),
+            port: parseInt(config.getenv("DB_PORT")),
             user: config.getenv("DB_USER"),
             password: config.getenv("DB_PASSWORD"),
             database: config.getenv("DB_NAME")

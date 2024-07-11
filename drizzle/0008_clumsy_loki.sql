@@ -1,1 +1,0 @@
-ALTER TABLE "verify_settings" ADD PRIMARY KEY ("gid");
