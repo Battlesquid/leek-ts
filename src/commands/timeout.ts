@@ -51,6 +51,10 @@ export class TimeoutCommand extends AugmentedCommand {
             millis = ms(duration);
             durationStr = ms(millis);
         } catch (e) {
+            inter.reply({
+                content: "An invalid duration was provided.",
+                ephemeral: true
+            });
             logger.error("An invalid duration was provided.", e);
             return;
         }
@@ -74,7 +78,7 @@ export class TimeoutCommand extends AugmentedCommand {
             await member.disableCommunicationUntil(Date.now() + millis, reason);
             inter.reply(`Timed out ${member} for ${durationStr} (${reason}).`);
         } catch (error) {
-            this.container.logger.error(error);
+            logger.error("An error occurred while timing out user, please try again later.", error);
             inter.reply({
                 content: "An error occurred while timing out user, please try again later.",
                 ephemeral: true
@@ -93,7 +97,7 @@ export class TimeoutCommand extends AugmentedCommand {
         try {
             channel = await inter.guild.channels.fetch(settings.moderation);
         } catch (error) {
-            this.container.logger.error(error);
+            logger.error("Unable to retreive moderation logging channel.", error);
             inter.followUp({
                 content: "Unable to retreive moderation logging channel.",
                 ephemeral: true
@@ -109,7 +113,7 @@ export class TimeoutCommand extends AugmentedCommand {
             try {
                 await this.db.update(logSettings).set({ moderation: null }).where(eq(logSettings.gid, inter.guildId));
             } catch (error) {
-                this.container.logger.error(error);
+                logger.error("An error occurred while deleting the old moderation log channel", error);
                 inter.followUp({
                     content: "An error occurred while deleting the old moderation log channel",
                     ephemeral: true
@@ -129,7 +133,7 @@ export class TimeoutCommand extends AugmentedCommand {
         try {
             await channel.send({ embeds: [embed] });
         } catch (error) {
-            this.container.logger.error(error);
+            logger.error("An error occurred while recording the timeout log.", error);
             inter.followUp({
                 content: "An error occurred while recording the timeout log.",
                 ephemeral: true

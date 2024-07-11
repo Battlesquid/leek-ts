@@ -88,7 +88,11 @@ export class ReactRolesCommand extends AugmentedSubcommand {
             });
             inter.reply(`New react roles created in ${channel}.`);
         } catch (error) {
-            logger.error("An error occurred while sending ", error);
+            inter.reply({
+                content: `An error occurred while creating '${title}'.`,
+                ephemeral: true
+            });
+            logger.error(`An error occurred while creating '${title}'.`, error);
         }
     }
 
@@ -130,7 +134,11 @@ export class ReactRolesCommand extends AugmentedSubcommand {
             });
             inter.reply(`'${title}' updated successfully.`);
         } catch (error) {
-            logger.error(`An error occurred while trying to edit '${title}'.`, error);
+            inter.reply({
+                content: `An error occurred while editing '${title}'.`,
+                ephemeral: true
+            });
+            logger.error(`An error occurred while editing '${title}'.`, error);
         }
     }
 
@@ -173,6 +181,10 @@ export class ReactRolesCommand extends AugmentedSubcommand {
             await msg.react(emoji);
             inter.reply(`Users can now react to '${title}' with ${emoji} to get the ${role} role`);
         } catch (error) {
+            inter.reply({
+                content: `An error occurred while editing '${title}'.`,
+                ephemeral: true
+            });
             logger.error(`An error occurred while editing '${title}'.`, error);
         }
     }
@@ -205,13 +217,11 @@ export class ReactRolesCommand extends AugmentedSubcommand {
         try {
             await msg.edit({ embeds: [builder] });
         } catch (error) {
-            logger.error(
-                {
-                    interaction: `An error occurred while removing ${role} from '${title}'.`,
-                    logger: `An error occurred while removing ${role.name} from '${title}'.`
-                },
-                error
-            );
+            inter.reply({
+                content: `An error occurred while removing ${role} from '${title}'.`,
+                ephemeral: true
+            });
+            logger.error(`An error occurred while removing ${role.name} from '${title}'.`, error);
             return;
         }
 
@@ -221,13 +231,11 @@ export class ReactRolesCommand extends AugmentedSubcommand {
             await msg.reactions.cache.get(emoji)?.remove();
             inter.reply(`Removed ${role} from '${title}'.`);
         } catch (error) {
-            logger.error(
-                {
-                    interaction: `An error occurred while removing ${role} from '${title}'.`,
-                    logger: `An error occurred while removing ${role.name} from '${title}'.`
-                },
-                error
-            );
+            inter.reply({
+                content: `An error occurred while removing ${role} from '${title}'.`,
+                ephemeral: true
+            });
+            logger.error(`An error occurred while removing ${role.name} from '${title}'.`, error);
             return;
         }
     }

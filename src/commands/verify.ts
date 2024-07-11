@@ -81,7 +81,11 @@ export class VerifyCommand extends AugmentedSubcommand {
 
         const { settings, error } = await this.getSettings(inter.guildId);
         if (error) {
-            logger.error("An error occurred while retrieving settings.", error);
+            inter.reply({
+                content: "An error occurred while retrieving your settings.",
+                ephemeral: true
+            });
+            logger.error("An error occurred while retrieving your settings.", error);
             return;
         }
         if (settings) {
@@ -108,6 +112,10 @@ export class VerifyCommand extends AugmentedSubcommand {
             ]);
             inter.reply(`Verification enabled.${successText}`);
         } catch (error) {
+            inter.reply({
+                content: "An error occurred while enabling verification.",
+                ephemeral: true
+            });
             logger.error("An error occurred while enabling verification.", error);
         }
     }
@@ -117,7 +125,11 @@ export class VerifyCommand extends AugmentedSubcommand {
 
         const { settings, error } = await this.getSettings(inter.guildId);
         if (error) {
-            logger.error("An error occurred while retrieving settings.", error);
+            inter.reply({
+                content: "An error occurred while retrieving your settings.",
+                ephemeral: true
+            });
+            logger.error("An error occurred while retrieving your settings.", error);
             return;
         }
         if (isNullish(settings)) {
@@ -129,14 +141,19 @@ export class VerifyCommand extends AugmentedSubcommand {
             await this.db.delete(verifyEntry).where(eq(verifyEntry.gid, inter.guildId));
             inter.reply("Verification disabled.");
         } catch (error) {
+            inter.reply({
+                content: "An error occurred while disabling verification.",
+                ephemeral: true
+            });
             logger.error("An error occurred while disabling verification.", error);
         }
     }
 
     public async chatInputRequest(inter: Subcommand.ChatInputCommandInteraction<"cached">) {
+        const logger = this.getCommandLogger(inter);
         const { settings, error } = await this.getSettings(inter.guildId);
         if (error) {
-            console.error(error);
+            logger.error("An error occurred while retrieving your settings.", error);
             inter.reply({
                 content: "An error occurred while processing your request, please try again later.",
                 ephemeral: true
@@ -179,6 +196,10 @@ export class VerifyCommand extends AugmentedSubcommand {
         const logger = this.getCommandLogger(inter);
         const { settings, error } = await this.getSettings(inter.guildId);
         if (error) {
+            inter.reply({
+                content: "An error occurred while retrieving your settings.",
+                ephemeral: true
+            });
             logger.error("An error occurred while retrieving your settings.", error);
             return;
         }
@@ -232,7 +253,11 @@ export class VerifyCommand extends AugmentedSubcommand {
         }
         const { settings, error } = await this.getSettings(inter.guildId);
         if (error) {
-            logger.error("An error occurred while retrieving settings.", error);
+            inter.reply({
+                content: "An error occurred while retrieving your settings.",
+                ephemeral: true
+            });
+            logger.error("An error occurred while retrieving your settings.", error);
             return;
         }
         if (isNullish(settings)) {
@@ -254,13 +279,11 @@ export class VerifyCommand extends AugmentedSubcommand {
                 .where(eq(verifySettings.gid, inter.guildId));
             inter.reply(`Added ${role} to verification roles.`);
         } catch (error) {
-            logger.error(
-                {
-                    interaction: `An error occurred while trying to add ${role} to verification roles.`,
-                    logger: `An error occurred while trying to add ${role.name} to verification roles.`
-                },
-                error
-            );
+            inter.reply({
+                content: `An error occurred while trying to add ${role} to verification roles.`,
+                ephemeral: true
+            });
+            logger.error(`An error occurred while trying to add ${role.name} to verification roles.`, error);
         }
     }
     public async chatInputRemoveRole(inter: Subcommand.ChatInputCommandInteraction<"cached">) {
@@ -275,7 +298,11 @@ export class VerifyCommand extends AugmentedSubcommand {
 
         const { settings, error } = await this.getSettings(inter.guildId);
         if (error) {
-            logger.error("An error occurred while retrieving settings.", error);
+            inter.reply({
+                content: "An error occurred while retrieving your settings.",
+                ephemeral: true
+            });
+            logger.error("An error occurred while retrieving your settings.", error);
             return;
         }
         if (isNullish(settings)) {
@@ -316,13 +343,11 @@ export class VerifyCommand extends AugmentedSubcommand {
                 .where(eq(verifySettings.gid, inter.guildId));
             inter.reply(`Removed ${role} from verification roles${replaceText}.`);
         } catch (error) {
-            logger.error(
-                {
-                    interaction: `An error occurred while trying to remove ${role} from verification roles.`,
-                    logger: `An error occurred while trying to remove ${role.name} from verification roles.`
-                },
-                error
-            );
+            inter.reply({
+                content: `An error occurred while trying to remove ${role} to verification roles.`,
+                ephemeral: true
+            });
+            logger.error(`An error occurred while trying to remove ${role.name} to verification roles.`, error);
         }
     }
 
@@ -338,7 +363,11 @@ export class VerifyCommand extends AugmentedSubcommand {
         const logger = this.getCommandLogger(inter);
         const { settings, error } = await this.getSettings(inter.guildId);
         if (error) {
-            logger.error("An error occurred while retrieving settings.", error);
+            inter.reply({
+                content: "An error occurred while retrieving your settings.",
+                ephemeral: true
+            });
+            logger.error("An error occurred while retrieving your settings.", error);
             return;
         }
         if (isNullish(settings)) {
@@ -372,16 +401,22 @@ export class VerifyCommand extends AugmentedSubcommand {
                 .where(eq(verifySettings.gid, inter.guildId));
             inter.reply("Successfully updated verification settings.");
         } catch (error) {
+            inter.reply({
+                content: "An error occurred while editing your verification settings.",
+                ephemeral: true
+            });
             logger.error("An error occurred while editing your verification settings.", error);
         }
     }
 
     public async chatInputRescan(inter: Subcommand.ChatInputCommandInteraction<"cached">) {
-        await inter.deferReply();
+        const logger = this.getCommandLogger(inter);
+        await inter.deferReply({ ephemeral: true });
 
         const { settings, error: settingsError } = await this.getSettings(inter.guildId);
         if (settingsError) {
             await inter.editReply("An error occurred while retrieving settings.");
+            logger.error("An error occurred while retrieving settings.", settingsError);
             return;
         }
         if (isNullish(settings)) {

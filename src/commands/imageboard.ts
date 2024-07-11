@@ -44,6 +44,10 @@ export class ImageBoardCommand extends AugmentedSubcommand {
         const channel = inter.options.getChannel<ChannelType.GuildText>("channel", true);
         const { settings, error } = await this.getSettings(inter.guildId);
         if (error) {
+            inter.reply({
+                content: "An error occurred while retrieving your settings.",
+                ephemeral: true
+            });
             logger.error("An error occurred while retrieving your settings.", error);
             return;
         }

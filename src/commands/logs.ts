@@ -52,7 +52,11 @@ export class LogsCommand extends AugmentedSubcommand {
                 });
             inter.reply(`Enabled ${type} logging on ${channel}.`);
         } catch (error) {
-            logger.error("An error occurred, please try again later", error);
+            inter.reply({
+                content: "An error occurred while saving your settings.",
+                ephemeral: true
+            });
+            logger.error("An error occurred while saving your settings.", error);
         }
     }
 
@@ -66,7 +70,11 @@ export class LogsCommand extends AugmentedSubcommand {
                 .where(eq(logSettings.gid, inter.guildId));
             inter.reply(`${capitalize(type)} logging disabled.`);
         } catch (error) {
-            logger.error("An error occurred.", error);
+            inter.reply({
+                content: "An error occurred while saving your settings.",
+                ephemeral: true
+            });
+            logger.error("An error occurred while saving your settings.", error);
         }
     }
 }

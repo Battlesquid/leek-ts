@@ -64,7 +64,11 @@ export class HallOfFameCommand extends AugmentedSubcommand {
 
         const { settings, error } = await this.getSettings(inter.guildId);
         if (error) {
-            logger.error("An error occurred while retreiving your settings.", error);
+            inter.reply({
+                content: "An error occurred while retrieving your settings.",
+                ephemeral: true
+            });
+            logger.error("An error occurred while retrieving your settings.", error);
             return;
         }
 
@@ -88,6 +92,10 @@ export class HallOfFameCommand extends AugmentedSubcommand {
                 });
             inter.reply(`Enabled hall of fame on ${channel}.`);
         } catch (error) {
+            inter.reply({
+                content: "An error occurred while enabling hall of fame.",
+                ephemeral: true
+            });
             logger.error("An error occurred while enabling hall of fame.", error);
         }
     }
@@ -98,6 +106,10 @@ export class HallOfFameCommand extends AugmentedSubcommand {
         const { settings, error } = await this.getSettings(inter.guildId);
 
         if (error) {
+            inter.reply({
+                content: "An error occurred while retreiving your settings.",
+                ephemeral: true
+            });
             logger.error("An error occurred while retreiving your settings.", error);
             return;
         }
@@ -112,6 +124,10 @@ export class HallOfFameCommand extends AugmentedSubcommand {
                 .where(eq(hallOfFameSettings.gid, inter.guildId));
             inter.reply(`Disabled hall of fame on ${channel}`);
         } catch (error) {
+            inter.reply({
+                content: "An error occurred while disabling hall of fame.",
+                ephemeral: true
+            });
             logger.error("An error occurred while disabling hall of fame.", error);
         }
     }
@@ -125,11 +141,15 @@ export class HallOfFameCommand extends AugmentedSubcommand {
 
         const { settings, error } = await this.getSettings(inter.guildId);
         if (error) {
+            inter.reply({
+                content: "An error occurred while retreiving your settings.",
+                ephemeral: true
+            });
             logger.error("An error occurred while retreiving your settings.", error);
             return;
         }
         if (isNullish(settings)) {
-            const mention = slashCommandMention(hall_of_fame.commands.chat.base.name, hall_of_fame.commands.chat.subcommands.enable.name, "1126901836243275806");
+            const mention = slashCommandMention(hall_of_fame.commands.chat.base.name, hall_of_fame.commands.chat.subcommands.enable.name, this.hints().getMessageId());
             inter.reply({
                 content: `You must create a hall of fame first. Create one with ${mention}.`,
                 ephemeral: true
