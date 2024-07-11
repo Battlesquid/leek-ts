@@ -149,7 +149,7 @@ export class HallOfFameCommand extends AugmentedSubcommand {
             return;
         }
         if (isNullish(settings)) {
-            const mention = slashCommandMention(hall_of_fame.commands.chat.base.name, hall_of_fame.commands.chat.subcommands.enable.name, this.hints().getMessageId());
+            const mention = slashCommandMention(this.name, hall_of_fame.commands.chat.subcommands.enable.name, this.hints().getMessageId());
             inter.reply({
                 content: `You must create a hall of fame first. Create one with ${mention}.`,
                 ephemeral: true
@@ -232,7 +232,7 @@ export class HallOfFameCommand extends AugmentedSubcommand {
         }
 
         if (!isTextBasedChannel(hall)) {
-            const mention = slashCommandMention(hall_of_fame.commands.chat.base.name, hall_of_fame.commands.chat.subcommands.enable.name, "1126901836243275806");
+            const mention = slashCommandMention(this.name, hall_of_fame.commands.chat.subcommands.enable.name, "1126901836243275806");
             inter.editReply({
                 content: `${hall} must be a text channel. Edit this channel to be a text channel, or add a new hall of fame using ${mention}.`,
                 components: []
@@ -246,11 +246,11 @@ export class HallOfFameCommand extends AugmentedSubcommand {
             .setDescription(`Submitted ${timestring(message.createdTimestamp, TimestampStyles.LongDateTime)}`);
 
         const files: string[] = [];
-        const attachment = message.attachments.find(this.canEmbedAttachment);
-        if (attachment) {
-            embed.setImage(attachment.url);
-        } else {
+        const validAttachments = message.attachments.filter(this.canEmbedAttachment);
+        if (validAttachments.size > 1) {
             files.push(...message.attachments.map((a) => a.url));
+        } else if (validAttachments.size === 1) {
+            embed.setImage(validAttachments.first()!.url);
         }
 
         const original = new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel("Original").setURL(message.url);
