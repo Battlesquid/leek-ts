@@ -23,7 +23,7 @@ export class ReactRoleAddListener extends Listener {
         }
 
         const [embed] = message.embeds;
-        if (ReactRolesCommand.isReactRole(embed)) {
+        if (!ReactRolesCommand.isReactRole(embed)) {
             return;
         }
 
