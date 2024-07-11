@@ -43,7 +43,7 @@ import { pluralize, ttry } from "../utils/general";
     ],
     preconditions: ["GuildTextOnly"],
     requiredUserPermissions: verify.permissions,
-    requiredClientPermissions: ["ManageRoles", "SendMessages", "ChangeNickname", "UseExternalEmojis"]
+    requiredClientPermissions: ["SendMessages", "ManageNicknames", "UseExternalEmojis"]
 })
 export class VerifyCommand extends AugmentedSubcommand {
     hints() {
