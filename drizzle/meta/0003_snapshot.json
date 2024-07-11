@@ -1,0 +1,147 @@
+{
+    "id": "6a4bffc0-f914-43fb-bf46-b8fb89bbc396",
+    "prevId": "ccd5f5c0-5eeb-4b32-b453-5ab1d0d8fb7c",
+    "version": "7",
+    "dialect": "postgresql",
+    "tables": {
+        "public.imageboard": {
+            "name": "imageboard",
+            "schema": "",
+            "columns": {
+                "gid": {
+                    "name": "gid",
+                    "type": "varchar",
+                    "primaryKey": true,
+                    "notNull": true
+                },
+                "boards": {
+                    "name": "boards",
+                    "type": "text[]",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "whitelist": {
+                    "name": "whitelist",
+                    "type": "text[]",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "default": "'{}'::text[]"
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {},
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {}
+        },
+        "public.log_settings": {
+            "name": "log_settings",
+            "schema": "",
+            "columns": {
+                "gid": {
+                    "name": "gid",
+                    "type": "varchar",
+                    "primaryKey": true,
+                    "notNull": true
+                },
+                "message": {
+                    "name": "message",
+                    "type": "varchar",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "image": {
+                    "name": "image",
+                    "type": "varchar",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "moderation": {
+                    "name": "moderation",
+                    "type": "varchar",
+                    "primaryKey": false,
+                    "notNull": false
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {},
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {}
+        },
+        "public.verify_entry": {
+            "name": "verify_entry",
+            "schema": "",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "serial",
+                    "primaryKey": true,
+                    "notNull": true
+                },
+                "gid": {
+                    "name": "gid",
+                    "type": "varchar",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "uid": {
+                    "name": "uid",
+                    "type": "varchar",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "nick": {
+                    "name": "nick",
+                    "type": "varchar(32)",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {},
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {}
+        },
+        "public.verify_settings": {
+            "name": "verify_settings",
+            "schema": "",
+            "columns": {
+                "gid": {
+                    "name": "gid",
+                    "type": "varchar",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "join_ch": {
+                    "name": "join_ch",
+                    "type": "varchar",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "roles": {
+                    "name": "roles",
+                    "type": "text[]",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "autogreet": {
+                    "name": "autogreet",
+                    "type": "boolean",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "default": false
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {},
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {}
+        }
+    },
+    "enums": {},
+    "schemas": {},
+    "_meta": {
+        "columns": {},
+        "schemas": {},
+        "tables": {}
+    }
+}

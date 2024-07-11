@@ -1,33 +1,54 @@
-import { config } from "dotenv";
-import { expand } from "dotenv-expand";
-import path from "path/posix";
-const env = config({ path: path.resolve(__dirname, "../.env") })
-expand(env)
-
+import { LogLevel, SapphireClient, container } from "@sapphire/framework";
 import { ActivityType, GatewayIntentBits, Partials } from "discord.js";
-import LeekClient from "./LeekClient";
+import { config } from "./config";
+import { getDatabase, getPgConnection } from "./db";
+import { getLoggerInstance } from "./logger";
+import { PinoLoggerAdapter } from "./utils/bot";
 
-const client = new LeekClient({
-    interactionsDir: path.resolve(__dirname, "./interactions"),
-    functionsDir: path.resolve(__dirname, "./functions"),
-    eventsDir: path.resolve(__dirname, "./events"),
-    intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.GuildMembers,
-        GatewayIntentBits.MessageContent,
-        GatewayIntentBits.GuildMessageReactions,
-    ],
+const logger = getLoggerInstance("leekbot");
+
+const client = new SapphireClient({
+    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessageReactions],
+    logger: {
+        level: config.getenv("NODE_ENV") === "development" ? LogLevel.Trace : LogLevel.Info,
+        instance: new PinoLoggerAdapter(logger)
+    },
     partials: [Partials.Message, Partials.Channel, Partials.Reaction],
     presence: {
-        status: "dnd",
+        status: "online",
         activities: [
             {
-                type: ActivityType.Playing,
-                name: 'I\'ve been updated! Type "/" to see what I can do.',
-            },
-        ],
-    },
+                type: ActivityType.Watching,
+                name: "out for leeks"
+            }
+        ]
+    }
 });
 
-client.start();
+const main = async () => {
+    container.drizzle = await getDatabase();
+    container.pg = await getPgConnection();
+    await client.login(config.getenv("DISCORD_TOKEN"));
+};
+
+const cleanup = () => {
+    container.pg.end();
+};
+
+main().catch((error) => {
+    container.logger.error(error);
+});
+
+process.on("uncaughtException", () => {
+    cleanup();
+});
+
+process.on("SIGTERM", () => {
+    cleanup();
+    process.exit(0);
+});
+
+process.on("SIGINT", () => {
+    cleanup();
+    process.exit(0);
+});

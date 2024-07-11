@@ -1,8 +1,14 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
+import { CommandBundle } from ".";
+import { PermissionFlagsBits } from "discord.js";
+import { combinePermissions } from "../utils/bot/bitwise";
 
-const timeoutInteraction = new SlashCommandBuilder()
+const permissions = [PermissionFlagsBits.ModerateMembers];
+
+const timeout = new SlashCommandBuilder()
     .setName("timeout")
     .setDescription("Timeout a user")
+    .setDefaultMemberPermissions(combinePermissions(permissions))
     .addUserOption((option) =>
         option
             .setName("user")
@@ -12,7 +18,7 @@ const timeoutInteraction = new SlashCommandBuilder()
     .addStringOption((option) =>
         option
             .setName("duration")
-            .setDescription("How long this user should be timed out for.")
+            .setDescription("How long this user should be timed out for")
             .setRequired(true)
     )
     .addStringOption((option) =>
@@ -21,4 +27,13 @@ const timeoutInteraction = new SlashCommandBuilder()
             .setDescription("The reason for timing this user out")
     );
 
-export default timeoutInteraction;
+export default {
+    permissions,
+    commands: {
+        chat: {
+            base: timeout,
+            subcommands: undefined
+        },
+        message: {}
+    }
+} satisfies CommandBundle<"Command">;

@@ -8,3 +8,7 @@ temp/
 dist/
 config.json
 .eslintcache
+.env*
+.flaskenv*
+!.env.project
+!.env.vault

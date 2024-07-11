@@ -1,0 +1,1 @@
+ALTER TABLE "verify_settings" ALTER COLUMN "type" SET DEFAULT 'message';
