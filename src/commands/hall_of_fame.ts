@@ -39,11 +39,11 @@ export class HallOfFameCommand extends AugmentedSubcommand {
         return new CommandHints({
             chat: {
                 development: "1126901836243275806",
-                production: ""
+                production: "1260783567382904904"
             },
             message: {
                 development: "1126901837249904672",
-                production: ""
+                production: "1260783568569892894"
             }
         });
     }
