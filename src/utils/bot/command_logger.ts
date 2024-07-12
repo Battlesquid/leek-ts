@@ -25,6 +25,6 @@ export class CommandLogger {
     }
 
     public async error(content: string, error: unknown) {
-        this.logger.error({ error }, content);
+        this.logger.error({ err: error }, content);
     }
 }
