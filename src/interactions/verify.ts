@@ -78,7 +78,7 @@ const request = new SlashCommandSubcommandBuilder()
     .setDescription("Request verification. Requires command verification to be enabled.");
 
 
-const permissions = [PermissionFlagsBits.ManageGuild];
+const permissions = [PermissionFlagsBits.ModerateMembers];
 
 const verify = new SlashCommandBuilder()
     .setName("verify")
