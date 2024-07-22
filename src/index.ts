@@ -35,13 +35,12 @@ const cleanup = () => {
     container.pool.end();
 };
 
-main().catch((error) => {
-    container.logger.error(error);
-});
+main();
 
 process.on("uncaughtException", (error) => {
     console.error(error);
     cleanup();
+    process.exit(1);
 });
 
 process.on("SIGTERM", () => {

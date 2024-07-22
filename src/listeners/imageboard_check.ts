@@ -35,7 +35,7 @@ export class ImageboardCheckListener extends Listener {
         const notWhitelisted = !roles?.hasAny(...settings.whitelist);
 
         if (locked && hasNoLink && hasNoAttachments && notWhitelisted) {
-            msg.delete();
+            ttry(() => msg.delete());
         }
     }
 }
