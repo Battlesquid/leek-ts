@@ -5,7 +5,7 @@ import { logSettings } from "../db/schema";
 import { ChannelType } from "discord.js";
 import { eq } from "drizzle-orm";
 import { chatInputCommand, AugmentedSubcommand, CommandHints } from "../utils/bot";
-import { capitalize } from "../utils/general";
+import { capitalizeFirstLetter } from "@sapphire/utilities";
 
 @ApplyOptions<Subcommand.Options>({
     name: logs.commands.chat.base.name,
@@ -68,7 +68,7 @@ export class LogsCommand extends AugmentedSubcommand {
                 .update(logSettings)
                 .set({ [type]: null })
                 .where(eq(logSettings.gid, inter.guildId));
-            inter.reply(`${capitalize(type)} logging disabled.`);
+            inter.reply(`${capitalizeFirstLetter(type)} logging disabled.`);
         } catch (error) {
             inter.reply({
                 content: "An error occurred while saving your settings.",
