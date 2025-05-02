@@ -1,6 +1,6 @@
 import { LogLevel, SapphireClient, container } from "@sapphire/framework";
 import { ActivityType, GatewayIntentBits, Partials } from "discord.js";
-import { config } from "./config";
+import { getenv } from "./config";
 import { getDatabase, getPgPool } from "./db";
 import { getLoggerInstance } from "./logger";
 import { PinoLoggerAdapter } from "./utils/bot";
@@ -10,7 +10,7 @@ const logger = getLoggerInstance("leekbot");
 const client = new SapphireClient({
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessageReactions],
     logger: {
-        level: config.getenv("NODE_ENV") === "development" ? LogLevel.Trace : LogLevel.Info,
+        level: getenv("NODE_ENV") === "development" ? LogLevel.Trace : LogLevel.Info,
         instance: new PinoLoggerAdapter(logger)
     },
     partials: [Partials.Message, Partials.Channel, Partials.Reaction],
@@ -28,7 +28,7 @@ const client = new SapphireClient({
 const main = async () => {
     container.drizzle = await getDatabase();
     container.pool = await getPgPool();
-    await client.login(config.getenv("DISCORD_TOKEN"));
+    await client.login(getenv("DISCORD_TOKEN"));
 };
 
 const cleanup = () => {

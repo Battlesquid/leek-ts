@@ -1,25 +1,29 @@
 import pino, { LoggerOptions } from "pino";
 import os from "os";
-import { config } from "./config";
+import { getenv } from "./config";
 
-export const getLoggerInstance = (stream: string, options?: LoggerOptions) => {
+export const getLoggerInstance = (service: string, options?: LoggerOptions) => {
     return pino({
         ...options,
         base: {
-            env: config.getenv("NODE_ENV"),
+            env: getenv("NODE_ENV"),
             pid: process.pid,
             hostname: os.hostname()
         },
         transport: {
             targets: [
                 {
-                    target: "pino-parseable",
+                    target: "pino-loki",
                     options: {
-                        endpoint: config.getenv("PARSEABLE_ENDPOINT"),
-                        stream,
-                        auth: {
-                            username: config.getenv("PARSEABLE_USERNAME"),
-                            password: config.getenv("PARSEABLE_PASSWORD")
+                        batching: true,
+                        interval: 5,
+                        labels: {
+                            service
+                        },
+                        host: getenv("LOKI_HOST"),
+                        basicAuth: {
+                            username: getenv("LOKI_USERNAME"),
+                            password: getenv("LOKI_PASSWORD")
                         }
                     }
                 },

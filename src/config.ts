@@ -1,7 +1,7 @@
 import { config as configenv } from "dotenv";
 import * as path from "path";
 
-const ENV_VARIABLES = ["DISCORD_TOKEN", "NODE_ENV", "PARSEABLE_ENDPOINT", "PARSEABLE_USERNAME", "PARSEABLE_PASSWORD", "DB_HOST", "DB_PORT", "DB_USER", "DB_PASSWORD", "DB_NAME"] as const;
+const ENV_VARIABLES = ["DISCORD_TOKEN", "NODE_ENV", "LOKI_HOST", "LOKI_USERNAME", "LOKI_PASSWORD", "DB_HOST", "DB_PORT", "DB_USER", "DB_PASSWORD", "DB_NAME"] as const;
 
 type ConfigVariable = (typeof ENV_VARIABLES)[number];
 
@@ -24,11 +24,9 @@ const loadConfig = () => {
 
 let CONFIG: Record<string, string> | null = null;
 
-export const config = {
-    getenv(key: ConfigVariable) {
-        if (CONFIG === null) {
-            CONFIG = loadConfig();
-        }
-        return CONFIG[key];
+export const getenv = (key: ConfigVariable) => {
+    if (CONFIG === null) {
+        CONFIG = loadConfig();
     }
+    return CONFIG[key];
 };

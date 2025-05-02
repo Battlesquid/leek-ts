@@ -14,7 +14,10 @@
         "clean": "rm -rf dist",
         "clean:all": "yarn clean && rm -rf node_modules",
         "lint": "eslint src/**",
-        "run_migrate": "node dist/migrate.js"
+        "run_migrate": "node dist/migrate.js",
+        "vault:remove-previous": "rimraf .env.previous .env.production.previous",
+        "vault:pull": "dotenv-vault pull && dotenv-vault pull production && yarn vault:remove-previous",
+        "vault:push": "dotenv-vault push && dotenv-vault push production && yarn vault:pull"
     },
     "dependencies": {
         "@sapphire/decorators": "^6.1.0",
@@ -30,7 +33,7 @@
         "node-fetch": "2",
         "pg": "^8.12.0",
         "pino": "^8.20.0",
-        "pino-parseable": "^1.0.3"
+        "pino-loki": "^2.5.0"
     },
     "devDependencies": {
         "@eslint/js": "^9.0.0",
@@ -46,6 +49,7 @@
         "lint-staged": "^15.2.2",
         "pino-pretty": "^11.2.1",
         "prettier": "3.2.5",
+        "rimraf": "^6.0.1",
         "typescript": "^5.4.5",
         "typescript-eslint": "^7.6.0"
     },

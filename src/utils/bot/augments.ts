@@ -2,7 +2,7 @@ import { Command, Listener } from "@sapphire/framework";
 import { Subcommand } from "@sapphire/plugin-subcommands";
 import { ClientEvents, ContextMenuCommandInteraction, Snowflake } from "discord.js";
 import { CommandLogger } from "./command_logger";
-import { config } from "../../config";
+import { getenv } from "../../config";
 import { slashCommandMention } from "./formatters";
 
 export interface CommandHint {
@@ -28,15 +28,15 @@ export class CommandHints {
     }
 
     getChatId() {
-        return config.getenv("NODE_ENV") === "development" ? this.chat.development : this.chat.production;
+        return getenv("NODE_ENV") === "development" ? this.chat.development : this.chat.production;
     }
 
     getMessageId() {
-        return config.getenv("NODE_ENV") === "development" ? this.message.development : this.message.production;
+        return getenv("NODE_ENV") === "development" ? this.message.development : this.message.production;
     }
 
     getUserId() {
-        return config.getenv("NODE_ENV") === "development" ? this.user.development : this.user.production;
+        return getenv("NODE_ENV") === "development" ? this.user.development : this.user.production;
     }
 }
 
