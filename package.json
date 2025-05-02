@@ -15,7 +15,7 @@
         "clean:all": "yarn clean && rm -rf node_modules",
         "lint": "eslint src/**",
         "run_migrate": "node dist/migrate.js",
-        "vault:remove-previous": "rimraf .env.previous .env.production.previous",
+        "vault:remove-previous": "rm -rf .env.previous .env.production.previous",
         "vault:pull": "dotenv-vault pull && dotenv-vault pull production && yarn vault:remove-previous",
         "vault:push": "dotenv-vault push && dotenv-vault push production && yarn vault:pull"
     },
@@ -49,7 +49,6 @@
         "lint-staged": "^15.2.2",
         "pino-pretty": "^11.2.1",
         "prettier": "3.2.5",
-        "rimraf": "^6.0.1",
         "typescript": "^5.4.5",
         "typescript-eslint": "^7.6.0"
     },
