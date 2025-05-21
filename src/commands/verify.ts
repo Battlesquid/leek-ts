@@ -452,7 +452,7 @@ export class VerifyCommand extends AugmentedSubcommand {
             return;
         }
 
-        const history = await channel.messages.fetch({ limit: 500 });
+        const history = await channel.messages.fetch({ limit: 200 });
         const messages = Array.from(
             history
                 .sort((msg1, msg2) => msg2.createdTimestamp - msg1.createdTimestamp)
